@@ -1,0 +1,13 @@
+/config.*
+/Makefile
+/Makefile.in
+/aclocal.m4
+/configure
+/autom4te.cache/
+/build-aux/
+/m4/
+/data/*.valid
+__pycache__/
+/trg/__main__.py
+*~
+/*.gresource

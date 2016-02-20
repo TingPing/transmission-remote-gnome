@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/io/github/Trg">
+    <file preprocess="xml-stripblanks">gtk/menus.ui</file>
+    <!--file preprocess="xml-stripblanks">gtk/help-overlay.ui</file-->
+
+    <file preprocess="xml-stripblanks">ui/applicationwindow.ui</file>
+    <file preprocess="xml-stripblanks">ui/adddialog.ui</file>
+    <file preprocess="xml-stripblanks">ui/fileview.ui</file>
+  </gresource>
+</gresources>

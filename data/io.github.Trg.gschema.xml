@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema path="/io/github/Trg/" id="io.github.Trg" gettext-domain="trg">
+
+    <key type="s" name="username">
+      <default>""</default>
+      <summary>Email address</summary>
+    </key>
+
+    <key type="s" name="password">
+      <default>""</default>
+      <summary>Password</summary>
+    </key>
+
+    <key type="s" name="hostname">
+      <default>""</default>
+      <summary>Hostname to connect to</summary>
+    </key>
+
+    <key type="q" name="port">
+      <default>9091</default>
+      <summary>Port to connect to</summary>
+    </key>
+
+    <key type="b" name="add-paused">
+      <default>false</default>
+      <summary>Add torrent in a paused state</summary>
+    </key>
+
+  </schema>
+
+</schemalist>
