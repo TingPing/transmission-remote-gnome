@@ -31,6 +31,6 @@ project in terms of UI and codebase. This is still a work in progress:
 ```sh
 ./autogen.sh
 make -s
-sudo make install # For GSettings only
 make run
+# Installing is not yet supported
 ```

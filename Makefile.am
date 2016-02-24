@@ -13,8 +13,8 @@ trg/__main__.py: trg/__main__.py.in
 		-e s!\@PYTHON\@!$(PYTHON)!          \
 		< $< > $@
 
-run: $(BUILT_SOURCES)
-	$(PYTHON) -m trg --log=3
+run: $(BUILT_SOURCES) data/gschemas.compiled
+	env GSETTINGS_SCHEMA_DIR=data $(PYTHON) -m trg --log=3
 
 # ----------- data --------------
 
@@ -29,5 +29,10 @@ EXTRA_DIST = trg/__main__.py.in
 gsettings_SCHEMAS = data/io.github.Trg.gschema.xml
 @GSETTINGS_RULES@
 
+# This is just for running locally and not normally built
+data/gschemas.compiled: $(gsettings_SCHEMAS)
+	$(AM_V_GEN) $(GLIB_COMPILE_SCHEMAS) data
+
 EXTRA_DIST += $(gsettings_SCHEMAS)
+CLEANFILES = data/gschemas.compiled
 
