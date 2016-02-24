@@ -109,7 +109,7 @@ class AddDialog(Gtk.Dialog):
 	def do_response(self, response_id):
 		if response_id == Gtk.ResponseType.OK:
 			args = self._make_args()
-			response = self.client.torrent_add(args)
+			self.client.torrent_add(args)
 
 		if response_id != Gtk.ResponseType.DELETE_EVENT:
 			self.destroy()

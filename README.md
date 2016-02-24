@@ -21,7 +21,7 @@ project in terms of UI and codebase. This is still a work in progress:
 - [ ] RPC Client
   - [x] Connecting
   - [x] Authentication
-  - [ ] Make fully Async
+  - [x] Make fully Async
   - [ ] Better error handling
   - [ ] Full API coverage
 - [ ] Misc files (desktop, appdata, icons)

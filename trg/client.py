@@ -95,7 +95,35 @@ class Client(GObject.Object):
 			logging.info('Authenticating as {}'.format(self.username))
 			auth.authenticate(self.username, self.password)
 
-	def _make_request(self, method, arguments=None, tag=None):
+	def _on_message_finish(self, session, message, user_data=None):
+		status_code = message.props.status_code
+		logging.debug('Got response code: {} ({})'.format(Soup.Status(status_code).value_name, status_code))
+
+		if status_code == Soup.Status.UNAUTHORIZED:
+			if not self.username or not self.password:
+				logging.warning('Requires authentication')
+			else:
+				logging.warning('Failed to log in as {}'.format(self.username))
+		elif status_code == Soup.Status.CONFLICT:
+			self._session_id = message.props.response_headers.get('X-Transmission-Session-Id')
+			logging.info('Got new session id ({}), retrying'.format(self._session_id))
+			message.props.request_headers.replace('X-Transmission-Session-Id', self._session_id)
+			# requeue_message fails?
+			self._session.cancel_message(message, Soup.Status.CANCELLED)
+			self._session.queue_message(message, self._on_message_finish, user_data=user_data)
+
+		if not 200 <= status_code < 300:
+			logging.warning('Response was not successful: {} ({})'.format(Soup.Status(status_code).value_name, status_code))
+			return
+
+		response_str = message.props.response_body_data.get_data().decode('UTF-8')
+		response = json.loads(response_str)
+		logging.debug('<<<\n{}'.format(pprint.pformat(response)))
+
+		if user_data:
+			user_data(response)
+
+	def _make_request_async(self, method, arguments=None, callback=None, tag=None):
 		message = Soup.Message.new('POST', self._rpc_uri)
 		message.props.request_headers.append('X-Transmission-Session-Id', self._session_id)
 
@@ -109,29 +137,7 @@ class Client(GObject.Object):
 		message.set_request('application/json', Soup.MemoryUse.COPY,
 		                    bytes(self._encoder.encode(request), 'UTF-8'))
 
-		# TODO: Async
-		ret = self._session.send_message(message)
-		logging.debug('Got response code: {}'.format(ret))
-
-		if ret == Soup.Status.UNAUTHORIZED:
-			if not self.username or not self.password:
-				logging.warning('Requires authentication')
-			else:
-				logging.warning('Failed to log in as {}'.format(self.username))
-			return {}
-		elif ret == Soup.Status.CONFLICT:
-			self._session_id = message.props.response_headers.get('X-Transmission-Session-Id')
-			logging.info('Got new session id ({}), retrying'.format(self._session_id))
-			return self._make_request(method, arguments, tag)
-
-		if not 200 <= ret < 300:
-			logging.warning('Response was not successful: {}'.format(ret))
-			return {}
-
-		response_str = message.props.response_body_data.get_data().decode('UTF-8')
-		response = json.loads(response_str)
-		logging.debug('<<<\n{}'.format(pprint.pformat(response)))
-		return response
+		self._session.queue_message(message, self._on_message_finish, user_data=callback)
 
 	@staticmethod
 	def _make_args(torrent, **kwargs):
@@ -149,33 +155,27 @@ class Client(GObject.Object):
 		'''
 		:type torrent: List of Torrent, single Torrent, None, or 'recently-active'
 		'''
-		self._make_request('torrent-start', self._make_args(torrent))
+		self._make_request_async('torrent-start', self._make_args(torrent))
 
 	def torrent_set(self, torrent, args):
-		self._make_request('torrent-set', self._make_args(torrent, args=args))
+		self._make_request_async('torrent-set', self._make_args(torrent, args=args))
 
-	def torrent_get(self, torrent, fields):
+	def torrent_get(self, torrent, fields, callback=None):
 		args = self._make_args(torrent, fields=fields)
-		return self._make_request('torrent-get', args)
+		self._make_request_async('torrent-get', args, callback=callback)
 
 	def torrent_move(self, torrent, location:str, move=None):
 		args = self._make_args(torrent, location=location, move=move)
-		self._make_request('torrent-set-location', )
+		self._make_request_async('torrent-set-location', )
 
 	def torrent_rename(self, torrent, path:str, name:str):
 		args = self._make_args(torrent, path=location, name=name)
-		self._make_request('torrent-rename-path', args)
+		self._make_request_async('torrent-rename-path', args)
 
-	def torrent_add(self, args):
-		return self._make_request('torrent-add', args)
+	def torrent_add(self, args, callback=None):
+		self._make_request_async('torrent-add', args, callback=callback)
 
-	def _refresh(self):
-		response = self.torrent_get('recently-active', ['id', 'name', 'rateDownload', 'rateUpload', 'eta',
-		                                   'sizeWhenDone', 'percentDone', 'totalSize'])
-
-		if not response:
-			return GLib.SOURCE_CONTINUE
-
+	def _on_refresh_complete(self, response):
 		for t in response['arguments']['torrents']:
 			for i in range(self.torrents.get_n_items()):
 				if self.torrents.get_item(i).id == t['id']:
@@ -189,11 +189,15 @@ class Client(GObject.Object):
 				if self.torrents.get_item(i).id == t:
 					self.torrents.remove(i)
 
+	def _refresh(self):
+		self.torrent_get('recently-active', ['id', 'name', 'rateDownload', 'rateUpload', 'eta',
+		                                     'sizeWhenDone', 'percentDone', 'totalSize'],
+		                  callback=self._on_refresh_complete)
+
+
 		return GLib.SOURCE_CONTINUE
 
-	def refresh_all(self):
-		response = self.torrent_get(None, ['id', 'name', 'rateDownload', 'rateUpload', 'eta',
-		                                   'sizeWhenDone', 'percentDone', 'totalSize'])
+	def _on_refresh_all_complete(self, response):
 		self.torrents.remove_all()
 		for t in response['arguments']['torrents']:
 			torrent = Torrent.new_from_response(t)
@@ -203,6 +207,12 @@ class Client(GObject.Object):
 			GLib.source_remove(self._refresh_timer)
 
 		self._refresh_timer = GLib.timeout_add_seconds(20, self._refresh)
+
+	def refresh_all(self):
+		self.torrent_get(None, ['id', 'name', 'rateDownload', 'rateUpload', 'eta',
+		                                   'sizeWhenDone', 'percentDone', 'totalSize'],
+		                 callback=self._on_refresh_all_complete)
+
 
 class TorrentEncoder(json.JSONEncoder):
 	'''JSONEncoder that converts Torrent objects into their id's at encode time'''
