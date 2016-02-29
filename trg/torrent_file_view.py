@@ -23,6 +23,7 @@ from gi.repository import (
 	GLib,
 	GObject,
 	Gio,
+	Gdk,
     Gtk,
 )
 
@@ -50,6 +51,58 @@ class TorrentFileView(Gtk.TreeView):
 		area.add(renderer)
 		area.add_attribute(renderer, 'size', FileColumn.size)
 
+	def _set_selection_value(self, item, user_data=None):
+		selection = self.get_selection()
+		model, iters = selection.get_selected_rows()
+		column, val = user_data
+
+		for it in iters:
+			if column == FileColumn.download:
+				self._set_download_value(model, it, val)
+			elif column == FileColumn.pri_val:
+				self._set_priority_value(model, it, *val)
+
+	def _build_menu(self):
+		MENU_ITEMS = (
+		    (_('Download'), FileColumn.download, True),
+			(_('Skip'),     FileColumn.download, False),
+			(),
+			(_('Priority High'),   FileColumn.pri_val, (1, _('High'))),
+			(_('Priority Normal'), FileColumn.pri_val, (0, _('Normal'))),
+			(_('Priority Low'),    FileColumn.pri_val, (-1, _('Low'))),
+		)
+
+		menu = Gtk.Menu.new()
+		for entry in MENU_ITEMS:
+			if entry:
+				item = Gtk.MenuItem.new_with_label(entry[0])
+				item.connect('activate', self._set_selection_value, entry[1:])
+			else:
+				item = Gtk.SeparatorMenuItem.new()
+			menu.append(item)
+
+		menu.attach_to_widget(self)
+		menu.show_all()
+		return menu
+
+	def do_button_press_event(self, event):
+		if not (event.type == Gdk.EventType.BUTTON_PRESS and event.button == Gdk.BUTTON_SECONDARY):
+			return Gtk.TreeView.do_button_press_event(self, event)
+
+		ret = self.get_path_at_pos(event.x, event.y)
+		if not ret or not ret[0]:
+			return Gdk.EVENT_STOP
+
+		path = ret[0]
+		selection = self.get_selection()
+		if not selection.path_is_selected(path):
+			selection.unselect_all()
+			selection.select_path(path)
+
+		menu = self._build_menu()
+		menu.popup(None, None, None, None, event.button, event.time)
+		return Gdk.EVENT_STOP
+
 	# TODO: Avoid recursion because python
 	def _add_node_to_store(self, parent, node):
 		parent = self.torrent_file_store.append(parent, [node.name, node.get_size(), True,
@@ -69,14 +122,7 @@ class TorrentFileView(Gtk.TreeView):
 		for child in rowiter.iterchildren():
 			yield from TorrentFileView._iter_get_children(child)
 
-	@GtkTemplate.Callback
-	def _on_file_priority_changed(self, cell, path, new_iter):
-		pri_model = cell.props.model
-		pri_val = pri_model[new_iter][PriorityColumn.pri_val]
-		pri_str = _(pri_model[new_iter][PriorityColumn.pri_str])
-
-		model = self.torrent_file_store
-		it = model.get_iter(path)
+	def _set_priority_value(self, model, it, pri_val, pri_str):
 		model[it][FileColumn.pri_val] = pri_val
 		model[it][FileColumn.pri_str] = pri_str
 
@@ -97,10 +143,16 @@ class TorrentFileView(Gtk.TreeView):
 			parent = parent.get_parent()
 
 	@GtkTemplate.Callback
-	def _on_file_download_toggled(self, cell, path):
+	def _on_file_priority_changed(self, cell, path, new_iter):
+		pri_model = cell.props.model
+		pri_val = pri_model[new_iter][PriorityColumn.pri_val]
+		pri_str = _(pri_model[new_iter][PriorityColumn.pri_str])
+
 		model = self.torrent_file_store
 		it = model.get_iter(path)
-		val = not model[it][FileColumn.download] # Toggled
+		self._set_priority_value(model, it, pri_val, pri_str)
+
+	def _set_download_value(self, model, it, val):
 		model[it][FileColumn.download] = val
 
 		for child in self._iter_get_children(model[it]):
@@ -119,6 +171,12 @@ class TorrentFileView(Gtk.TreeView):
 				parent[FileColumn.download_inconsistent] = False
 			parent = parent.get_parent()
 
+	@GtkTemplate.Callback
+	def _on_file_download_toggled(self, cell, path):
+		model = self.torrent_file_store
+		it = model.get_iter(path)
+		val = not model[it][FileColumn.download] # Toggled
+		self._set_download_value(model, it, val)
 
 class FileColumn(IntEnum):
 	name = 0

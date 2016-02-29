@@ -32,7 +32,7 @@
       <!-- column-name download -->
       <column type="gboolean"/>
       <!-- column-name priority -->
-      <column type="guint"/>
+      <column type="gint"/>
       <!-- column-name priority-text -->
       <column type="gchararray"/>
       <!-- column-name index -->
@@ -52,7 +52,9 @@
     <property name="search_column">0</property>
     <property name="fixed_height_mode">True</property>
     <child internal-child="selection">
-      <object class="GtkTreeSelection"/>
+      <object class="GtkTreeSelection">
+        <property name="mode">3</property>
+      </object>
     </child>
     <child>
       <object class="GtkTreeViewColumn">
