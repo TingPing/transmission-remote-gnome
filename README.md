@@ -20,7 +20,7 @@ project in terms of UI and codebase. This is still a work in progress:
   - [ ] View properties
 - [ ] Settings
   - [x] Local settings
-  - [ ] Dialog for configuration
+  - [x] Dialog for configuration
   - [ ] Sync remote settings
 - [ ] RPC Client
   - [x] Connecting

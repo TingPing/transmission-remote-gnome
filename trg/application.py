@@ -29,6 +29,7 @@ from gi.repository import (
 
 from .client import Client
 from .window import ApplicationWindow
+from .preferences_dialog import PreferencesDialog
 
 class Application(Gtk.Application):
 	__gtype_name__ = 'Application'
@@ -56,6 +57,10 @@ class Application(Gtk.Application):
 
 		action = Gio.SimpleAction.new('about', None)
 		action.connect('activate', self.on_about)
+		self.add_action(action)
+
+		action = Gio.SimpleAction.new('preferences', None)
+		action.connect('activate', self.on_preferences)
 		self.add_action(action)
 
 	def do_open(self, files, n_files, hint):
@@ -90,6 +95,10 @@ class Application(Gtk.Application):
 
 	def do_shutdown(self):
 		Gtk.Application.do_shutdown(self)
+
+	def on_preferences(self, action, param):
+		dialog = PreferencesDialog(transient_for=self.window, modal=True)
+		dialog.present()
 
 	def on_about(self, action, param):
 		about = Gtk.AboutDialog(transient_for=self.window, modal=True,

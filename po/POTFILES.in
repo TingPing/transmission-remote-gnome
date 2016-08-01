@@ -4,8 +4,10 @@ data/se.tingping.Trg.gschema.xml
 data/ui/adddialog.ui
 data/ui/applicationwindow.ui
 data/ui/fileview.ui
+data/ui/preferencesdialog.ui
 data/ui/torrentview.ui
 trg/client.py
 trg/torrent.py
 trg/application.py
 trg/torrent_file_view.py
+trg/preferences_dialog.py
