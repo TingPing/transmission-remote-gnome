@@ -118,7 +118,7 @@ class Client(GObject.Object):
 
 		response_str = message.props.response_body_data.get_data().decode('UTF-8')
 		response = json.loads(response_str)
-		logging.debug('<<<\n{}'.format(pprint.pformat(response)))
+		#logging.debug('<<<\n{}'.format(pprint.pformat(response)))
 
 		if user_data:
 			user_data(response)
@@ -178,7 +178,9 @@ class Client(GObject.Object):
 	def _on_refresh_complete(self, response):
 		for t in response['arguments']['torrents']:
 			for i in range(self.torrents.get_n_items()):
-				if self.torrents.get_item(i).id == t['id']:
+				torrent = self.torrents.get_item(i)
+				if torrent.id == t['id']:
+					torrent.update_from_response(t)
 					break
 			else:
 				torrent = Torrent.new_from_response(t)

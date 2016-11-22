@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 from gettext import gettext as _
 
 from gi.repository import (
@@ -118,6 +119,14 @@ class Torrent(GObject.Object):
 		for k,v in d.items():
 			prop_dict[Torrent._propertify_name(k)] = v
 		return prop_dict
+
+	def update_from_response(self, response:dict):
+		for k, v in response.items():
+			if k != 'id':
+				prop = self._propertify_name(k)
+				if getattr(self.props, prop) != v:
+					logging.debug('Updating', k, 'of torrent', self)
+					setattr(self.props, prop, v)
 
 	@staticmethod
 	def new_from_response(response:dict):

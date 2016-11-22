@@ -15,58 +15,105 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import gi
-gi.require_version('Pango', '1.0')
+from enum import IntEnum
+from collections import OrderedDict
+
 from gi.repository import (
 	GLib,
     GObject,
-    Gio,
-    Pango,
     Gtk,
 )
 
 from .torrent import Torrent
+from .list_wrapper import WrappedStore
+from .torrent_file_view import CellRendererSize
+from .gi_composites import GtkTemplate
 
-class TorrentListView(Gtk.ListBox):
+@GtkTemplate(ui='/io/github/Trg/ui/torrentview.ui')
+class TorrentListView(Gtk.TreeView):
 	__gtype_name__ = 'TorrentListView'
 
-	model = GObject.Property(type=Gio.ListModel)
+	size_column = GtkTemplate.Child()
+	progress_column = GtkTemplate.Child()
+	down_column = GtkTemplate.Child()
+	up_column = GtkTemplate.Child()
+
+	def __init__(self, model, **kwargs):
+		super().__init__(**kwargs)
+		self.init_template()
+		self._init_cells()
+
+		# NOTE: Order must match TorrentColumn enum
+		props = OrderedDict()
+		props['name'] = str
+		props['size_when_done'] = GObject.TYPE_UINT64
+		props['percent_done'] = float
+		props['rate_download'] = GObject.TYPE_UINT64
+		props['rate_upload'] = GObject.TYPE_UINT64
+		s = WrappedStore.new_for_model(model, props)
+		self.props.model = s
+		self.props.model.insert_with_valuesv(0, [0], ['FIXME'])
+		GLib.timeout_add(0.1, lambda: self.props.model.clear())
+
+	def _init_cells(self):
+		area = self.size_column.props.cell_area
+		area.clear()
+		renderer = CellRendererSize()
+		area.add(renderer)
+		area.add_attribute(renderer, 'size', TorrentColumn.size)
+
+		area = self.progress_column.props.cell_area
+		area.clear()
+		renderer = CellRendererPercent()
+		area.add(renderer)
+		area.add_attribute(renderer, 'percent', TorrentColumn.progress)
+
+		area = self.down_column.props.cell_area
+		area.clear()
+		renderer = CellRendererSpeed()
+		area.add(renderer)
+		area.add_attribute(renderer, 'speed', TorrentColumn.down)
+
+		area = self.up_column.props.cell_area
+		area.clear()
+		renderer = CellRendererSpeed()
+		area.add(renderer)
+		area.add_attribute(renderer, 'speed', TorrentColumn.up)
+
+
+class TorrentColumn(IntEnum):
+	name = 0
+	size = 1
+	progress = 2
+	down = 3
+	up = 4
+
+
+class CellRendererSpeed(Gtk.CellRendererText):
+	__gtype_name__ = 'CellRendererSpeed'
+
+	speed = GObject.Property(type=GObject.TYPE_UINT64)
 
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
-		self.bind_model(self.model, self._on_create_row)
+		self.connect('notify::speed', self._on_speed_change)
 
-	@staticmethod
-	def _on_create_row(item):
-		return TorrentBox(torrent=item)
+	def _on_speed_change(self, prop, param):
+		if self.speed:
+			self.props.text = GLib.format_size(self.speed) + '/s'
+		else:
+			self.props.text = ''
 
-class TorrentBox(Gtk.Box):
-	__gtype_name__ = 'TorrentBox'
 
-	torrent = GObject.Property(type=Torrent, flags=GObject.ParamFlags.CONSTRUCT_ONLY|GObject.ParamFlags.READWRITE)
+class CellRendererPercent(Gtk.CellRendererProgress):
+	__gtype_name__ = 'CellRendererPercent'
+
+	percent = GObject.Property(type=float)
 
 	def __init__(self, **kwargs):
-		super().__init__(orientation=Gtk.Orientation.VERTICAL, **kwargs)
+		super().__init__(**kwargs)
+		self.connect('notify::percent', self._on_percent_change)
 
-		self.name_lbl = Gtk.Label(halign=Gtk.Align.START,
-		                          ellipsize=Pango.EllipsizeMode.END,
-		                          lines=1)
-		self.pack_start(self.name_lbl, False, True, 5)
-
-		self.set_name(self.torrent.props.name)
-		self.torrent.connect('notify::name', lambda obj, param: self.set_name(obj.props.name))
-
-		bar = Gtk.ProgressBar(show_text=True)
-		bar.props.text = '{}/{}'.format(GLib.format_size(self.torrent.size_when_done * self.torrent.percent_done),
-										GLib.format_size(self.torrent.size_when_done))
-		self.torrent.bind_property('percent_done', bar, 'fraction', GObject.BindingFlags.SYNC_CREATE)
-		self.pack_start(bar, False, True, 5)
-
-		self.show_all()
-
-	def set_name(self, text:str):
-		esc = GLib.markup_escape_text(text)
-		self.name_lbl.set_markup('<b>{}</b>'.format(esc))
-
-	def set_size_line(self, text:str):
-		pass
+	def _on_percent_change(self, prop, param):
+		self.props.value = int(self.percent * 100)
+		

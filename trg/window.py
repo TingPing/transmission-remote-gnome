@@ -45,7 +45,7 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 
 		self.client = Client(username=settings['username'], password=settings['password'])
 		self.client.refresh_all()
-		view = TorrentListView(model=self.client.props.torrents)
+		view = TorrentListView(self.client.props.torrents)
 		self.torrent_sw.add(view)
 		view.show_all()
 
