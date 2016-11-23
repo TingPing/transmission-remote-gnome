@@ -125,7 +125,7 @@ class Torrent(GObject.Object):
 			if k != 'id':
 				prop = self._propertify_name(k)
 				if getattr(self.props, prop) != v:
-					logging.debug('Updating', k, 'of torrent', self)
+					logging.debug('Updating {} of torrent {}'.format(k, self))
 					setattr(self.props, prop, v)
 
 	@staticmethod

@@ -20,8 +20,9 @@ from collections import OrderedDict
 
 from gi.repository import (
 	GLib,
-    GObject,
-    Gtk,
+	GObject,
+	Pango,
+	Gtk,
 )
 
 from .torrent import Torrent
@@ -46,10 +47,10 @@ class TorrentListView(Gtk.TreeView):
 		# NOTE: Order must match TorrentColumn enum
 		props = OrderedDict()
 		props['name'] = str
-		props['size_when_done'] = GObject.TYPE_UINT64
-		props['percent_done'] = float
-		props['rate_download'] = GObject.TYPE_UINT64
-		props['rate_upload'] = GObject.TYPE_UINT64
+		props['size-when-done'] = GObject.TYPE_UINT64
+		props['percent-done'] = float
+		props['rate-download'] = GObject.TYPE_UINT64
+		props['rate-upload'] = GObject.TYPE_UINT64
 		s = WrappedStore.new_for_model(model, props)
 		self.props.model = s
 		self.props.model.insert_with_valuesv(0, [0], ['FIXME'])
@@ -58,7 +59,7 @@ class TorrentListView(Gtk.TreeView):
 	def _init_cells(self):
 		area = self.size_column.props.cell_area
 		area.clear()
-		renderer = CellRendererSize()
+		renderer = CellRendererSize(alignment=Pango.Alignment.RIGHT)
 		area.add(renderer)
 		area.add_attribute(renderer, 'size', TorrentColumn.size)
 

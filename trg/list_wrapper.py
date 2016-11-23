@@ -34,30 +34,30 @@ class WrappedStore(Gtk.ListStore):
 		self._on_items_changed(model, 0, 0, model.get_n_items())
 		return self
 
-	def _on_item_property_changed(self, item, property_name):
-		# FIXME: Map property names...
-		print('prop', property_name, 'changed')
+	def _on_item_property_changed(self, item, paramspec):
+		property_name = paramspec.name
 		if property_name not in self.properties:
 			return
 
+		def index(d, v):
+			for i, k in enumerate(d):
+				if k == v:
+					return i
+			raise IndexError('Key {} was not in dict'.format(v))
+
 		for row in self:
 			if row[-1] == item:
-				idx = self.properties.index(property_name)
+				idx = index(self.properties, property_name)
 				row[idx] = getattr(item.props, property_name)
 				break
 
 	def _on_items_changed(self, model, position, removed, added):
-		if removed:
-			# FIXME: Removes wrong value
-			it = self[position].iter
-			print('Removing', self[position][-1])
-			while removed:
-				item = model.get_item(position)
-				item.disconnect(item._hook_id)
-				item._hook_id = 0
-				if not self.remove(it):
-					print('Failed to remove list item')
-				removed = removed - 1
+		while removed:
+			row = self[position]
+			item = row[-1]
+			item.disconnect(item._hook_id)
+			self.remove(row.iter)
+			removed = removed - 1
 		all_columns = [i for i in range(len(self.properties) + 1)]
 		for i in range(added):
 			new_pos = position + i
