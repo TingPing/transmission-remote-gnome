@@ -11,3 +11,4 @@ __pycache__/
 /trg/__main__.py
 *~
 /*.gresource
+/data/gschemas.compiled
