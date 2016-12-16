@@ -9,9 +9,13 @@ project in terms of UI and codebase. This is still a work in progress:
 
 - [x] Add Dialog
   - [x] Parse torrent files
-- [ ] Torrent List
-  - [ ] Sorting
-  - [ ] Filtering
+- [x] Torrent List
+  - [x] Sorting
+  - [x] Filtering
+    - [x] By status
+    - [ ] By tracker
+    - [ ] By label/directory
+  - [ ] Searching
   - [ ] Right click options
   - [ ] View properties
 - [ ] Settings
@@ -24,7 +28,10 @@ project in terms of UI and codebase. This is still a work in progress:
   - [x] Make fully Async
   - [ ] Better error handling
   - [ ] Full API coverage
-- [ ] Misc files (desktop, appdata, icons)
+- [ ] Installation
+  - [ ] Misc files (desktop, appdata, icons, translations)
+  - [ ] Flatpak
+- [ ] Port build system to Meson?
 
 ## Building
 
