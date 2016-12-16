@@ -79,6 +79,24 @@ Author: Patrick Griffis
           </packing>
         </child>
         <child>
+          <object class="GtkMenuButton" id="filter_button">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="popover">view_menu_widget</property>
+            <child>
+              <object class="GtkImage">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="icon_name">open-menu-symbolic</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="pack_type">end</property>
+          </packing>
+        </child>
+        <child>
           <object class="GtkToggleButton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
@@ -99,4 +117,73 @@ Author: Patrick Griffis
       </object>
     </child>
   </template>
+  <object class ="GtkPopoverMenu" id="view_menu_widget">
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="border_width">8</property>
+        <property name="orientation">vertical</property>
+        <property name="width_request">160</property>
+        <child>
+          <object class="GtkModelButton">
+            <property name="visible">True</property>
+            <property name="menu-name">filter_box</property>
+            <property name="text" translatable="yes">Filter by state…</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox" id="filter_box">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <property name="margin">10</property>
+        <child>
+          <!-- The value of these is documented in torrent.py -->
+          <object class="GtkModelButton">
+            <property name="visible">True</property>
+            <property name="action-name">win.filter_status</property>
+            <property name="action-target">-1</property>
+            <property name="text" translatable="yes">All</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkModelButton">
+            <property name="visible">True</property>
+            <property name="action-name">win.filter_status</property>
+            <property name="action-target">4</property>
+            <property name="text" translatable="yes">Downloading</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkModelButton">
+            <property name="visible">True</property>
+            <property name="action-name">win.filter_status</property>
+            <property name="action-target">6</property>
+            <property name="text" translatable="yes">Seeding</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkModelButton">
+            <property name="visible">True</property>
+            <property name="action-name">win.filter_status</property>
+            <property name="action-target">0</property>
+            <property name="text" translatable="yes">Stopped</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkModelButton">
+            <property name="visible">True</property>
+            <property name="action-name">win.filter_status</property>
+            <property name="action-target">2</property>
+            <property name="text" translatable="yes">Checking</property>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="submenu">filter_box</property>
+      </packing>
+    </child>
+  </object>
 </interface>

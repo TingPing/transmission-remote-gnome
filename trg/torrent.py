@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from enum import IntEnum
 from gettext import gettext as _
 
 from gi.repository import (
@@ -89,6 +90,11 @@ class Torrent(GObject.Object):
 			0.0, 1.0, 0.0,
 			GObject.ParamFlags.CONSTRUCT|GObject.ParamFlags.READWRITE,
 		),
+  		'status': (
+			GObject.TYPE_UINT64, _('Status'), _('Current status of torrent'),
+			0, GLib.MAXUINT64, 0,
+			GObject.ParamFlags.CONSTRUCT|GObject.ParamFlags.READWRITE,
+		),
 	}
 
 	def __init__(self, **kwargs):
@@ -149,3 +155,12 @@ class Torrent(GObject.Object):
 
 	def do_set_property(self, prop, value):
 		setattr(self, prop.name.replace('-', '_'), value)
+
+class TorrentStatus(IntEnum):
+    STOPPED = 0
+    CHECK_WAIT = 1
+    CHECK = 2
+    DOWNLOAD_WAIT = 3
+    DOWNLOAD = 4
+    SEED_WAIT = 5
+    SEED = 6

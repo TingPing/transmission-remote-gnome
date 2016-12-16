@@ -51,10 +51,15 @@ class TorrentListView(Gtk.TreeView):
 		props['percent-done'] = float
 		props['rate-download'] = GObject.TYPE_UINT64
 		props['rate-upload'] = GObject.TYPE_UINT64
+		props['status'] = GObject.TYPE_UINT64
 		s = WrappedStore.new_for_model(model, props)
-		self.props.model = s
-		self.props.model.insert_with_valuesv(0, [0], ['FIXME'])
-		GLib.timeout_add(0.1, lambda: self.props.model.clear())
+		self.filter_model = Gtk.TreeModelFilter(child_model=s)
+		self._sort_model = Gtk.TreeModelSort(model=self.filter_model)
+		self.props.model = self._sort_model
+
+		# Workaround random crash?
+		s.insert_with_valuesv(0, [0], ['FIXME'])
+		GLib.timeout_add(0.1, lambda: s.clear())
 
 	def _init_cells(self):
 		area = self.size_column.props.cell_area
@@ -88,6 +93,7 @@ class TorrentColumn(IntEnum):
 	progress = 2
 	down = 3
 	up = 4
+	status = 5
 
 
 class CellRendererSpeed(Gtk.CellRendererText):

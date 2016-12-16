@@ -193,7 +193,7 @@ class Client(GObject.Object):
 
 	def _refresh(self):
 		self.torrent_get('recently-active', ['id', 'name', 'rateDownload', 'rateUpload', 'eta',
-		                                     'sizeWhenDone', 'percentDone', 'totalSize'],
+		                                     'sizeWhenDone', 'percentDone', 'totalSize', 'status'],
 		                  callback=self._on_refresh_complete)
 
 
@@ -212,7 +212,7 @@ class Client(GObject.Object):
 
 	def refresh_all(self):
 		self.torrent_get(None, ['id', 'name', 'rateDownload', 'rateUpload', 'eta',
-		                                   'sizeWhenDone', 'percentDone', 'totalSize'],
+		                                   'sizeWhenDone', 'percentDone', 'totalSize', 'status'],
 		                 callback=self._on_refresh_all_complete)
 
 
