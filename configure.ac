@@ -9,6 +9,7 @@ AM_INIT_AUTOMAKE([1.11 dist-xz no-dist-gzip foreign subdir-objects -Wall -Wno-po
 AM_SILENT_RULES([yes])
 AM_PATH_PYTHON([3.3])
 
+AC_PROG_SED
 AC_PATH_PROG(GLIB_COMPILE_RESOURCES, glib-compile-resources)
 AX_REQUIRE_DEFINED([GLIB_GSETTINGS])
 GLIB_GSETTINGS

@@ -8,7 +8,7 @@
 /m4/
 /data/*.valid
 __pycache__/
-/trg/__main__.py
+/bin/transmission-remote-gnome
 *~
 /*.gresource
 /data/gschemas.compiled
