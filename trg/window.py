@@ -36,12 +36,15 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 
 	client = GObject.Property(type=Client)
 	torrent_sw = GtkTemplate.Child()
+	search_entry = GtkTemplate.Child()
+	search_revealer = GtkTemplate.Child()
 
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
 		self.init_template()
 		self._init_actions()
 		self._filter = None
+		self._filter_text = None
 
 		settings = Gio.Settings.new('se.tingping.Trg')
 
@@ -65,6 +68,14 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 		action.connect('change-state', self._on_status_filter)
 		self.add_action(action)
 
+	@GtkTemplate.Callback
+	def _on_search_changed(self, entry):
+		text = entry.get_text().lower() or None
+		last_value = self._filter_text
+		self._filter_text = text
+		if last_value != text:
+			self._filter_model.refilter()
+
 	def _on_status_filter(self, action, value):
 		new_value = value.get_int32()
 		if new_value > TorrentStatus.SEED:
@@ -77,10 +88,19 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 			self._filter = new_value
 		self._filter_model.refilter()
 
+	@GtkTemplate.Callback
+	def _on_search_toggle(self, button):
+		active = button.props.active
+		if not active:
+			self.search_entry.props.text = ''
+		self.search_revealer.set_reveal_child(active)
+
 	def _filter_model_func(self, model, it, data=None):
-		if self._filter is None:
-			return True
-		return model[it][TorrentColumn.status] == self._filter
+		if self._filter is not None and model[it][TorrentColumn.status] != self._filter:
+			return False
+		if self._filter_text is not None and not self._filter_text in model[it][TorrentColumn.name].lower():
+			return False
+		return True
 
 	def _on_torrent_add(self, action, param):
 		dialog = AddDialog(transient_for=self, modal=True,

@@ -15,7 +15,7 @@ project in terms of UI and codebase. This is still a work in progress:
     - [x] By status
     - [ ] By tracker
     - [ ] By label/directory
-  - [ ] Searching
+  - [x] Searching
   - [ ] Right click options
   - [ ] View properties
 - [ ] Settings

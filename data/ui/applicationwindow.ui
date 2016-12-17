@@ -1,40 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.19.0 
-
-Copyright (C)
-
-This file is part of .
-
- is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
- is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with .  If not, see <http://www.gnu.org/licenses/>.
-
-Author: Patrick Griffis
-
--->
 <interface domain="trg">
   <requires lib="gtk+" version="3.18"/>
-  <!-- interface-license-type gplv3 -->
-  <!-- interface-authors Patrick Griffis -->
   <template class="ApplicationWindow" parent="GtkApplicationWindow">
     <property name="can_focus">False</property>
     <property name="default_width">800</property>
     <property name="default_height">600</property>
     <child>
-      <object class="GtkPaned">
+      <object class="GtkBox">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
+        <property name="orientation">vertical</property>
         <child>
-          <placeholder/>
+          <object class="GtkRevealer" id="search_revealer">
+            <property name="visible">True</property>
+            <child>
+              <object class="GtkSearchEntry" id="search_entry">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <signal name="search-changed" handler="_on_search_changed"/>
+              </object>
+            </child>
+          </object>
         </child>
         <child>
           <object class="GtkScrolledWindow" id="torrent_sw">
@@ -46,8 +32,7 @@ Author: Patrick Griffis
             </child>
           </object>
           <packing>
-            <property name="resize">True</property>
-            <property name="shrink">True</property>
+            <property name="expand">1</property>
           </packing>
         </child>
       </object>
@@ -101,7 +86,7 @@ Author: Patrick Griffis
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <property name="action_name">win.search</property>
+            <signal name="toggled" handler="_on_search_toggle"/>
             <child>
               <object class="GtkImage">
                 <property name="visible">True</property>
