@@ -47,23 +47,23 @@ along with .  If not, see <http://www.gnu.org/licenses/>.
   </object>
   <template class="TorrentListView" parent="GtkTreeView">
     <property name="visible">True</property>
-    <property name="can_focus">True</property>
+    <property name="can-focus">True</property>
     <property name="model">liststore1</property>
-    <property name="enable_search">False</property>
-    <property name="fixed_height_mode">True</property>
+    <property name="enable-search">False</property>
+    <property name="fixed-height-mode">True</property>
     <child internal-child="selection">
       <object class="GtkTreeSelection"/>
     </child>
     <child>
       <object class="GtkTreeViewColumn">
-        <property name="resizable">True</property>
+        <property name="resizable">1</property>
         <property name="sizing">fixed</property>
-        <property name="min_width">80</property>
+        <property name="min-width">80</property>
         <property name="title" translatable="yes">Name</property>
-        <property name="expand">True</property>
-        <property name="clickable">True</property>
-        <property name="sort_indicator">True</property>
-        <property name="sort_column_id">0</property>
+        <property name="expand">1</property>
+        <property name="clickable">1</property>
+        <property name="sort-indicator">1</property>
+        <property name="sort-column-id">0</property>
         <child>
           <object class="GtkCellRendererText">
             <property name="ellipsize">end</property>
@@ -76,39 +76,39 @@ along with .  If not, see <http://www.gnu.org/licenses/>.
     </child>
     <child>
       <object class="GtkTreeViewColumn" id="size_column">
-        <property name="resizable">True</property>
+        <property name="resizable">1</property>
         <property name="sizing">fixed</property>
         <property name="title" translatable="yes">Size</property>
-        <property name="clickable">True</property>
-        <property name="sort_indicator">True</property>
-        <property name="sort_column_id">1</property>
+        <property name="clickable">1</property>
+        <property name="sort-indicator">1</property>
+        <property name="sort-column-id">1</property>
       </object>
     </child>
     <child>
       <object class="GtkTreeViewColumn" id="progress_column">
         <property name="sizing">fixed</property>
         <property name="title" translatable="yes">Progress</property>
-        <property name="clickable">True</property>
-        <property name="sort_indicator">True</property>
-        <property name="sort_column_id">2</property>
+        <property name="clickable">1</property>
+        <property name="sort-indicator">1</property>
+        <property name="sort-column-id">2</property>
       </object>
     </child>
     <child>
       <object class="GtkTreeViewColumn" id="down_column">
         <property name="sizing">fixed</property>
         <property name="title" translatable="yes">Down Speed</property>
-        <property name="clickable">True</property>
-        <property name="sort_indicator">True</property>
-        <property name="sort_column_id">3</property>
+        <property name="clickable">1</property>
+        <property name="sort-indicator">1</property>
+        <property name="sort-column-id">3</property>
       </object>
     </child>
     <child>
       <object class="GtkTreeViewColumn" id="up_column">
         <property name="sizing">fixed</property>
         <property name="title" translatable="yes">Up Speed</property>
-        <property name="clickable">True</property>
-        <property name="sort_indicator">True</property>
-        <property name="sort_column_id">4</property>
+        <property name="clickable">1</property>
+        <property name="sort-indicator">1</property>
+        <property name="sort-column-id">4</property>
       </object>
     </child>
   </template>

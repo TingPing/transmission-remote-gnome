@@ -2,21 +2,21 @@
 <interface domain="trg">
   <requires lib="gtk+" version="3.18"/>
   <template class="ApplicationWindow" parent="GtkApplicationWindow">
-    <property name="can_focus">False</property>
-    <property name="default_width">800</property>
-    <property name="default_height">600</property>
+    <property name="can-focus">False</property>
+    <property name="default-width">800</property>
+    <property name="default-height">600</property>
     <child>
       <object class="GtkBox">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
+        <property name="visible">1</property>
+        <property name="can-focus">1</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkRevealer" id="search_revealer">
-            <property name="visible">True</property>
+            <property name="visible">1</property>
             <child>
               <object class="GtkSearchEntry" id="search_entry">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
+                <property name="visible">1</property>
+                <property name="can-focus">1</property>
                 <signal name="search-changed" handler="_on_search_changed"/>
               </object>
             </child>
@@ -24,12 +24,9 @@
         </child>
         <child>
           <object class="GtkScrolledWindow" id="torrent_sw">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="shadow_type">in</property>
-            <child>
-              <placeholder/>
-            </child>
+            <property name="visible">1</property>
+            <property name="can-focus">1</property>
+            <property name="shadow-type">in</property>
           </object>
           <packing>
             <property name="expand">1</property>
@@ -39,23 +36,21 @@
     </child>
     <child type="titlebar">
       <object class="GtkHeaderBar">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="visible">1</property>
         <property name="title">Transmission Remote</property>
-        <property name="has_subtitle">False</property>
-        <property name="show_close_button">True</property>
+        <property name="has-subtitle">0</property>
+        <property name="show-close-button">1</property>
         <child>
           <object class="GtkButton">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="action_name">win.torrent_add</property>
             <property name="action_target">''</property>
+            <property name="visible">1</property>
+            <property name="can-focus">1</property>
+            <property name="receives-default">1</property>
+            <property name="action-name">win.torrent_add</property>
             <child>
               <object class="GtkImage">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="icon_name">list-add-symbolic</property>
+                <property name="visible">1</property>
+                <property name="icon-name">list-add-symbolic</property>
               </object>
             </child>
           </object>
@@ -65,54 +60,51 @@
         </child>
         <child>
           <object class="GtkMenuButton" id="filter_button">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
+            <property name="visible">1</property>
+            <property name="can-focus">1</property>
+            <property name="receives-default">1</property>
             <property name="popover">view_menu_widget</property>
             <child>
               <object class="GtkImage">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="icon_name">open-menu-symbolic</property>
+                <property name="visible">1</property>
+                <property name="icon-name">open-menu-symbolic</property>
               </object>
             </child>
           </object>
           <packing>
-            <property name="pack_type">end</property>
+            <property name="pack-type">end</property>
           </packing>
         </child>
         <child>
           <object class="GtkToggleButton">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
+            <property name="visible">1</property>
+            <property name="can-focus">1</property>
+            <property name="receives-default">1</property>
             <signal name="toggled" handler="_on_search_toggle"/>
             <child>
               <object class="GtkImage">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="icon_name">edit-find-symbolic</property>
+                <property name="visible">1</property>
+                <property name="icon-name">edit-find-symbolic</property>
               </object>
             </child>
           </object>
           <packing>
-            <property name="pack_type">end</property>
+            <property name="pack-type">end</property>
           </packing>
         </child>
       </object>
     </child>
   </template>
-  <object class ="GtkPopoverMenu" id="view_menu_widget">
+  <object class="GtkPopoverMenu" id="view_menu_widget">
     <child>
       <object class="GtkBox">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="border_width">8</property>
+        <property name="visible">1</property>
+        <property name="border-width">8</property>
         <property name="orientation">vertical</property>
-        <property name="width_request">160</property>
+        <property name="width-request">160</property>
         <child>
           <object class="GtkModelButton">
-            <property name="visible">True</property>
+            <property name="visible">1</property>
             <property name="menu-name">filter_box</property>
             <property name="text" translatable="yes">Filter by state…</property>
           </object>
@@ -121,13 +113,13 @@
     </child>
     <child>
       <object class="GtkBox" id="filter_box">
-        <property name="visible">True</property>
+        <property name="visible">1</property>
         <property name="orientation">vertical</property>
         <property name="margin">10</property>
+        <!-- The value of these is documented in torrent.py -->
         <child>
-          <!-- The value of these is documented in torrent.py -->
           <object class="GtkModelButton">
-            <property name="visible">True</property>
+            <property name="visible">1</property>
             <property name="action-name">win.filter_status</property>
             <property name="action-target">-1</property>
             <property name="text" translatable="yes">All</property>
@@ -135,7 +127,7 @@
         </child>
         <child>
           <object class="GtkModelButton">
-            <property name="visible">True</property>
+            <property name="visible">1</property>
             <property name="action-name">win.filter_status</property>
             <property name="action-target">4</property>
             <property name="text" translatable="yes">Downloading</property>
@@ -143,7 +135,7 @@
         </child>
         <child>
           <object class="GtkModelButton">
-            <property name="visible">True</property>
+            <property name="visible">1</property>
             <property name="action-name">win.filter_status</property>
             <property name="action-target">6</property>
             <property name="text" translatable="yes">Seeding</property>
@@ -151,7 +143,7 @@
         </child>
         <child>
           <object class="GtkModelButton">
-            <property name="visible">True</property>
+            <property name="visible">1</property>
             <property name="action-name">win.filter_status</property>
             <property name="action-target">0</property>
             <property name="text" translatable="yes">Stopped</property>
@@ -159,7 +151,7 @@
         </child>
         <child>
           <object class="GtkModelButton">
-            <property name="visible">True</property>
+            <property name="visible">1</property>
             <property name="action-name">win.filter_status</property>
             <property name="action-target">2</property>
             <property name="text" translatable="yes">Checking</property>

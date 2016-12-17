@@ -42,15 +42,15 @@
     </columns>
   </object>
   <requires lib="gtk+" version="3.18"/>
-   <template class="TorrentFileView" parent="GtkTreeView">
+  <template class="TorrentFileView" parent="GtkTreeView">
     <property name="visible">True</property>
-    <property name="can_focus">True</property>
+    <property name="can-focus">True</property>
     <property name="hexpand">True</property>
     <property name="vexpand">True</property>
     <property name="expand">True</property>
     <property name="model">torrent_file_store</property>
-    <property name="search_column">0</property>
-    <property name="fixed_height_mode">True</property>
+    <property name="search-column">0</property>
+    <property name="fixed-height-mode">True</property>
     <child internal-child="selection">
       <object class="GtkTreeSelection">
         <property name="mode">3</property>
@@ -58,12 +58,12 @@
     </child>
     <child>
       <object class="GtkTreeViewColumn">
-        <property name="resizable">True</property>
+        <property name="resizable">1</property>
         <property name="sizing">fixed</property>
-        <property name="max_width">400</property>
+        <property name="max-width">400</property>
         <property name="title" translatable="yes">Name</property>
-        <property name="expand">True</property>
-        <property name="sort_column_id">0</property>
+        <property name="expand">1</property>
+        <property name="sort-column-id">0</property>
         <child>
           <object class="GtkCellRendererText"/>
           <attributes>
@@ -76,16 +76,16 @@
       <object class="GtkTreeViewColumn" id="size_column">
         <property name="sizing">fixed</property>
         <property name="title" translatable="yes">Size</property>
-        <property name="clickable">True</property>
-        <property name="sort_indicator">True</property>
-        <property name="sort_column_id">1</property>
+        <property name="clickable">1</property>
+        <property name="sort-indicator">1</property>
+        <property name="sort-column-id">1</property>
       </object>
     </child>
     <child>
       <object class="GtkTreeViewColumn" id="download_column">
         <property name="sizing">fixed</property>
         <property name="title" translatable="yes">Download</property>
-        <property name="sort_column_id">2</property>
+        <property name="sort-column-id">2</property>
         <child>
           <object class="GtkCellRendererToggle">
             <signal name="toggled" handler="_on_file_download_toggled" swapped="no"/>
@@ -101,13 +101,13 @@
       <object class="GtkTreeViewColumn">
         <property name="sizing">fixed</property>
         <property name="title" translatable="yes">Priority</property>
-        <property name="sort_column_id">3</property>
+        <property name="sort-column-id">3</property>
         <child>
           <object class="GtkCellRendererCombo">
-            <property name="editable">True</property>
-            <property name="has_entry">False</property>
+            <property name="editable">1</property>
+            <property name="has-entry">0</property>
             <property name="model">priority_store</property>
-            <property name="text_column">1</property>
+            <property name="text-column">1</property>
             <signal name="changed" handler="_on_file_priority_changed" swapped="no"/>
           </object>
           <attributes>
