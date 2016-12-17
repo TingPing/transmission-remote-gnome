@@ -30,7 +30,7 @@ from .list_wrapper import WrappedStore
 from .torrent_file_view import CellRendererSize
 from .gi_composites import GtkTemplate
 
-@GtkTemplate(ui='/io/github/Trg/ui/torrentview.ui')
+@GtkTemplate(ui='/se/tingping/Trg/ui/torrentview.ui')
 class TorrentListView(Gtk.TreeView):
 	__gtype_name__ = 'TorrentListView'
 

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+  <id>se.tingping.Trg.desktop</id>
+  <translation type="gettext">trg</translation>
+  <name>Transmission Remote Gnome</name>
+  <developer_name>TingPing</developer_name>
+  <summary>Remote client to Transmission</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0+</project_license>
+  <description>
+    <p>Transmission Remote Gnome allows you to remotely manage the Transmission BitTorrent client using its RPC interface.</p>
+  </description>
+  <url type="homepage">https://github.com/TingPing/transmission-remote-gnome/</url>
+  <url type="bugtracker">https://github.com/TingPing/transmission-remote-gnome/issues</url>
+  <kudos>
+    <kudo>AppMenu</kudo>
+    <kudo>ModernToolkit</kudo>
+  </kudos>
+  <update_contact>tingping_at_fedoraproject.org</update_contact>
+</component>

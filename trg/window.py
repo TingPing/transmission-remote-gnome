@@ -30,7 +30,7 @@ from .add_dialog import AddDialog
 from .client import Client
 from .torrent import TorrentStatus
 
-@GtkTemplate(ui='/io/github/Trg/ui/applicationwindow.ui')
+@GtkTemplate(ui='/se/tingping/Trg/ui/applicationwindow.ui')
 class ApplicationWindow(Gtk.ApplicationWindow):
 	__gtype_name__ = 'ApplicationWindow'
 
@@ -43,7 +43,7 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 		self._init_actions()
 		self._filter = None
 
-		settings = Gio.Settings.new('io.github.Trg')
+		settings = Gio.Settings.new('se.tingping.Trg')
 
 		self.client = Client(username=settings['username'], password=settings['password'])
 		self.client.refresh_all()

@@ -28,8 +28,9 @@ project in terms of UI and codebase. This is still a work in progress:
   - [x] Make fully Async
   - [ ] Better error handling
   - [ ] Full API coverage
-- [ ] Installation
-  - [ ] Misc files (desktop, appdata, icons, translations)
+- [x] Installation
+  - [x] Misc files (desktop, appdata, translations)
+  - [ ] Icon
   - [ ] Flatpak
 - [ ] Port build system to Meson?
 

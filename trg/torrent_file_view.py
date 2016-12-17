@@ -33,7 +33,7 @@ from .torrent_file import TorrentFile
 DEFAULT_PRI_STR = _('Normal')
 DEFAULT_PRI_VAL = 0
 
-@GtkTemplate(ui='/io/github/Trg/ui/fileview.ui')
+@GtkTemplate(ui='/se/tingping/Trg/ui/fileview.ui')
 class TorrentFileView(Gtk.TreeView):
 	__gtype_name__ = 'TorrentFileView'
 

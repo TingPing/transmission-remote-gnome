@@ -36,7 +36,7 @@ class Application(Gtk.Application):
 	version = GObject.Property(type=str, flags=GObject.ParamFlags.CONSTRUCT_ONLY|GObject.ParamFlags.READWRITE)
 
 	def __init__(self, **kwargs):
-		super().__init__(application_id='io.github.Trg',
+		super().__init__(application_id='se.tingping.Trg',
 		                 flags=Gio.ApplicationFlags.HANDLES_OPEN, **kwargs)
 
 		if GLib.get_prgname() == '__main__.py':

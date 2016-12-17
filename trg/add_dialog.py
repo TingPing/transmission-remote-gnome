@@ -28,7 +28,7 @@ from .client import Client
 from .torrent_file import TorrentFile
 from .torrent_file_view import *
 
-@GtkTemplate(ui='/io/github/Trg/ui/adddialog.ui')
+@GtkTemplate(ui='/se/tingping/Trg/ui/adddialog.ui')
 class AddDialog(Gtk.Dialog):
 	__gtype_name__ = 'AddDialog'
 
@@ -47,7 +47,7 @@ class AddDialog(Gtk.Dialog):
 		self.init_template()
 
 		self.set_response_sensitive(Gtk.ResponseType.OK, False)
-		settings = Gio.Settings.new('io.github.Trg')
+		settings = Gio.Settings.new('se.tingping.Trg')
 		settings.bind('add-paused', self.paused_check, 'active', Gio.SettingsBindFlags.DEFAULT)
 
 		self.fileview = TorrentFileView()

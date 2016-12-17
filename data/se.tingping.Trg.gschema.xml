@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-  <schema path="/io/github/Trg/" id="io.github.Trg" gettext-domain="trg">
+  <schema path="/se/tingping/Trg/" id="se.tingping.Trg" gettext-domain="trg">
 
     <key type="s" name="username">
       <default>""</default>
