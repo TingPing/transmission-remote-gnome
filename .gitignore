@@ -22,3 +22,5 @@ __pycache__/
 !/po/LINGUAS
 !/po/*.po
 /ABOUT-NLS
+/.flatpak-builder/
+/build/
