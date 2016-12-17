@@ -91,9 +91,11 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 	@GtkTemplate.Callback
 	def _on_search_toggle(self, button):
 		active = button.props.active
+		self.search_revealer.set_reveal_child(active)
 		if not active:
 			self.search_entry.props.text = ''
-		self.search_revealer.set_reveal_child(active)
+		else:
+			self.search_entry.grab_focus()
 
 	def _filter_model_func(self, model, it, data=None):
 		if self._filter is not None and model[it][TorrentColumn.status] != self._filter:
