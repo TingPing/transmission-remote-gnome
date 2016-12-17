@@ -31,7 +31,7 @@ project in terms of UI and codebase. This is still a work in progress:
 - [x] Installation
   - [x] Misc files (desktop, appdata, translations)
   - [ ] Icon
-  - [ ] Flatpak
+  - [x] Flatpak
 - [ ] Port build system to Meson?
 
 ## Building
@@ -39,6 +39,5 @@ project in terms of UI and codebase. This is still a work in progress:
 ```sh
 ./autogen.sh
 make -s
-make run
-# Installing is not yet supported
+sudo make install
 ```

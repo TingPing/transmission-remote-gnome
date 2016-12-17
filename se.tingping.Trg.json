@@ -1,0 +1,32 @@
+{
+  "app-id": "se.tingping.Trg",
+  "runtime": "org.gnome.Platform",
+  "runtime-version": "3.22",
+  "sdk": "org.gnome.Sdk",
+  "command": "transmission-remote-gnome",
+  "finish-args": [
+      "--share=ipc",
+      "--socket=x11",
+      "--socket=wayland",
+      "--share=network",
+
+      "--talk-name=org.gnome.SettingsDaemon",
+
+      "--env=DCONF_USER_CONFIG_DIR=.config/dconf",
+      "--filesystem=xdg-run/dconf",
+      "--filesystem=~/.config/dconf:ro",
+      "--talk-name=ca.desrt.dconf",
+
+      "--env=SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt"
+  ],
+  "modules": [
+    {
+      "name": "transmission-remote-gnome",
+      "config-opts": [ "--disable-desktop-database-update", "--disable-schemas-compile" ],
+      "sources": [{
+        "type": "git",
+        "url": "https://github.com/TingPing/transmission-remote-gnome.git"
+      }]
+    }
+  ]
+}
