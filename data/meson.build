@@ -51,6 +51,19 @@ install_data(app_id + '.gschema.xml',
   install_dir: join_paths(get_option('datadir'), 'glib-2.0/schemas')
 )
 
+if false
+gtk_encode_symbolic = find_program('gtk-encode-symbolic-svg')
+sizes = ['32x32', '64x64']
+icon_targets = []
+foreach size: sizes
+  icon_targets += custom_target('symbolic-icon-' + size,
+    input: 'icons/turtle-symbolic.svg',
+    output: 'turtle-symbolic.symbolic.png',
+    command: [gtk_encode_symbolic, '--output=' + meson.current_build_dir(), '@INPUT@', size]
+  )
+endforeach
+endif
+
 trg_resources = gnome.compile_resources(app_id,
   app_id + '.gresource.xml',
   gresource_bundle: true,

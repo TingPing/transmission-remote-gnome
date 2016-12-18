@@ -60,6 +60,23 @@
           </packing>
         </child>
         <child>
+          <object class="GtkToggleButton" id="alt_speed_toggle">
+            <property name="visible">1</property>
+            <property name="can-focus">1</property>
+            <property name="receives-default">1</property>
+            <signal name="toggled" handler="_on_alt_speed_toggled"/>
+            <child>
+              <object class="GtkImage">
+                <property name="visible">1</property>
+                <property name="icon-name">turtle-symbolic</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
           <object class="GtkMenuButton" id="filter_button">
             <property name="visible">1</property>
             <property name="can-focus">1</property>

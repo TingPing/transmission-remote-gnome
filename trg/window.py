@@ -44,6 +44,7 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 	search_entry = GtkTemplate.Child()
 	search_revealer = GtkTemplate.Child()
 	header_bar = GtkTemplate.Child()
+	alt_speed_toggle = GtkTemplate.Child()
 
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
@@ -54,6 +55,8 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 		self._filter_tracker = None
 
 		self.client.connect('notify::download-speed', self._on_speed_refresh)
+		self.client.bind_property('alt-speed-enabled', self.alt_speed_toggle,
+		                          'active', GObject.BindingFlags.SYNC_CREATE)
 
 		torrent_target = Gtk.TargetEntry.new('text/uri-list', Gtk.TargetFlags.OTHER_APP, 0)
 		self.drag_dest_set(Gtk.DestDefaults.ALL, (torrent_target,), Gdk.DragAction.MOVE)
@@ -90,6 +93,10 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 		if up:
 			subtitle += '↑ {}/s'.format(GLib.format_size(up))
 		self.header_bar.props.subtitle = subtitle
+
+	@GtkTemplate.Callback
+	def _on_alt_speed_toggled(self, button):
+		self.client.session_set({'alt-speed-enabled': button.props.active})
 
 	@GtkTemplate.Callback
 	def _on_drag_data_received(self, widget, context, x, y, data, info, time):
