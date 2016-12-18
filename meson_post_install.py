@@ -16,11 +16,11 @@ if not destdir:
 	subprocess.call(['glib-compile-schemas', str(datadir / 'glib-2.0' / 'schemas')])
 
 	print('Updating icon cache...')
-	subprocess.call(['gtk-update-icon-cache', '-qt', str(datadir / 'icons' / 'hicolor')])
+	subprocess.call(['gtk-update-icon-cache', '-qtf', str(datadir / 'icons' / 'hicolor')])
 
 	print('Updating desktop database...')
 	subprocess.call(['update-desktop-database', '-q', str(datadir / 'applications')])
 
 print('Compiling python bytecode...')
 moduledir = sysconfig.get_path('purelib', vars={'base': str(prefix)})
-compileall.compile_dir(destdir + os.path.join(moduledir, 'trg'), workers=4, optimize=2)
+compileall.compile_dir(destdir + os.path.join(moduledir, 'trg'), optimize=2)

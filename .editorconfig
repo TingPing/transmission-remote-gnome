@@ -7,7 +7,7 @@ charset = utf-8
 indent_style = tab
 indent_size = 4
 
-[*.{ui,xml,xml.in}]
+[*.{ui,xml,xml.in,json}]
 indent_style = space
 indent_size = 2
 
