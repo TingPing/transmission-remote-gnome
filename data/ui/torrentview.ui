@@ -52,7 +52,9 @@ along with .  If not, see <http://www.gnu.org/licenses/>.
     <property name="enable-search">False</property>
     <property name="fixed-height-mode">True</property>
     <child internal-child="selection">
-      <object class="GtkTreeSelection"/>
+      <object class="GtkTreeSelection">
+        <property name="mode">multiple</property>
+      </object>
     </child>
     <child>
       <object class="GtkTreeViewColumn">

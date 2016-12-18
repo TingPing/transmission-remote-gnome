@@ -16,16 +16,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from enum import IntEnum
-from collections import OrderedDict
+from collections import (OrderedDict, namedtuple)
+from functools import partial
+from gettext import gettext as _
 
 from gi.repository import (
 	GLib,
 	GObject,
+	Gio,
 	Pango,
+	Gdk,
 	Gtk,
 )
 
-from .torrent import Torrent
+from .client import Client
+from .torrent import (Torrent, TorrentStatus)
 from .list_wrapper import WrappedStore
 from .torrent_file_view import CellRendererSize
 from .gi_composites import GtkTemplate
@@ -33,6 +38,8 @@ from .gi_composites import GtkTemplate
 @GtkTemplate(ui='/se/tingping/Trg/ui/torrentview.ui')
 class TorrentListView(Gtk.TreeView):
 	__gtype_name__ = 'TorrentListView'
+
+	client = GObject.Property(type=Client, flags=GObject.ParamFlags.READWRITE|GObject.ParamFlags.CONSTRUCT_ONLY)
 
 	size_column = GtkTemplate.Child()
 	progress_column = GtkTemplate.Child()
@@ -85,6 +92,63 @@ class TorrentListView(Gtk.TreeView):
 		renderer = CellRendererSpeed()
 		area.add(renderer)
 		area.add_attribute(renderer, 'speed', TorrentColumn.up)
+
+	def do_button_press_event(self, event):
+		if not (event.type == Gdk.EventType.BUTTON_PRESS and event.button == Gdk.BUTTON_SECONDARY):
+			return Gtk.TreeView.do_button_press_event(self, event)
+
+		ret = self.get_path_at_pos(event.x, event.y)
+		if not ret or not ret[0]:
+			return Gdk.EVENT_STOP
+
+		# If we right click a single unselcted item, select it.
+		path = ret[0]
+		selection = self.get_selection()
+		if not selection.path_is_selected(path):
+			selection.unselect_all()
+			selection.select_path(path)
+
+		# But we handle multple selections
+		model, paths = selection.get_selected_rows()
+		torrents = []
+		for path in paths:
+			it = model.get_iter(path)
+			torrent = model[it][-1]
+			torrents.append(torrent)
+
+		menu = self._build_menu(torrents)
+		menu.popup(None, None, None, None, event.button, event.time)
+		return Gdk.EVENT_STOP
+
+	def _build_menu(self, torrents) -> Gio.Menu:
+		Entry = namedtuple('Entry', ['label', 'function'])
+
+		MENU_ITEMS = (
+			Entry(_('Resume'), partial(self.client.torrent_start, torrents)),
+			Entry(_('Pause'), partial(self.client.torrent_stop, torrents)),
+			Entry(_('Verify'), partial(self.client.torrent_verify, torrents)),
+			(),
+			#Entry(_('Move'), None),
+			Entry(_('Remove'), partial(self.client.torrent_remove, torrents)),
+			Entry(_('Delete'), partial(self.client.torrent_remove, torrents, True)),
+		)
+
+		def on_activate(widget, callback):
+			callback()
+
+		menu = Gtk.Menu.new()
+		for entry in MENU_ITEMS:
+			if entry:
+				item = Gtk.MenuItem.new_with_label(entry.label)
+				if entry.function:
+					item.connect('activate', on_activate, entry.function)
+			else:
+				item = Gtk.SeparatorMenuItem.new()
+			menu.append(item)
+
+		menu.attach_to_widget(self)
+		menu.show_all()
+		return menu
 
 
 class TorrentColumn(IntEnum):

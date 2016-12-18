@@ -157,6 +157,20 @@ class Client(GObject.Object):
 		'''
 		self._make_request_async('torrent-start', self._make_args(torrent))
 
+	def torrent_stop(self, torrent):
+		self._make_request_async('torrent-stop', self._make_args(torrent))
+
+	def torrent_verify(self, torrent):
+		self._make_request_async('torrent-verify', self._make_args(torrent))
+
+	def torrent_reannounce(self, torrent):
+		self._make_request_async('torrent-reannounce', self._make_args(torrent))
+
+	def torrent_remove(self, torrent, delete_data=False):
+		args={'delete-local-data': delete_data}
+		self._make_request_async('torrent-remove', self._make_args(torrent,
+                                                                   args=args))
+
 	def torrent_set(self, torrent, args):
 		self._make_request_async('torrent-set', self._make_args(torrent, args=args))
 

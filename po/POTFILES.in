@@ -10,4 +10,5 @@ trg/client.py
 trg/torrent.py
 trg/application.py
 trg/torrent_file_view.py
+trg/torrent_list_view.py
 trg/preferences_dialog.py
