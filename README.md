@@ -32,12 +32,12 @@ project in terms of UI and codebase. This is still a work in progress:
   - [x] Misc files (desktop, appdata, translations)
   - [ ] Icon
   - [x] Flatpak
-- [ ] Port build system to Meson?
+- [x] Port build system to Meson
 
 ## Building
 
 ```sh
-./autogen.sh
-make -s
-sudo make install
+meson build
+ninja -C build
+sudo ninja -C build install
 ```
