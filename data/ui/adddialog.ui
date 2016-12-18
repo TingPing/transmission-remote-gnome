@@ -181,6 +181,26 @@ Author: Patrick Griffis
                   <object class="GtkBox">
                     <property name="visible">1</property>
                     <child>
+                      <object class="GtkCheckButton" id="delete_check">
+                        <property name="visible">1</property>
+                        <property name="can-focus">1</property>
+                        <property name="draw-indicator">1</property>
+                      </object>
+                      <packing>
+                        <property name="pack-type">end</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">1</property>
+                        <property name="label" translatable="yes">Delete Torrent: </property>
+                      </object>
+                      <packing>
+                        <property name="padding">5</property>
+                        <property name="pack-type">end</property>
+                      </packing>
+                    </child>
+                    <child>
                       <object class="GtkCheckButton" id="paused_check">
                         <property name="visible">1</property>
                         <property name="can-focus">1</property>
@@ -198,7 +218,6 @@ Author: Patrick Griffis
                       <packing>
                         <property name="padding">5</property>
                         <property name="pack-type">end</property>
-                        <property name="position">1</property>
                       </packing>
                     </child>
                   </object>

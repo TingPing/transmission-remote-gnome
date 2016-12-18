@@ -27,6 +27,11 @@
       <summary>Add torrent in a paused state</summary>
     </key>
 
+    <key type="b" name="delete-on-add">
+      <default>false</default>
+      <summary>Delete a torrent once added</summary>
+    </key>
+
   </schema>
 
 </schemalist>

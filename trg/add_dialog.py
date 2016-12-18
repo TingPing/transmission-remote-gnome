@@ -40,6 +40,7 @@ class AddDialog(Gtk.Dialog):
 	destination_combo = GtkTemplate.Child()
 	fileview_sw = GtkTemplate.Child()
 	paused_check = GtkTemplate.Child()
+	delete_check = GtkTemplate.Child()
 	priority_combo = GtkTemplate.Child()
 
 	def __init__(self, **kwargs):
@@ -47,8 +48,9 @@ class AddDialog(Gtk.Dialog):
 		self.init_template()
 
 		self.set_response_sensitive(Gtk.ResponseType.OK, False)
-		settings = Gio.Settings.new('se.tingping.Trg')
-		settings.bind('add-paused', self.paused_check, 'active', Gio.SettingsBindFlags.DEFAULT)
+		self.settings = Gio.Settings.new('se.tingping.Trg')
+		self.settings.bind('add-paused', self.paused_check, 'active', Gio.SettingsBindFlags.DEFAULT)
+		self.settings.bind('delete-on-add', self.delete_check, 'active', Gio.SettingsBindFlags.DEFAULT)
 
 		self.fileview = TorrentFileView()
 		self.fileview_sw.add(self.fileview)
@@ -110,6 +112,9 @@ class AddDialog(Gtk.Dialog):
 		if response_id == Gtk.ResponseType.OK:
 			args = self._make_args()
 			self.client.torrent_add(args)
+			if self.settings['delete-on-add']:
+				_file = Gio.File.new_for_uri(self.uri)
+				_file.trash_async(GLib.PRIORITY_DEFAULT, None, None)
 
 		if response_id != Gtk.ResponseType.DELETE_EVENT:
 			self.destroy()
