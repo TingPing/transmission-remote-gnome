@@ -16,8 +16,8 @@ project in terms of UI and codebase. This is still a work in progress:
     - [ ] By tracker
     - [ ] By label/directory
   - [x] Searching
-  - [ ] Right click options
-  - [ ] View properties
+  - [x] Right click actions
+  - [ ] View/Edit properties
 - [ ] Settings
   - [x] Local settings
   - [x] Dialog for configuration
