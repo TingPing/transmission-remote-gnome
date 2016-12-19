@@ -25,5 +25,22 @@ subdir('data')
 subdir('bin')
 subdir('po')
 
-meson.add_install_script('meson_post_install.py')
+meson.add_install_script('scripts/meson_post_install.py')
 
+# We keep a generic manifest in the repo you can use but
+# we want builds to use the local files so simply rewrite it
+make_local_manifest = find_program('scripts/make_local_manifest.py')
+local_manifest = custom_target('manifest',
+  input: 'se.tingping.Trg.json',
+  output: 'se.tingping.Trg.json',
+  command: [make_local_manifest, '@INPUT@', '@OUTPUT@']
+)
+
+# Build a bundle for both testing and releases
+build_flatpak = find_program('scripts/build_flatpak.py')
+custom_target('flatpak',
+  input: local_manifest,
+  output: 'se.tingping.Trg.flatpak',
+  command: [build_flatpak, '@INPUT@', '@OUTPUT@'],
+  build_always: true
+)

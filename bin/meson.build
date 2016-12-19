@@ -13,10 +13,9 @@ configure_file(
   install_dir: get_option('bindir')
 )
 
-#trg = find_program('transmission-remote-gnome')
 trg = join_paths(meson.build_root(), 'bin', 'transmission-remote-gnome')
 run_target('run',
-  command: trg,
+  command: [trg, '--log=3'],
   depends: [
     trg_resources[0],
     trg_settings
