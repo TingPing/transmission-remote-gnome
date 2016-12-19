@@ -15,14 +15,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Dict
 from gi.repository import GObject, Gtk, Gio
 
 class WrappedStore(Gtk.ListStore):
 	"""Wraps a Gio.ListStore with a Gtk.ListStore"""
 
 	@classmethod
-	def new_for_model(cls, model: Gio.ListModel, properties_map: Dict[str, type]):
+	def new_for_model(cls, model: Gio.ListModel, properties_map):
 		"""
 		properties_map: Ordered Dict of property names and types to map
 		"""

@@ -33,8 +33,6 @@ from .client import Client
 from .list_wrapper import WrappedStore
 from .torrent_file_view import CellRendererSize
 from .gi_composites import GtkTemplate
-
-from typing import List
 from .torrent import Torrent
 
 @GtkTemplate(ui='/se/tingping/Trg/ui/torrentview.ui')
@@ -122,7 +120,7 @@ class TorrentListView(Gtk.TreeView):
 		menu.popup(None, None, None, None, event.button, event.time)
 		return Gdk.EVENT_STOP
 
-	def _build_menu(self, torrents: List[Torrent]) -> Gio.Menu:
+	def _build_menu(self, torrents) -> Gio.Menu:
 		Entry = namedtuple('Entry', ['label', 'function'])
 
 		MENU_ITEMS = (
