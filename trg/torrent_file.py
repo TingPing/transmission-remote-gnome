@@ -80,7 +80,7 @@ class TorrentFile(GObject.Object):
 		return TorrentFile(uri=uri, cancellable=cancellable)
 
 	def _parse_data(self, data:bytes):
-		'''Converts the dictionary of metadata into a tree of files'''
+		"""Converts the dictionary of metadata into a tree of files"""
 		try:
 			data_dict = bencode.decode(data)
 			info = data_dict[b'info']
@@ -98,11 +98,11 @@ class TorrentFile(GObject.Object):
 			self.emit('file-loaded')
 
 		except bencode.DecodingError as e:
-			self.emit('file-invalid', 'Failed to decode file: {}'.format(e.message))
+			self.emit('file-invalid', 'Failed to decode file: {}'.format(e))
 		except UnicodeError as e:
-			self.emit('file-invalid', 'Failed to decode UTF-8: {}'.format(e.msg))
+			self.emit('file-invalid', 'Failed to decode UTF-8: {}'.format(e))
 		except KeyError as e:
-			self.emit('file-invalid', 'Failed to get information from file: {}'.format(e.msg))
+			self.emit('file-invalid', 'Failed to get information from file: {}'.format(e))
 
 	def _on_contents_loaded(self, file, result):
 		try:

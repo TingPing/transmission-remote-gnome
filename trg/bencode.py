@@ -5,7 +5,6 @@ __copyright__ = "Copyright 2014, Eric Weast"
 __license__ = "GPL v2"
 
 from collections import OrderedDict
-from collections.abc import Iterable
 
 class Decoder:
     def __init__(self, data: bytes):
@@ -53,7 +52,7 @@ class Decoder:
             raise DecodingError(
                 'Invalid token character ({0}) at position {1}.'.format(str(char), str(self.idx)))
 
-    def decode(self) -> Iterable:
+    def decode(self):
         """Start of decode process. Returns final results."""
         if self.data[0:1] not in (b'd', b'l'):
             return self.__wrap_with_tuple()
@@ -97,7 +96,7 @@ class DecodingError(Exception):
     def __str__(self):
         return repr(self.msg)
 
-def decode(data: bytes) -> Iterable:
+def decode(data: bytes):
     """Convenience function. Initializes Decoder class, calls decode method, and returns the result."""
     decoder = Decoder(data)
     return decoder.decode()

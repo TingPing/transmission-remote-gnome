@@ -127,11 +127,11 @@ class Client(GObject.Object):
 		message = Soup.Message.new('POST', self._rpc_uri)
 		message.props.request_headers.append('X-Transmission-Session-Id', self._session_id)
 
-		request = { 'method': method }
+		request = {'method': method}
 		if arguments:
 			request['arguments'] = arguments
 		if tag:
-			requests['tag'] = tag
+			request['tag'] = tag
 
 		logging.debug('>>>\n{}'.format(pprint.pformat(request)))
 		message.set_request('application/json', Soup.MemoryUse.COPY,
@@ -152,9 +152,9 @@ class Client(GObject.Object):
 		return args
 
 	def torrent_start(self, torrent):
-		'''
+		"""
 		:type torrent: List of Torrent, single Torrent, None, or 'recently-active'
-		'''
+		"""
 		self._make_request_async('torrent-start', self._make_args(torrent))
 
 	def torrent_stop(self, torrent):
@@ -183,7 +183,7 @@ class Client(GObject.Object):
 		self._make_request_async('torrent-set-location', )
 
 	def torrent_rename(self, torrent, path:str, name:str):
-		args = self._make_args(torrent, path=location, name=name)
+		args = self._make_args(torrent, path=path, name=name)
 		self._make_request_async('torrent-rename-path', args)
 
 	def torrent_add(self, args, callback=None):
@@ -231,8 +231,8 @@ class Client(GObject.Object):
 
 
 class TorrentEncoder(json.JSONEncoder):
-	'''JSONEncoder that converts Torrent objects into their id's at encode time'''
-	def default(self, obj):
+	"""JSONEncoder that converts Torrent objects into their id's at encode time"""
+	def default(self, obj: object) -> str:
 		if isinstance(obj, Torrent):
 			return obj.id
 		else:

@@ -109,7 +109,7 @@ class Torrent(GObject.Object):
 
 	@staticmethod
 	def _propertify_name(name:str) -> str:
-		'''Converts a transmission property name to a gobject style one'''
+		"""Converts a transmission property name to a gobject style one"""
 		prop_name = ''
 		for c in name:
 			if c.isupper():
@@ -134,11 +134,11 @@ class Torrent(GObject.Object):
 					logging.debug('Updating {} of torrent {}'.format(k, self))
 					setattr(self.props, prop, v)
 
-	@staticmethod
-	def new_from_response(response:dict):
-		files = response.pop('files', None)
+	@classmethod
+	def new_from_response(cls, response:dict):
+		files = response.pop('files', [])
 		prop_dict = Torrent._propertify_dict(response)
-		torrent = Torrent(**prop_dict)
+		torrent = cls(**prop_dict)
 		if files:
 			torrent.set_files(files)
 		return torrent
@@ -157,10 +157,10 @@ class Torrent(GObject.Object):
 		setattr(self, prop.name.replace('-', '_'), value)
 
 class TorrentStatus(IntEnum):
-    STOPPED = 0
-    CHECK_WAIT = 1
-    CHECK = 2
-    DOWNLOAD_WAIT = 3
-    DOWNLOAD = 4
-    SEED_WAIT = 5
-    SEED = 6
+	STOPPED = 0
+	CHECK_WAIT = 1
+	CHECK = 2
+	DOWNLOAD_WAIT = 3
+	DOWNLOAD = 4
+	SEED_WAIT = 5
+	SEED = 6

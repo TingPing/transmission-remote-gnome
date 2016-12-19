@@ -15,13 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Dict
 from gi.repository import GObject, Gtk, Gio
 
 class WrappedStore(Gtk.ListStore):
 	"""Wraps a Gio.ListStore with a Gtk.ListStore"""
 
 	@classmethod
-	def new_for_model(cls, model, properties_map):
+	def new_for_model(cls, model: Gio.ListModel, properties_map: Dict[str, type]):
 		"""
 		properties_map: Ordered Dict of property names and types to map
 		"""
@@ -57,7 +58,7 @@ class WrappedStore(Gtk.ListStore):
 			item = row[-1]
 			item.disconnect(item._hook_id)
 			self.remove(row.iter)
-			removed = removed - 1
+			removed -= 1
 		all_columns = [i for i in range(len(self.properties) + 1)]
 		for i in range(added):
 			new_pos = position + i

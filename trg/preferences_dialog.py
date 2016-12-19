@@ -19,9 +19,8 @@ from gettext import gettext as _
 from collections import namedtuple
 from gi.repository import (
 	GLib,
-	GObject,
 	Gio,
-    Gtk,
+	Gtk,
 )
 
 from .gi_composites import GtkTemplate

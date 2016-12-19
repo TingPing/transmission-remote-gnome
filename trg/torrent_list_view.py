@@ -30,10 +30,12 @@ from gi.repository import (
 )
 
 from .client import Client
-from .torrent import (Torrent, TorrentStatus)
 from .list_wrapper import WrappedStore
 from .torrent_file_view import CellRendererSize
 from .gi_composites import GtkTemplate
+
+from typing import List
+from .torrent import Torrent
 
 @GtkTemplate(ui='/se/tingping/Trg/ui/torrentview.ui')
 class TorrentListView(Gtk.TreeView):
@@ -93,7 +95,7 @@ class TorrentListView(Gtk.TreeView):
 		area.add(renderer)
 		area.add_attribute(renderer, 'speed', TorrentColumn.up)
 
-	def do_button_press_event(self, event):
+	def do_button_press_event(self, event: Gdk.EventButton) -> int:
 		if not (event.type == Gdk.EventType.BUTTON_PRESS and event.button == Gdk.BUTTON_SECONDARY):
 			return Gtk.TreeView.do_button_press_event(self, event)
 
@@ -120,7 +122,7 @@ class TorrentListView(Gtk.TreeView):
 		menu.popup(None, None, None, None, event.button, event.time)
 		return Gdk.EVENT_STOP
 
-	def _build_menu(self, torrents) -> Gio.Menu:
+	def _build_menu(self, torrents: List[Torrent]) -> Gio.Menu:
 		Entry = namedtuple('Entry', ['label', 'function'])
 
 		MENU_ITEMS = (

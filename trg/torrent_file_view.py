@@ -15,20 +15,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import itertools
 from enum import IntEnum
 from gettext import gettext as _
 
 from gi.repository import (
 	GLib,
 	GObject,
-	Gio,
 	Gdk,
-    Gtk,
+	Gtk,
 )
 
 from .gi_composites import GtkTemplate
-from .torrent_file import TorrentFile
 
 DEFAULT_PRI_STR = _('Normal')
 DEFAULT_PRI_VAL = 0

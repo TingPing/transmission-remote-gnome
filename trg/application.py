@@ -27,7 +27,6 @@ from gi.repository import (
     Gtk
 )
 
-from .client import Client
 from .window import ApplicationWindow
 from .preferences_dialog import PreferencesDialog
 
@@ -52,7 +51,7 @@ class Application(Gtk.Application):
 		Gtk.Application.do_startup(self)
 
 		action = Gio.SimpleAction.new('quit', None)
-		action.connect('activate', lambda action, param: self.quit())
+		action.connect('activate', lambda act, param: self.quit())
 		self.add_action(action)
 
 		action = Gio.SimpleAction.new('about', None)

@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from gettext import gettext as _
-
 from gi.repository import (
 	GLib,
     GObject,
@@ -97,7 +95,7 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 		else:
 			self.search_entry.grab_focus()
 
-	def _filter_model_func(self, model, it, data=None):
+	def _filter_model_func(self, model, it, data=None) -> bool:
 		if self._filter is not None and model[it][TorrentColumn.status] != self._filter:
 			return False
 		if self._filter_text is not None and not self._filter_text in model[it][TorrentColumn.name].lower():
