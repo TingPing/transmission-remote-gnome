@@ -46,7 +46,8 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 
 		settings = Gio.Settings.new('se.tingping.Trg')
 
-		self.client = Client(username=settings['username'], password=settings['password'])
+		self.client = Client(username=settings['username'], password=settings['password'],
+		                     hostname=settings['hostname'], port=settings['port'])
 		self.client.refresh_all()
 
 		view = TorrentListView(self.client.props.torrents, client=self.client)
