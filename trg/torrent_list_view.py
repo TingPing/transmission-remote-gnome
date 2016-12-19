@@ -33,7 +33,7 @@ from .client import Client
 from .list_wrapper import WrappedStore
 from .torrent_file_view import CellRendererSize
 from .gi_composites import GtkTemplate
-from .torrent import Torrent
+
 
 @GtkTemplate(ui='/se/tingping/Trg/ui/torrentview.ui')
 class TorrentListView(Gtk.TreeView):
@@ -128,7 +128,7 @@ class TorrentListView(Gtk.TreeView):
 			Entry(_('Pause'), partial(self.client.torrent_stop, torrents)),
 			Entry(_('Verify'), partial(self.client.torrent_verify, torrents)),
 			(),
-			#Entry(_('Move'), None),
+			# Entry(_('Move'), None),
 			Entry(_('Remove'), partial(self.client.torrent_remove, torrents)),
 			Entry(_('Delete'), partial(self.client.torrent_remove, torrents, True)),
 		)
@@ -187,4 +187,3 @@ class CellRendererPercent(Gtk.CellRendererProgress):
 
 	def _on_percent_change(self, prop, param):
 		self.props.value = int(self.percent * 100)
-		

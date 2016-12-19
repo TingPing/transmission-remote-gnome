@@ -19,13 +19,13 @@ from . import bencode
 
 from gi.repository import (
 	GLib,
-    GObject,
-    Gio,
+	GObject,
+	Gio,
 )
 
-class TorrentFileNode:
 
-	def __init__(self, name:str, size:int=-1, index:int=-1):
+class TorrentFileNode:
+	def __init__(self, name: str, size: int=-1, index: int=-1):
 		self.name = name
 		self.size = size
 		self.index = index # Used by transmission
@@ -38,7 +38,7 @@ class TorrentFileNode:
 		else:
 			return sum(child.get_size() for child in self.children)
 
-	def add_file(self, paths:list, size:int, index:int):
+	def add_file(self, paths: list, size: int, index: int):
 		n = self
 		filenode = TorrentFileNode(paths.pop(), size, index)
 		for path in paths:
@@ -62,8 +62,9 @@ class TorrentFile(GObject.Object):
 		'file-invalid': (GObject.SIGNAL_RUN_FIRST, None, (str, )),
 	}
 
-	uri = GObject.Property(type=str, flags=GObject.ParamFlags.CONSTRUCT_ONLY|GObject.ParamFlags.READWRITE)
-	cancellable = GObject.Property(type=Gio.Cancellable, flags=GObject.ParamFlags.CONSTRUCT_ONLY|GObject.ParamFlags.READWRITE)
+	rwc_flags = GObject.ParamFlags.CONSTRUCT_ONLY|GObject.ParamFlags.READWRITE
+	uri = GObject.Property(type=str, flags=rwc_flags)
+	cancellable = GObject.Property(type=Gio.Cancellable, flags=rwc_flags)
 
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
@@ -79,7 +80,7 @@ class TorrentFile(GObject.Object):
 	def new_for_uri(uri, cancellable):
 		return TorrentFile(uri=uri, cancellable=cancellable)
 
-	def _parse_data(self, data:bytes):
+	def _parse_data(self, data: bytes):
 		"""Converts the dictionary of metadata into a tree of files"""
 		try:
 			data_dict = bencode.decode(data)
@@ -116,7 +117,3 @@ class TorrentFile(GObject.Object):
 
 	def get_base64(self):
 		return self.base64
-
-
-
-	

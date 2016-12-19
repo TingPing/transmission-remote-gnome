@@ -25,6 +25,7 @@ from gi.repository import (
 
 from .gi_composites import GtkTemplate
 
+
 @GtkTemplate(ui='/se/tingping/Trg/ui/preferencesdialog.ui')
 class PreferencesDialog(Gtk.Dialog):
 	__gtype_name__ = 'PreferencesDialog'
@@ -56,7 +57,7 @@ class PreferencesDialog(Gtk.Dialog):
 				row_box.add(row.widget)
 
 				self.settings.bind(row.setting, row.widget, row.bind_property,
-			                       Gio.SettingsBindFlags.DEFAULT|Gio.SettingsBindFlags.NO_SENSITIVITY)
+								   Gio.SettingsBindFlags.DEFAULT|Gio.SettingsBindFlags.NO_SENSITIVITY)
 				box.add(row_box)
 			box.show_all()
 			self.local_stack.add_titled(box, page[0], page[1])

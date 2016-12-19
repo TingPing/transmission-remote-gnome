@@ -25,6 +25,7 @@ from gi.repository import (
     Gio,
 )
 
+
 class TorrentFile(GObject.Object):
 	__gtype_name__ = 'TorrentFile'
 
@@ -42,6 +43,7 @@ class TorrentFile(GObject.Object):
 
 	def __repr__(self):
 		return '<TorrentFile "{}">'.format(self.name)
+
 
 class Torrent(GObject.Object):
 	__gtype_name__ = 'Torrent'
@@ -108,7 +110,7 @@ class Torrent(GObject.Object):
 		return '<Torrent {}>'.format(self.id)
 
 	@staticmethod
-	def _propertify_name(name:str) -> str:
+	def _propertify_name(name: str) -> str:
 		"""Converts a transmission property name to a gobject style one"""
 		prop_name = ''
 		for c in name:
@@ -120,13 +122,13 @@ class Torrent(GObject.Object):
 		return prop_name
 
 	@staticmethod
-	def _propertify_dict(d:dict) -> dict:
+	def _propertify_dict(d: dict) -> dict:
 		prop_dict = {}
-		for k,v in d.items():
+		for k, v in d.items():
 			prop_dict[Torrent._propertify_name(k)] = v
 		return prop_dict
 
-	def update_from_response(self, response:dict):
+	def update_from_response(self, response: dict):
 		for k, v in response.items():
 			if k != 'id':
 				prop = self._propertify_name(k)
@@ -135,7 +137,7 @@ class Torrent(GObject.Object):
 					setattr(self.props, prop, v)
 
 	@classmethod
-	def new_from_response(cls, response:dict):
+	def new_from_response(cls, response: dict):
 		files = response.pop('files', [])
 		prop_dict = Torrent._propertify_dict(response)
 		torrent = cls(**prop_dict)
@@ -143,7 +145,7 @@ class Torrent(GObject.Object):
 			torrent.set_files(files)
 		return torrent
 
-	def set_files(self, files:list):
+	def set_files(self, files: list):
 		self.files.remove_all()
 		for d in files:
 			prop_dict = self._propertify_dict(d)
@@ -155,6 +157,7 @@ class Torrent(GObject.Object):
 
 	def do_set_property(self, prop, value):
 		setattr(self, prop.name.replace('-', '_'), value)
+
 
 class TorrentStatus(IntEnum):
 	STOPPED = 0

@@ -6,6 +6,7 @@ __license__ = "GPL v2"
 
 from collections import OrderedDict
 
+
 class Decoder:
     def __init__(self, data: bytes):
         self.data = data
@@ -16,9 +17,8 @@ class Decoder:
         b = self.data[self.idx: self.idx + i]
         self.idx += i
         if len(b) != i:
-            raise DecodingError(
-                "Incorrect byte length returned between indexes of {0} and {1}. Possible unexpected End of File."
-                    .format(str(self.idx), str(self.idx - i)))
+            raise DecodingError('Incorrect byte length returned between indexes of {0} and {1}. '
+			                    'Possible unexpected End of File.'.format(str(self.idx), str(self.idx - i)))
         return b
 
     def __read_to(self, terminator: bytes) -> bytes:
@@ -89,12 +89,14 @@ class Decoder:
         self.idx += 1
         return l
 
+
 class DecodingError(Exception):
     def __init__(self, msg):
         self.msg = msg
 
     def __str__(self):
         return repr(self.msg)
+
 
 def decode(data: bytes):
     """Convenience function. Initializes Decoder class, calls decode method, and returns the result."""

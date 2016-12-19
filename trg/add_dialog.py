@@ -20,13 +20,14 @@ from gi.repository import (
 	GLib,
 	GObject,
 	Gio,
-    Gtk,
+	Gtk,
 )
 
 from .gi_composites import GtkTemplate
 from .client import Client
 from .torrent_file import TorrentFile
-from .torrent_file_view import *
+from .torrent_file_view import TorrentFileView, FileColumn
+
 
 @GtkTemplate(ui='/se/tingping/Trg/ui/adddialog.ui')
 class AddDialog(Gtk.Dialog):
@@ -146,5 +147,3 @@ class AddDialog(Gtk.Dialog):
 	@GtkTemplate.Callback
 	def _on_file_set(self, chooser):
 		self.uri = chooser.get_uri()
-
-

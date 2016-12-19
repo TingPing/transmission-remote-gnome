@@ -17,9 +17,9 @@
 
 from gi.repository import (
 	GLib,
-    GObject,
-    Gio,
-    Gtk,
+	GObject,
+	Gio,
+	Gtk,
 )
 
 from .gi_composites import GtkTemplate
@@ -27,6 +27,7 @@ from .torrent_list_view import TorrentListView, TorrentColumn
 from .add_dialog import AddDialog
 from .client import Client
 from .torrent import TorrentStatus
+
 
 @GtkTemplate(ui='/se/tingping/Trg/ui/applicationwindow.ui')
 class ApplicationWindow(Gtk.ApplicationWindow):
@@ -62,8 +63,7 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 		self.add_action(action)
 
 		default_value = GLib.Variant('i', -1) # All
-		action = Gio.SimpleAction.new_stateful('filter_status', default_value.get_type(),
-                                                                default_value)
+		action = Gio.SimpleAction.new_stateful('filter_status', default_value.get_type(), default_value)
 		action.connect('change-state', self._on_status_filter)
 		self.add_action(action)
 
@@ -99,7 +99,7 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 	def _filter_model_func(self, model, it, data=None) -> bool:
 		if self._filter is not None and model[it][TorrentColumn.status] != self._filter:
 			return False
-		if self._filter_text is not None and not self._filter_text in model[it][TorrentColumn.name].lower():
+		if self._filter_text is not None and self._filter_text not in model[it][TorrentColumn.name].lower():
 			return False
 		return True
 
@@ -108,4 +108,3 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 		                   uri=param.get_string(),
 		                   client=self.client)
 		dialog.present()
-

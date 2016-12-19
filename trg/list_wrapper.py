@@ -17,6 +17,7 @@
 
 from gi.repository import GObject, Gtk, Gio
 
+
 class WrappedStore(Gtk.ListStore):
 	"""Wraps a Gio.ListStore with a Gtk.ListStore"""
 
@@ -26,7 +27,7 @@ class WrappedStore(Gtk.ListStore):
 		properties_map: Ordered Dict of property names and types to map
 		"""
 		self = cls()
-		self.set_column_types([v for k,v in properties_map.items()] + [GObject.Object])
+		self.set_column_types(list(properties_map.values()) + [GObject.Object])
 
 		self._model = model
 		self.properties = properties_map
@@ -66,6 +67,3 @@ class WrappedStore(Gtk.ListStore):
 			self.insert_with_valuesv(new_pos, all_columns, new_values)
 			hook_id = item.connect('notify', self._on_item_property_changed)
 			item._hook_id = hook_id
-
-
-		

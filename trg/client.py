@@ -24,9 +24,9 @@ import gi
 gi.require_version('Soup', '2.4')
 from gi.repository import (
 	GLib,
-    GObject,
+	GObject,
 	Gio,
-    Soup,
+	Soup,
 )
 
 from .torrent import Torrent
@@ -41,28 +41,27 @@ class Client(GObject.Object):
 
 	__gproperties__ = {
 		'username': (
-		    str, _('Username'), _('Username to login with'),
+			str, _('Username'), _('Username to login with'),
 			'',
 			GObject.ParamFlags.CONSTRUCT_ONLY|GObject.ParamFlags.READWRITE,
 		),
 		'password': (
-		    str, _('Password'), _('Password to login with'),
+			str, _('Password'), _('Password to login with'),
 			'',
 			GObject.ParamFlags.CONSTRUCT_ONLY|GObject.ParamFlags.READWRITE,
 		),
 		'hostname': (
-		    str, _('Hostname'), _('Hostname of remote server'),
+			str, _('Hostname'), _('Hostname of remote server'),
 			'localhost',
 			GObject.ParamFlags.CONSTRUCT_ONLY|GObject.ParamFlags.READWRITE,
 		),
 		'port': (
-		    int, _('Port'), _('Port of remote server'),
+			int, _('Port'), _('Port of remote server'),
 			1, GLib.MAXUINT16, 9091,
 			GObject.ParamFlags.CONSTRUCT_ONLY|GObject.ParamFlags.READWRITE,
 		),
-
 		'torrents': (
-		    Gio.ListModel, _('Torrents'), _('List of torrents'),
+			Gio.ListModel, _('Torrents'), _('List of torrents'),
 			GObject.ParamFlags.READABLE,
 		),
 	}
@@ -118,7 +117,7 @@ class Client(GObject.Object):
 
 		response_str = message.props.response_body_data.get_data().decode('UTF-8')
 		response = json.loads(response_str)
-		#logging.debug('<<<\n{}'.format(pprint.pformat(response)))
+		# logging.debug('<<<\n{}'.format(pprint.pformat(response)))
 
 		if user_data:
 			user_data(response)
@@ -146,7 +145,7 @@ class Client(GObject.Object):
 			if isinstance(torrent, str) and torrent != 'recently-active':
 				logging.error('Invalid torrent sent')
 			args['ids'] = torrent
-		for k,v in kwargs.items():
+		for k, v in kwargs.items():
 			if v is not None:
 				args[k] = v
 		return args
@@ -167,9 +166,8 @@ class Client(GObject.Object):
 		self._make_request_async('torrent-reannounce', self._make_args(torrent))
 
 	def torrent_remove(self, torrent, delete_data=False):
-		args={'delete-local-data': delete_data}
-		self._make_request_async('torrent-remove', self._make_args(torrent,
-                                                                   args=args))
+		args = {'delete-local-data': delete_data}
+		self._make_request_async('torrent-remove', self._make_args(torrent, args=args))
 
 	def torrent_set(self, torrent, args):
 		self._make_request_async('torrent-set', self._make_args(torrent, args=args))
@@ -178,11 +176,11 @@ class Client(GObject.Object):
 		args = self._make_args(torrent, fields=fields)
 		self._make_request_async('torrent-get', args, callback=callback)
 
-	def torrent_move(self, torrent, location:str, move=None):
+	def torrent_move(self, torrent, location: str, move=None):
 		args = self._make_args(torrent, location=location, move=move)
-		self._make_request_async('torrent-set-location', )
+		self._make_request_async('torrent-set-location', args)
 
-	def torrent_rename(self, torrent, path:str, name:str):
+	def torrent_rename(self, torrent, path: str, name: str):
 		args = self._make_args(torrent, path=path, name=name)
 		self._make_request_async('torrent-rename-path', args)
 
@@ -208,9 +206,7 @@ class Client(GObject.Object):
 	def _refresh(self):
 		self.torrent_get('recently-active', ['id', 'name', 'rateDownload', 'rateUpload', 'eta',
 		                                     'sizeWhenDone', 'percentDone', 'totalSize', 'status'],
-		                  callback=self._on_refresh_complete)
-
-
+						 callback=self._on_refresh_complete)
 		return GLib.SOURCE_CONTINUE
 
 	def _on_refresh_all_complete(self, response):
@@ -226,8 +222,8 @@ class Client(GObject.Object):
 
 	def refresh_all(self):
 		self.torrent_get(None, ['id', 'name', 'rateDownload', 'rateUpload', 'eta',
-		                                   'sizeWhenDone', 'percentDone', 'totalSize', 'status'],
-		                 callback=self._on_refresh_all_complete)
+								'sizeWhenDone', 'percentDone', 'totalSize', 'status'],
+						 callback=self._on_refresh_all_complete)
 
 
 class TorrentEncoder(json.JSONEncoder):

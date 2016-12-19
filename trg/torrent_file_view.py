@@ -30,6 +30,7 @@ from .gi_composites import GtkTemplate
 DEFAULT_PRI_STR = _('Normal')
 DEFAULT_PRI_VAL = 0
 
+
 @GtkTemplate(ui='/se/tingping/Trg/ui/fileview.ui')
 class TorrentFileView(Gtk.TreeView):
 	__gtype_name__ = 'TorrentFileView'
@@ -61,12 +62,12 @@ class TorrentFileView(Gtk.TreeView):
 
 	def _build_menu(self):
 		MENU_ITEMS = (
-		    (_('Download'), FileColumn.download, True),
-			(_('Skip'),     FileColumn.download, False),
+			(_('Download'), FileColumn.download, True),
+			(_('Skip'), FileColumn.download, False),
 			(),
-			(_('Priority High'),   FileColumn.pri_val, (1, _('High'))),
+			(_('Priority High'), FileColumn.pri_val, (1, _('High'))),
 			(_('Priority Normal'), FileColumn.pri_val, (0, _('Normal'))),
-			(_('Priority Low'),    FileColumn.pri_val, (-1, _('Low'))),
+			(_('Priority Low'), FileColumn.pri_val, (-1, _('Low'))),
 		)
 
 		menu = Gtk.Menu.new()
@@ -175,6 +176,7 @@ class TorrentFileView(Gtk.TreeView):
 		val = not model[it][FileColumn.download] # Toggled
 		self._set_download_value(model, it, val)
 
+
 class FileColumn(IntEnum):
 	name = 0
 	size = 1
@@ -183,6 +185,7 @@ class FileColumn(IntEnum):
 	pri_str = 4
 	index = 5
 	download_inconsistent = 6
+
 
 class PriorityColumn(IntEnum):
 	pri_val = 0

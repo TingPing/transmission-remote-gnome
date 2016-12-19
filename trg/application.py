@@ -21,14 +21,15 @@ from gettext import gettext as _
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import (
-    GLib,
+	GLib,
 	GObject,
-    Gio,
-    Gtk
+	Gio,
+	Gtk
 )
 
 from .window import ApplicationWindow
 from .preferences_dialog import PreferencesDialog
+
 
 class Application(Gtk.Application):
 	__gtype_name__ = 'Application'
@@ -81,7 +82,7 @@ class Application(Gtk.Application):
 
 			# TODO: Improve logging format
 			logging.basicConfig(level=level,
-                       format=' %(levelname)s | %(module)s.%(funcName)s:%(lineno)d\t| %(message)s')
+								format=' %(levelname)s | %(module)s.%(funcName)s:%(lineno)d\t| %(message)s')
 			options.remove('log')
 
 		return Gtk.Application.do_handle_local_options(self, options)
