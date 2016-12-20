@@ -55,15 +55,15 @@ class Application(Gtk.Application):
 	def do_startup(self):
 		Gtk.Application.do_startup(self)
 
-		action = Gio.SimpleAction.new('quit', None)
+		action = Gio.SimpleAction.new('quit')
 		action.connect('activate', lambda act, param: self.quit())
 		self.add_action(action)
 
-		action = Gio.SimpleAction.new('about', None)
+		action = Gio.SimpleAction.new('about')
 		action.connect('activate', self.on_about)
 		self.add_action(action)
 
-		action = Gio.SimpleAction.new('preferences', None)
+		action = Gio.SimpleAction.new('preferences')
 		action.connect('activate', self.on_preferences)
 		self.add_action(action)
 
@@ -93,7 +93,7 @@ class Application(Gtk.Application):
 
 		downloads_str = GLib.get_user_special_dir(GLib.USER_DIRECTORY_DOWNLOAD)
 		downloads = Gio.File.new_for_path(downloads_str)
-		self.download_monitor = downloads.monitor_directory(Gio.FileMonitorFlags.NONE, None)
+		self.download_monitor = downloads.monitor_directory(Gio.FileMonitorFlags.NONE)
 		self.download_monitor.connect('changed', file_changed)
 
 		self.client = Client(username=self.settings['username'], password=self.settings['password'],

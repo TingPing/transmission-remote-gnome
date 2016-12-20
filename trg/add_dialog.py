@@ -115,7 +115,7 @@ class AddDialog(Gtk.Dialog):
 			self.client.torrent_add(args)
 			if self.settings['delete-on-add']:
 				_file = Gio.File.new_for_uri(self.uri)
-				_file.trash_async(GLib.PRIORITY_DEFAULT, None, None)
+				_file.trash_async(GLib.PRIORITY_DEFAULT)
 
 		if response_id != Gtk.ResponseType.DELETE_EVENT:
 			self.destroy()
