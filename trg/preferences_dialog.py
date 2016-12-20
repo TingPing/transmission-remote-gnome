@@ -124,7 +124,10 @@ class AutoStartSwitch(Gtk.Switch):
 				# TODO: Fix upstream in GLib
 				source.copy_async(self.autostart_file, Gio.FileCopyFlags.NONE, GLib.PRIORITY_DEFAULT)
 			else:
-				source.copy(self.autostart_file, Gio.FileCopyFlags.NONE)
+				try:
+					source.copy(self.autostart_file, Gio.FileCopyFlags.NONE)
+				except GLib.Error:
+					pass
 		else:
 			logging.info('Deleting autostart file')
 			self.autostart_file.delete_async(GLib.PRIORITY_DEFAULT)
