@@ -118,7 +118,10 @@ class TorrentListView(Gtk.TreeView):
 			torrents.append(torrent)
 
 		menu = self._build_menu(torrents)
-		menu.popup(None, None, None, None, event.button, event.time)
+		if hasattr(menu, 'popup_at_pointer'):
+			menu.popup_at_pointer(event) # Gtk 3.22
+		else:
+			menu.popup(None, None, None, None, event.button, event.time)
 		return Gdk.EVENT_STOP
 
 	def _build_menu(self, torrents) -> Gio.Menu:

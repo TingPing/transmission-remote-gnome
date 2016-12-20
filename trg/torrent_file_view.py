@@ -98,7 +98,10 @@ class TorrentFileView(Gtk.TreeView):
 			selection.select_path(path)
 
 		menu = self._build_menu()
-		menu.popup(None, None, None, None, event.button, event.time)
+		if hasattr(menu, 'popup_at_pointer'):
+			menu.popup_at_pointer(event) # Gtk 3.22
+		else:
+			menu.popup(None, None, None, None, event.button, event.time)
 		return Gdk.EVENT_STOP
 
 	# TODO: Avoid recursion because python
