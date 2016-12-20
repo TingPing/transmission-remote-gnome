@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Transmission Remote
+# TODO: We could include the full path here but Meson requires
+#       newer GLib to generate files for GResource
+TryExec=transmission-remote-gnome
+Exec=transmission-remote-gnome --gapplication-service
+Type=Application
+NoDisplay=true
