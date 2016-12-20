@@ -97,6 +97,10 @@ class Torrent(GObject.Object):
 			0, GLib.MAXUINT64, 0,
 			GObject.ParamFlags.CONSTRUCT|GObject.ParamFlags.READWRITE,
 		),
+		'is-finished': (
+			bool, _('Finished'), _('Torrent is finished downloading'), False,
+			GObject.ParamFlags.CONSTRUCT|GObject.ParamFlags.READWRITE,
+		),
 	}
 
 	def __init__(self, **kwargs):

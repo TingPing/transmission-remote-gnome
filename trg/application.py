@@ -29,6 +29,7 @@ from gi.repository import (
 
 from .window import ApplicationWindow
 from .preferences_dialog import PreferencesDialog
+from .client import Client
 
 
 class Application(Gtk.Application):
@@ -44,6 +45,9 @@ class Application(Gtk.Application):
 			GLib.set_prgname('transmission-remote-gnome')
 
 		self.window = None
+		self.client = None
+		self.download_monitor = None
+		self.settings = Gio.Settings.new('se.tingping.Trg')
 
 		self.add_main_option('log', 0, GLib.OptionFlags.NONE, GLib.OptionArg.INT,
 		                     _('Set log level'), None)
@@ -62,6 +66,39 @@ class Application(Gtk.Application):
 		action = Gio.SimpleAction.new('preferences', None)
 		action.connect('activate', self.on_preferences)
 		self.add_action(action)
+
+		self._init_service()
+
+	def _init_service(self):
+		if self.props.flags & Gio.ApplicationFlags.IS_SERVICE:
+			self.hold()
+
+		# FIXME: File system encoding
+		def file_changed(monitor, file_changed, other_file, event):
+			if not self.settings['watch-downloads-directory']:
+				return
+
+			if event != Gio.FileMonitorEvent.CREATED:
+				return
+
+			if file_changed.get_basename().rpartition('.')[2] != 'torrent':
+				return
+
+			file_uri = file_changed.get_uri()
+			logging.info('Got file created event for {}'.format(file_uri))
+
+			self.activate()
+			action = self.window.lookup_action('torrent_add')
+			action.activate(GLib.Variant('s', file_uri))
+
+		downloads_str = GLib.get_user_special_dir(GLib.USER_DIRECTORY_DOWNLOAD)
+		downloads = Gio.File.new_for_path(downloads_str)
+		self.download_monitor = downloads.monitor_directory(Gio.FileMonitorFlags.NONE, None)
+		self.download_monitor.connect('changed', file_changed)
+
+		self.client = Client(username=self.settings['username'], password=self.settings['password'],
+		                     hostname=self.settings['hostname'], port=self.settings['port'])
+		self.client.refresh_all()
 
 	def do_open(self, files, n_files, hint):
 		self.activate()
@@ -88,8 +125,12 @@ class Application(Gtk.Application):
 		return Gtk.Application.do_handle_local_options(self, options)
 
 	def do_activate(self):
+		def on_window_destroy(window):
+			self.window = None
+
 		if not self.window:
-			self.window = ApplicationWindow(application=self)
+			self.window = ApplicationWindow(application=self, client=self.client)
+			self.window.connect('destroy', on_window_destroy)
 
 		self.window.present()
 

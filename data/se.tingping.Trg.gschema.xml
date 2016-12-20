@@ -32,6 +32,16 @@
       <summary>Delete a torrent once added</summary>
     </key>
 
+    <key type="b" name="watch-downloads-directory">
+      <default>false</default>
+      <summary>Watches downloads directory for new torrent files</summary>
+    </key>
+
+    <key type="b" name="notify-on-finish">
+      <default>false</default>
+      <summary>Show notifications when a download finishes</summary>
+    </key>
+
   </schema>
 
 </schemalist>

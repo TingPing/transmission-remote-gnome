@@ -59,14 +59,15 @@ class TorrentListView(Gtk.TreeView):
 		props['rate-download'] = GObject.TYPE_UINT64
 		props['rate-upload'] = GObject.TYPE_UINT64
 		props['status'] = GObject.TYPE_UINT64
-		s = WrappedStore.new_for_model(model, props)
-		self.filter_model = Gtk.TreeModelFilter(child_model=s)
+		store = WrappedStore.new_for_model(model, props)
+		self.filter_model = Gtk.TreeModelFilter(child_model=store)
 		self._sort_model = Gtk.TreeModelSort(model=self.filter_model)
 		self.props.model = self._sort_model
 
-		# Workaround random crash?
-		s.insert_with_valuesv(0, [0], ['FIXME'])
-		GLib.timeout_add(0.1, lambda: s.clear())
+		# FIXME: The custom CellRenderText's will segfault if the store is empty?
+		if not len(store):
+			store.insert_with_valuesv(0, [0], ['FIXME'])
+			GLib.timeout_add(0.1, lambda: store.clear())
 
 	def _init_cells(self):
 		area = self.size_column.props.cell_area
@@ -166,7 +167,7 @@ class CellRendererSpeed(Gtk.CellRendererText):
 	speed = GObject.Property(type=GObject.TYPE_UINT64)
 
 	def __init__(self, **kwargs):
-		super().__init__(**kwargs)
+		super().__init__(text='', **kwargs)
 		self.connect('notify::speed', self._on_speed_change)
 
 	def _on_speed_change(self, prop, param):

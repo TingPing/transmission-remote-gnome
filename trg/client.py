@@ -187,12 +187,22 @@ class Client(GObject.Object):
 	def torrent_add(self, args, callback=None):
 		self._make_request_async('torrent-add', args, callback=callback)
 
+	def _show_notification(self, torrent: Torrent):
+		notification = Gio.Notification.new(_('Download completed'))
+		notification.set_body(torrent.props.name + _('has finished.'))
+		application = Gio.Application.get_default()
+		if application and application.settings['notify-on-finish']:
+			# TODO: Combine repeated notifications
+			application.send_notification(None, notification)
+
 	def _on_refresh_complete(self, response):
 		for t in response['arguments']['torrents']:
 			for i in range(self.torrents.get_n_items()):
 				torrent = self.torrents.get_item(i)
 				if torrent.id == t['id']:
 					torrent.update_from_response(t)
+					if t.get('isFinished'):
+						self._show_notification(torrent)
 					break
 			else:
 				torrent = Torrent.new_from_response(t)
@@ -205,7 +215,8 @@ class Client(GObject.Object):
 
 	def _refresh(self):
 		self.torrent_get('recently-active', ['id', 'name', 'rateDownload', 'rateUpload', 'eta',
-		                                     'sizeWhenDone', 'percentDone', 'totalSize', 'status'],
+		                                     'sizeWhenDone', 'percentDone', 'totalSize', 'status',
+		                                     'isFinished'],
 						 callback=self._on_refresh_complete)
 		return GLib.SOURCE_CONTINUE
 
@@ -222,7 +233,8 @@ class Client(GObject.Object):
 
 	def refresh_all(self):
 		self.torrent_get(None, ['id', 'name', 'rateDownload', 'rateUpload', 'eta',
-								'sizeWhenDone', 'percentDone', 'totalSize', 'status'],
+								'sizeWhenDone', 'percentDone', 'totalSize', 'status',
+								'isFinished'],
 						 callback=self._on_refresh_all_complete)
 
 

@@ -18,6 +18,17 @@ i18n.merge_file(
   install_dir: join_paths(get_option('datadir'), 'appdata')
 )
 
+dbus_conf = configuration_data()
+dbus_conf.set('bindir', join_paths(prefix, get_option('bindir')))
+
+configure_file(
+  input: app_id + '.service.in',
+  output: app_id + '.service',
+  configuration: dbus_conf,
+  install: true,
+  install_dir: join_paths(get_option('datadir'), 'dbus-1/services')
+)
+
 install_data(app_id + '.gschema.xml',
   install_dir: join_paths(get_option('datadir'), 'glib-2.0/schemas')
 )

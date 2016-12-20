@@ -198,7 +198,7 @@ class CellRendererSize(Gtk.CellRendererText):
 	size = GObject.Property(type=GObject.TYPE_UINT64)
 
 	def __init__(self, **kwargs):
-		super().__init__(**kwargs)
+		super().__init__(text='', **kwargs)
 		self.connect('notify::size', self._on_size_change)
 
 	def _on_size_change(self, prop, param):

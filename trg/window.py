@@ -45,12 +45,6 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 		self._filter = None
 		self._filter_text = None
 
-		settings = Gio.Settings.new('se.tingping.Trg')
-
-		self.client = Client(username=settings['username'], password=settings['password'],
-		                     hostname=settings['hostname'], port=settings['port'])
-		self.client.refresh_all()
-
 		view = TorrentListView(self.client.props.torrents, client=self.client)
 		self._filter_model = view.filter_model
 		self._filter_model.set_visible_func(self._filter_model_func)

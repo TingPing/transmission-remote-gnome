@@ -45,7 +45,14 @@ class PreferencesDialog(Gtk.Dialog):
 				Row(_('Hostname:'), Gtk.Entry.new(), 'text', 'hostname'),
 				Row(_('Port:'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1), 'value', 'port'),
 				Row(_('Username:'), Gtk.Entry.new(), 'text', 'username'),
-				Row(_('Password:'), Gtk.Entry(visibility=False, input_purpose=Gtk.InputPurpose.PASSWORD), 'text', 'password'),
+				Row(_('Password:'), Gtk.Entry(visibility=False, input_purpose=Gtk.InputPurpose.PASSWORD), 'text',
+					'password'),
+			],
+			('service', _('Service')): [
+				Row(_('Automatically load downloaded torrent files:'), Gtk.Switch.new(), 'active',
+					'watch-downloads-directory'),
+				Row(_('Show notifications when downlods complete:'), Gtk.Switch.new(), 'active',
+				 	'notify-on-finish'),
 			]
 		}
 
