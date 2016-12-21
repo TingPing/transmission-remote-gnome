@@ -19,8 +19,6 @@ from enum import IntEnum
 from gettext import gettext as _
 
 from gi.repository import (
-	GLib,
-	GObject,
 	Gdk,
 	Gtk,
 )
@@ -185,16 +183,3 @@ class FileColumn(IntEnum):
 class PriorityColumn(IntEnum):
 	pri_val = 0
 	pri_str = 1
-
-
-class CellRendererSize(Gtk.CellRendererText):
-	__gtype_name__ = 'TrgCellRendererSize'
-
-	size = GObject.Property(type=GObject.TYPE_UINT64)
-
-	def __init__(self, **kwargs):
-		super().__init__(text='', **kwargs)
-		self.connect('notify::size', self._on_size_change)
-
-	def _on_size_change(self, prop, param):
-		self.set_property('text', GLib.format_size(self.size))
