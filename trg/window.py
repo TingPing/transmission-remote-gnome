@@ -98,7 +98,7 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 		return True
 
 	def _on_torrent_add(self, action, param):
-		dialog = AddDialog(transient_for=self, modal=True,
+		dialog = AddDialog(transient_for=self,
 		                   uri=param.get_string(),
 		                   client=self.client)
 		dialog.present()
