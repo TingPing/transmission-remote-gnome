@@ -229,7 +229,16 @@ class Client(GObject.Object):
 		if self._refresh_timer:
 			GLib.source_remove(self._refresh_timer)
 
-		self._refresh_timer = GLib.timeout_add_seconds(20, self._refresh)
+		self._refresh_timer = GLib.timeout_add_seconds(10, self._refresh)
+
+	def refresh(self):
+		"""Refresh the list one time in the near future"""
+		def refresh_once():
+			self._refresh()
+			return GLib.SOURCE_REMOVE
+		# FIXME: The timing of this is wrong but logically all of our HTTP calls are in the correct order
+		# the server just doesn't respond with the up to date information for some actions
+		GLib.timeout_add(250, refresh_once)
 
 	def refresh_all(self):
 		self.torrent_get(None, ['id', 'name', 'rateDownload', 'rateUpload', 'eta',

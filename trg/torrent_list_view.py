@@ -148,6 +148,7 @@ class TorrentListView(Gtk.TreeView):
 
 		def on_activate(widget, callback):
 			callback()
+			self.client.refresh()
 
 		menu = Gtk.Menu.new()
 		for entry in MENU_ITEMS:
