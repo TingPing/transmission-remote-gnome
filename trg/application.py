@@ -127,10 +127,12 @@ class Application(Gtk.Application):
 	def do_activate(self):
 		def on_window_destroy(window):
 			self.window = None
+			self.client.props.timeout = 30 # We can relax the timer if there is no UI
 
 		if not self.window:
 			self.window = ApplicationWindow(application=self, client=self.client)
 			self.window.connect('destroy', on_window_destroy)
+			self.client.props.timeout = 10
 
 		self.window.present()
 

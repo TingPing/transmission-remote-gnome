@@ -219,7 +219,7 @@ class CellRendererStatus(Gtk.CellRendererPixbuf):
 	status = GObject.Property(type=GObject.TYPE_UINT64)
 
 	def __init__(self, **kwargs):
-		super().__init__(**kwargs)
+		super().__init__(gicon=None, **kwargs)
 		self.connect('notify::status', self._on_status_change)
 
 	def _on_status_change(self, prop, param):

@@ -30,6 +30,7 @@ from gi.repository import (
 )
 
 from .torrent import Torrent
+from .timer import Timer
 
 
 class Client(GObject.Object):
@@ -64,6 +65,11 @@ class Client(GObject.Object):
 			Gio.ListModel, _('Torrents'), _('List of torrents'),
 			GObject.ParamFlags.READABLE,
 		),
+		'timeout': (
+			GObject.TYPE_UINT, _('Timeout'), _('Timer for refreshing torrent list'),
+			1, GLib.MAXUINT, 30,
+			GObject.ParamFlags.CONSTRUCT|GObject.ParamFlags.READWRITE,
+		)
 	}
 
 	def __init__(self, **kwargs):
@@ -74,14 +80,10 @@ class Client(GObject.Object):
 		self._rpc_uri = 'http://{}:{}/transmission/rpc'.format(self.hostname, self.port)
 		self._session_id = '0'
 		self._session.connect('authenticate', self._on_authenticate)
-		self._refresh_timer = 0
+		self._refresh_timer = None
 
 		if self.username and self.password:
 			self._session.add_feature_by_type(Soup.AuthBasic)
-
-	def __del__(self):
-		if self._refresh_timer:
-			GLib.source_remove(self._refresh_timer)
 
 	def do_get_property(self, prop):
 		return getattr(self, prop.name)
@@ -187,6 +189,7 @@ class Client(GObject.Object):
 	def torrent_add(self, args, callback=None):
 		self._make_request_async('torrent-add', args, callback=callback)
 
+	@staticmethod
 	def _show_notification(self, torrent: Torrent):
 		notification = Gio.Notification.new(_('Download completed'))
 		notification.set_body(torrent.props.name + _('has finished.'))
@@ -218,7 +221,6 @@ class Client(GObject.Object):
 		                                     'sizeWhenDone', 'percentDone', 'totalSize', 'status',
 		                                     'isFinished'],
 						 callback=self._on_refresh_complete)
-		return GLib.SOURCE_CONTINUE
 
 	def _on_refresh_all_complete(self, response):
 		self.torrents.remove_all()
@@ -226,19 +228,14 @@ class Client(GObject.Object):
 			torrent = Torrent.new_from_response(t)
 			self.torrents.append(torrent)
 
-		if self._refresh_timer:
-			GLib.source_remove(self._refresh_timer)
-
-		self._refresh_timer = GLib.timeout_add_seconds(10, self._refresh)
+		if self._refresh_timer is None:
+			self._refresh_timer = Timer(self._refresh, timeout=self.timeout)
+			self.bind_property('timeout', self._refresh_timer, 'timeout', GObject.BindingFlags.DEFAULT)
 
 	def refresh(self):
 		"""Refresh the list one time in the near future"""
-		def refresh_once():
-			self._refresh()
-			return GLib.SOURCE_REMOVE
-		# FIXME: The timing of this is wrong but logically all of our HTTP calls are in the correct order
-		# the server just doesn't respond with the up to date information for some actions
-		GLib.timeout_add(250, refresh_once)
+		if self._refresh_timer:
+			self._refresh_timer.run_once()
 
 	def refresh_all(self):
 		self.torrent_get(None, ['id', 'name', 'rateDownload', 'rateUpload', 'eta',
