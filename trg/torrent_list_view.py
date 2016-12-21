@@ -43,17 +43,7 @@ class TorrentListView(Gtk.TreeView):
 
 	client = GObject.Property(type=Client, flags=GObject.ParamFlags.READWRITE|GObject.ParamFlags.CONSTRUCT_ONLY)
 
-	status_column = GtkTemplate.Child()
-	size_column = GtkTemplate.Child()
-	progress_column = GtkTemplate.Child()
-	down_column = GtkTemplate.Child()
-	up_column = GtkTemplate.Child()
-
 	def __init__(self, model, **kwargs):
-		super().__init__(**kwargs)
-		self.init_template()
-		self._init_cells()
-
 		# NOTE: Order must match TorrentColumn enum
 		props = OrderedDict()
 		props['name'] = str
@@ -65,43 +55,9 @@ class TorrentListView(Gtk.TreeView):
 		store = WrappedStore.new_for_model(model, props)
 		self.filter_model = Gtk.TreeModelFilter(child_model=store)
 		self._sort_model = Gtk.TreeModelSort(model=self.filter_model)
-		self.props.model = self._sort_model
 
-		# FIXME: The custom CellRenderText's will segfault if the store is empty?
-		if not len(store):
-			store.insert_with_valuesv(0, [0], ['FIXME'])
-			GLib.timeout_add(0.1, lambda: store.clear())
-
-	def _init_cells(self):
-		area = self.status_column.props.cell_area
-		area.clear()
-		renderer = CellRendererStatus()
-		area.add(renderer)
-		area.add_attribute(renderer, 'status', TorrentColumn.status)
-
-		area = self.size_column.props.cell_area
-		area.clear()
-		renderer = CellRendererSize(alignment=Pango.Alignment.RIGHT)
-		area.add(renderer)
-		area.add_attribute(renderer, 'size', TorrentColumn.size)
-
-		area = self.progress_column.props.cell_area
-		area.clear()
-		renderer = CellRendererPercent()
-		area.add(renderer)
-		area.add_attribute(renderer, 'percent', TorrentColumn.progress)
-
-		area = self.down_column.props.cell_area
-		area.clear()
-		renderer = CellRendererSpeed()
-		area.add(renderer)
-		area.add_attribute(renderer, 'speed', TorrentColumn.down)
-
-		area = self.up_column.props.cell_area
-		area.clear()
-		renderer = CellRendererSpeed()
-		area.add(renderer)
-		area.add_attribute(renderer, 'speed', TorrentColumn.up)
+		super().__init__(model=self._sort_model, **kwargs)
+		self.init_template()
 
 	def do_button_press_event(self, event: Gdk.EventButton) -> int:
 		if not (event.type == Gdk.EventType.BUTTON_PRESS and event.button == Gdk.BUTTON_SECONDARY):
@@ -175,7 +131,7 @@ class TorrentColumn(IntEnum):
 
 
 class CellRendererSpeed(Gtk.CellRendererText):
-	__gtype_name__ = 'CellRendererSpeed'
+	__gtype_name__ = 'TrgCellRendererSpeed'
 
 	speed = GObject.Property(type=GObject.TYPE_UINT64)
 
@@ -191,7 +147,7 @@ class CellRendererSpeed(Gtk.CellRendererText):
 
 
 class CellRendererPercent(Gtk.CellRendererProgress):
-	__gtype_name__ = 'CellRendererPercent'
+	__gtype_name__ = 'TrgCellRendererPercent'
 
 	percent = GObject.Property(type=float)
 
@@ -216,6 +172,8 @@ STATUS_ICONS = {
 
 
 class CellRendererStatus(Gtk.CellRendererPixbuf):
+	__gtype_name__ = 'TrgCellRendererStatus'
+
 	status = GObject.Property(type=GObject.TYPE_UINT64)
 
 	def __init__(self, **kwargs):

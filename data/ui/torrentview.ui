@@ -32,11 +32,17 @@ along with .  If not, see <http://www.gnu.org/licenses/>.
       </object>
     </child>
     <child>
-      <object class="GtkTreeViewColumn" id="status_column">
+      <object class="GtkTreeViewColumn">
         <property name="sizing">fixed</property>
         <property name="clickable">1</property>
         <property name="sort-indicator">1</property>
         <property name="sort-column-id">5</property>
+        <child>
+          <object class="TrgCellRendererStatus"/>
+          <attributes>
+            <attribute name="status">5</attribute>
+          </attributes>
+        </child>
       </object>
     </child>
     <child>
@@ -60,40 +66,66 @@ along with .  If not, see <http://www.gnu.org/licenses/>.
       </object>
     </child>
     <child>
-      <object class="GtkTreeViewColumn" id="size_column">
+      <object class="GtkTreeViewColumn">
         <property name="resizable">1</property>
         <property name="sizing">fixed</property>
         <property name="title" translatable="yes">Size</property>
         <property name="clickable">1</property>
         <property name="sort-indicator">1</property>
         <property name="sort-column-id">1</property>
+        <child>
+          <object class="TrgCellRendererSize">
+            <property name="alignment">2</property>
+          </object>
+          <attributes>
+            <attribute name="size">1</attribute>
+          </attributes>
+        </child>
       </object>
     </child>
     <child>
-      <object class="GtkTreeViewColumn" id="progress_column">
+      <object class="GtkTreeViewColumn">
         <property name="sizing">fixed</property>
         <property name="title" translatable="yes">Progress</property>
         <property name="clickable">1</property>
         <property name="sort-indicator">1</property>
         <property name="sort-column-id">2</property>
+        <child>
+          <object class="TrgCellRendererPercent"/>
+          <attributes>
+            <attribute name="percent">2</attribute>
+          </attributes>
+        </child>
       </object>
     </child>
     <child>
-      <object class="GtkTreeViewColumn" id="down_column">
+      <object class="GtkTreeViewColumn">
         <property name="sizing">fixed</property>
         <property name="title" translatable="yes">Down Speed</property>
         <property name="clickable">1</property>
         <property name="sort-indicator">1</property>
         <property name="sort-column-id">3</property>
+        <child>
+          <object class="TrgCellRendererSpeed"/>
+          <attributes>
+            <attribute name="speed">3</attribute>
+          </attributes>
+        </child>
       </object>
     </child>
     <child>
-      <object class="GtkTreeViewColumn" id="up_column">
+      <object class="GtkTreeViewColumn">
         <property name="sizing">fixed</property>
         <property name="title" translatable="yes">Up Speed</property>
         <property name="clickable">1</property>
         <property name="sort-indicator">1</property>
         <property name="sort-column-id">4</property>
+        <child>
+          <object class="TrgCellRendererSpeed"/>
+          <attributes>
+            <attribute name="speed">4</attribute>
+          </attributes>
+        </child>
       </object>
     </child>
   </template>

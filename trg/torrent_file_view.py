@@ -196,7 +196,7 @@ class PriorityColumn(IntEnum):
 
 
 class CellRendererSize(Gtk.CellRendererText):
-	__gtype_name__ = 'CellRendererSize'
+	__gtype_name__ = 'TrgCellRendererSize'
 
 	size = GObject.Property(type=GObject.TYPE_UINT64)
 
