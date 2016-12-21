@@ -18,6 +18,7 @@
 import logging
 from os import path
 from gettext import gettext as _
+from contextlib import suppress
 from collections import namedtuple
 from gi.repository import (
 	GLib,
@@ -124,10 +125,8 @@ class AutoStartSwitch(Gtk.Switch):
 				# TODO: Fix upstream in GLib
 				source.copy_async(self.autostart_file, Gio.FileCopyFlags.NONE, GLib.PRIORITY_DEFAULT)
 			else:
-				try:
+				with suppress(GLib.Error):
 					source.copy(self.autostart_file, Gio.FileCopyFlags.NONE)
-				except GLib.Error:
-					pass
 		else:
 			logging.info('Deleting autostart file')
 			self.autostart_file.delete_async(GLib.PRIORITY_DEFAULT)
