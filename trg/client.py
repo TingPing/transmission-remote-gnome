@@ -240,7 +240,7 @@ class Client(GObject.Object):
 	def refresh_all(self):
 		self.torrent_get(None, ['id', 'name', 'rateDownload', 'rateUpload', 'eta',
 								'sizeWhenDone', 'percentDone', 'totalSize', 'status',
-								'isFinished'],
+								'isFinished', 'trackers'],
 						 callback=self._on_refresh_all_complete)
 
 

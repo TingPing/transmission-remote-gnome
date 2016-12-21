@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from functools import lru_cache
+from urllib.parse import urlparse
+
 from gi.repository import (
 	GLib,
 	GObject,
@@ -22,6 +25,7 @@ from gi.repository import (
 	Gtk,
 )
 
+from .list_model_override import ListStore
 from .gi_composites import GtkTemplate
 from .torrent_list_view import TorrentListView, TorrentColumn
 from .add_dialog import AddDialog
@@ -44,6 +48,7 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 		self._init_actions()
 		self._filter = None
 		self._filter_text = None
+		self._filter_tracker = None
 
 		view = TorrentListView(self.client.props.torrents, client=self.client)
 		self._filter_model = view.filter_model
@@ -60,6 +65,38 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 		action = Gio.SimpleAction.new_stateful('filter_status', default_value.get_type(), default_value)
 		action.connect('change-state', self._on_status_filter)
 		self.add_action(action)
+
+		default_value = GLib.Variant('s', 'All')
+		action = Gio.SimpleAction.new_stateful('filter_tracker', default_value.get_type(), default_value)
+		action.connect('change-state', self._on_tracker_filter)
+		self.add_action(action)
+
+	@staticmethod
+	@lru_cache(maxsize=1000)
+	def _get_torrent_trackers(torrent) -> set:
+		trackers = set()
+		for tracker in ListStore(torrent.props.trackers):
+			tracker_url = urlparse(tracker.props.announce).hostname
+			trackers.add(tracker_url)
+		return trackers
+
+	@GtkTemplate.Callback
+	def _on_filter_button_toggled(self, button, filter_box):
+		if not button.props.active:
+			# Empty on close
+			filter_box.foreach(lambda child: child.destroy())
+			return
+
+		trackers = set()
+		for torrent in ListStore(self.client.props.torrents):
+			trackers |= self._get_torrent_trackers(torrent)
+
+		for tracker in ['All'] + list(trackers):
+			button = Gtk.ModelButton(text=tracker,
+									 action_name='win.filter_tracker',
+									 action_target=GLib.Variant('s', tracker))
+			filter_box.add(button)
+		filter_box.show_all()
 
 	@GtkTemplate.Callback
 	def _on_search_changed(self, entry):
@@ -81,6 +118,16 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 			self._filter = new_value
 		self._filter_model.refilter()
 
+	def _on_tracker_filter(self, action, value):
+		new_value = value.get_string()
+
+		action.set_state(value)
+		if new_value == 'All':
+			self._filter_tracker = None
+		else:
+			self._filter_tracker = new_value
+		self._filter_model.refilter()
+
 	@GtkTemplate.Callback
 	def _on_search_toggle(self, button):
 		active = button.props.active
@@ -95,6 +142,8 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 			return False
 		if self._filter_text is not None and self._filter_text not in model[it][TorrentColumn.name].lower():
 			return False
+		if self._filter_tracker is not None:
+			return self._filter_tracker in self._get_torrent_trackers(model[it][-1])
 		return True
 
 	def _on_torrent_add(self, action, param):

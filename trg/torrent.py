@@ -25,6 +25,8 @@ from gi.repository import (
     Gio,
 )
 
+from .tracker import Tracker
+
 
 class TorrentFile(GObject.Object):
 	__gtype_name__ = 'TorrentFile'
@@ -101,11 +103,16 @@ class Torrent(GObject.Object):
 			bool, _('Finished'), _('Torrent is finished downloading'), False,
 			GObject.ParamFlags.CONSTRUCT|GObject.ParamFlags.READWRITE,
 		),
+		'trackers': (
+			Gio.ListModel, _('Trackers'), _('List of trackers'),
+			GObject.ParamFlags.CONSTRUCT|GObject.ParamFlags.READWRITE,
+		),
 	}
 
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
 		self.files = Gio.ListStore.new(TorrentFile)
+		self.trackers = Gio.ListStore.new(Tracker)
 
 	def __str__(self):
 		return self.name
@@ -142,11 +149,15 @@ class Torrent(GObject.Object):
 
 	@classmethod
 	def new_from_response(cls, response: dict):
-		files = response.pop('files', [])
+		# TODO: Generic solution to lists
+		files = response.pop('files', None)
+		trackers = response.pop('trackers', None)
 		prop_dict = Torrent._propertify_dict(response)
 		torrent = cls(**prop_dict)
 		if files:
 			torrent.set_files(files)
+		if trackers:
+			torrent._set_trackers(trackers)
 		return torrent
 
 	def set_files(self, files: list):
@@ -155,6 +166,13 @@ class Torrent(GObject.Object):
 			prop_dict = self._propertify_dict(d)
 			f = TorrentFile(**prop_dict)
 			self.files.append(f)
+
+	def _set_trackers(self, trackers: list):
+		self.trackers.remove_all()
+		for d in trackers:
+			prop_dict = self._propertify_dict(d)
+			t = Tracker(**prop_dict)
+			self.trackers.append(t)
 
 	def do_get_property(self, prop):
 		return getattr(self, prop.name.replace('-', '_'))

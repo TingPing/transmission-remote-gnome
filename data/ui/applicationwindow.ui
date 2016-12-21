@@ -64,6 +64,7 @@
             <property name="can-focus">1</property>
             <property name="receives-default">1</property>
             <property name="popover">view_menu_widget</property>
+            <signal name="toggled" handler="_on_filter_button_toggled" object="tracker_box"/>
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
@@ -107,6 +108,13 @@
             <property name="visible">1</property>
             <property name="menu-name">filter_box</property>
             <property name="text" translatable="yes">Filter by state…</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkModelButton">
+            <property name="visible">1</property>
+            <property name="menu-name">tracker_box</property>
+            <property name="text" translatable="yes">Filter by tracker…</property>
           </object>
         </child>
       </object>
@@ -160,6 +168,16 @@
       </object>
       <packing>
         <property name="submenu">filter_box</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkBox" id="tracker_box">
+        <property name="visible">1</property>
+        <property name="orientation">vertical</property>
+        <property name="margin">10</property>
+      </object>
+      <packing>
+        <property name="submenu">tracker_box</property>
       </packing>
     </child>
   </object>

@@ -13,7 +13,7 @@ project in terms of UI and codebase. This is still a work in progress:
   - [x] Sorting
   - [x] Filtering
     - [x] By status
-    - [ ] By tracker
+    - [x] By tracker
     - [ ] By label/directory
   - [x] Searching
   - [x] Right click actions
