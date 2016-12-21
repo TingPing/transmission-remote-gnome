@@ -36,6 +36,16 @@ project in terms of UI and codebase. This is still a work in progress:
 
 ## Building
 
+### Dependencies
+
+- Meson >= 0.37.0 (build only)
+- Python >= 3.4
+- PyGObject
+- GLib (Only 2.50+ tested)
+- Gtk3 (Only 3.20+ tested)
+- LibSoup
+
+
 ```sh
 meson build
 ninja -C build
