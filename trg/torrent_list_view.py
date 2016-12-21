@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 from enum import IntEnum
 from collections import (OrderedDict, namedtuple)
 from functools import partial
@@ -33,6 +34,7 @@ from .client import Client
 from .list_wrapper import WrappedStore
 from .torrent_file_view import CellRendererSize
 from .gi_composites import GtkTemplate
+from .torrent import TorrentStatus
 
 
 @GtkTemplate(ui='/se/tingping/Trg/ui/torrentview.ui')
@@ -41,6 +43,7 @@ class TorrentListView(Gtk.TreeView):
 
 	client = GObject.Property(type=Client, flags=GObject.ParamFlags.READWRITE|GObject.ParamFlags.CONSTRUCT_ONLY)
 
+	status_column = GtkTemplate.Child()
 	size_column = GtkTemplate.Child()
 	progress_column = GtkTemplate.Child()
 	down_column = GtkTemplate.Child()
@@ -70,6 +73,12 @@ class TorrentListView(Gtk.TreeView):
 			GLib.timeout_add(0.1, lambda: store.clear())
 
 	def _init_cells(self):
+		area = self.status_column.props.cell_area
+		area.clear()
+		renderer = CellRendererStatus()
+		area.add(renderer)
+		area.add_attribute(renderer, 'status', TorrentColumn.status)
+
 		area = self.size_column.props.cell_area
 		area.clear()
 		renderer = CellRendererSize(alignment=Pango.Alignment.RIGHT)
@@ -191,3 +200,29 @@ class CellRendererPercent(Gtk.CellRendererProgress):
 
 	def _on_percent_change(self, prop, param):
 		self.props.value = int(self.percent * 100)
+
+
+STATUS_ICONS = {
+	TorrentStatus.STOPPED: Gio.ThemedIcon.new('media-playback-pause-symbolic'),
+	TorrentStatus.DOWNLOAD: Gio.ThemedIcon.new('network-transmit-receive-symbolic'),
+	TorrentStatus.SEED: Gio.ThemedIcon.new('network-transmit-symbolic'),
+	TorrentStatus.CHECK: Gio.ThemedIcon.new('emblem-synchronizing-symbolic'),
+
+	TorrentStatus.CHECK_WAIT: Gio.ThemedIcon.new('content-loading-symbolic'),
+	TorrentStatus.DOWNLOAD_WAIT: Gio.ThemedIcon.new('content-loading-symbolic'),
+	TorrentStatus.SEED_WAIT: Gio.ThemedIcon.new('content-loading-symbolic'),
+}
+
+
+class CellRendererStatus(Gtk.CellRendererPixbuf):
+	status = GObject.Property(type=GObject.TYPE_UINT64)
+
+	def __init__(self, **kwargs):
+		super().__init__(**kwargs)
+		self.connect('notify::status', self._on_status_change)
+
+	def _on_status_change(self, prop, param):
+		icon = STATUS_ICONS.get(self.props.status)
+		self.props.gicon = icon
+		if not icon:
+			logging.warning('Icon for status {} not found!'.format(self.props.status))

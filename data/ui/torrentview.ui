@@ -32,6 +32,14 @@ along with .  If not, see <http://www.gnu.org/licenses/>.
       </object>
     </child>
     <child>
+      <object class="GtkTreeViewColumn" id="status_column">
+        <property name="sizing">fixed</property>
+        <property name="clickable">1</property>
+        <property name="sort-indicator">1</property>
+        <property name="sort-column-id">5</property>
+      </object>
+    </child>
+    <child>
       <object class="GtkTreeViewColumn">
         <property name="resizable">1</property>
         <property name="sizing">fixed</property>
