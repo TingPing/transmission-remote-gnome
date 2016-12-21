@@ -79,6 +79,12 @@
         <property name="clickable">1</property>
         <property name="sort-indicator">1</property>
         <property name="sort-column-id">1</property>
+        <child>
+          <object class="TrgCellRendererSize"/>
+          <attributes>
+            <attribute name="size">1</attribute>
+          </attributes>
+        </child>
       </object>
     </child>
     <child>

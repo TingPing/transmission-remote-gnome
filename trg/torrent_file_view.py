@@ -35,19 +35,11 @@ DEFAULT_PRI_VAL = 0
 class TorrentFileView(Gtk.TreeView):
 	__gtype_name__ = 'TorrentFileView'
 
-	size_column = GtkTemplate.Child()
-	download_column = GtkTemplate.Child()
 	torrent_file_store = GtkTemplate.Child()
 
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
 		self.init_template()
-
-		# Add size cell
-		area = self.size_column.props.cell_area
-		renderer = CellRendererSize()
-		area.add(renderer)
-		area.add_attribute(renderer, 'size', FileColumn.size)
 
 	def _set_selection_value(self, item, user_data=None):
 		selection = self.get_selection()
