@@ -27,7 +27,7 @@ subdir('po')
 
 meson.add_install_script('scripts/meson_post_install.py')
 
-if find_program('flatpak-builder', required: false).found()
+if get_option('with-flatpak')
   # We keep a generic manifest in the repo you can use but
   # we want builds to use the local files so simply rewrite it
   make_local_manifest = find_program('scripts/make_local_manifest.py')
@@ -44,5 +44,6 @@ if find_program('flatpak-builder', required: false).found()
     output: 'se.tingping.Trg.flatpak',
     command: [build_flatpak, '@INPUT@', '@OUTPUT@'],
     build_always: true
+    # TODO: This shouldn't build unless explicit
   )
 endif
