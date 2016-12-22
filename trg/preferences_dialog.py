@@ -17,7 +17,6 @@
 
 import logging
 from os import path
-from gettext import gettext as _
 from contextlib import suppress
 from collections import namedtuple
 from gi.repository import (

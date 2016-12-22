@@ -16,7 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from enum import IntEnum
-from gettext import gettext as _
 
 from gi.repository import (
 	Gdk,

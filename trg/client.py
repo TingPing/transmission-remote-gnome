@@ -18,7 +18,6 @@
 import json
 import pprint
 import logging
-from gettext import gettext as _
 
 import gi
 gi.require_version('Soup', '2.4')

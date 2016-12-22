@@ -19,7 +19,6 @@
 
 import os
 import sys
-import locale
 import signal
 import gettext
 
@@ -37,10 +36,7 @@ if builddir:
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-locale.bindtextdomain('trg', localedir)
-locale.textdomain('trg')
-gettext.bindtextdomain('trg', localedir)
-gettext.textdomain('trg')
+gettext.install('trg', localedir)
 
 if __name__ == '__main__':
 	from gi.repository import Gio

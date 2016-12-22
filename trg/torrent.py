@@ -17,7 +17,6 @@
 
 import logging
 from enum import IntEnum
-from gettext import gettext as _
 
 from gi.repository import (
     GLib,

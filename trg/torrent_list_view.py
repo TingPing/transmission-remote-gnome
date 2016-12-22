@@ -18,7 +18,6 @@
 from enum import IntEnum
 from collections import (OrderedDict, namedtuple)
 from functools import partial
-from gettext import gettext as _
 
 from gi.repository import (
 	GObject,
