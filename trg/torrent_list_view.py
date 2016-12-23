@@ -28,7 +28,7 @@ from gi.repository import (
 
 # This import is used by the UI file indirectly
 # noinspection PyUnresolvedReferences
-from . import cell_renderers
+from . import cell_renderers # noqa: ignore=F401
 from .client import Client
 from .list_wrapper import WrappedStore
 from .gi_composites import GtkTemplate

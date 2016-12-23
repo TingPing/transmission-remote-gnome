@@ -39,6 +39,13 @@ signal.signal(signal.SIGINT, signal.SIG_DFL)
 gettext.install('trg', localedir)
 
 if __name__ == '__main__':
+	import gi
+
+	gi.require_versions({
+		'Gtk': '3.0',
+		'Soup': '2.4',
+	})
+
 	from gi.repository import Gio
 	resource = Gio.Resource.load(os.path.join(pkgdatadir, 'se.tingping.Trg.gresource'))
 	resource._register()

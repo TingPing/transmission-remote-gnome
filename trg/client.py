@@ -19,8 +19,6 @@ import json
 import pprint
 import logging
 
-import gi
-gi.require_version('Soup', '2.4')
 from gi.repository import (
 	GLib,
 	GObject,
