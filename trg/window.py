@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from contextlib import suppress
 from functools import lru_cache
 from urllib.parse import urlparse
 
@@ -22,6 +23,7 @@ from gi.repository import (
 	GLib,
 	GObject,
 	Gio,
+	Gdk,
 	Gtk,
 )
 
@@ -50,6 +52,9 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 		self._filter_text = None
 		self._filter_tracker = None
 
+		torrent_target = Gtk.TargetEntry.new('text/uri-list', Gtk.TargetFlags.OTHER_APP, 0)
+		self.drag_dest_set(Gtk.DestDefaults.ALL, (torrent_target,), Gdk.DragAction.MOVE)
+
 		view = TorrentListView(self.client.props.torrents, client=self.client)
 		self._filter_model = view.filter_model
 		self._filter_model.set_visible_func(self._filter_model_func)
@@ -57,9 +62,9 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 		view.show_all()
 
 	def _init_actions(self):
-		action = Gio.SimpleAction.new('torrent_add', GLib.VariantType('s'))
-		action.connect('activate', self._on_torrent_add)
-		self.add_action(action)
+		self._add_action = Gio.SimpleAction.new('torrent_add', GLib.VariantType('s'))
+		self._add_action.connect('activate', self._on_torrent_add)
+		self.add_action(self._add_action)
 
 		default_value = GLib.Variant('i', -1) # All
 		action = Gio.SimpleAction.new_stateful('filter_status', default_value.get_type(), default_value)
@@ -70,6 +75,19 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 		action = Gio.SimpleAction.new_stateful('filter_tracker', default_value.get_type(), default_value)
 		action.connect('change-state', self._on_tracker_filter)
 		self.add_action(action)
+
+	@GtkTemplate.Callback
+	def _on_drag_data_received(self, widget, context, x, y, data, info, time):
+		success = False
+
+		for uri in data.get_data().split():
+			with suppress(UnicodeDecodeError):
+				uri = uri.decode('utf-8')
+				if uri.endswith('.torrent'):
+					self._add_action.activate(GLib.Variant('s', uri))
+					success = True
+
+		Gtk.drag_finish(context, success, success, time)
 
 	@staticmethod
 	@lru_cache(maxsize=1000)
