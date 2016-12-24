@@ -36,7 +36,7 @@
       </object>
     </child>
     <child type="titlebar">
-      <object class="GtkHeaderBar">
+      <object class="GtkHeaderBar" id="header_bar">
         <property name="visible">1</property>
         <property name="title">Transmission Remote</property>
         <property name="has-subtitle">0</property>

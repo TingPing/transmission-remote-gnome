@@ -66,7 +66,29 @@ class Client(GObject.Object):
 			GObject.TYPE_UINT, _('Timeout'), _('Timer for refreshing torrent list'),
 			1, GLib.MAXUINT, 30,
 			GObject.ParamFlags.CONSTRUCT|GObject.ParamFlags.READWRITE,
-		)
+		),
+		# These are session properties
+		'download-dir': (
+			str, _('Download Directory'), _('Directory downloads are saved to'),
+			'', GObject.ParamFlags.READABLE
+		),
+		'download-dir-free-space': (
+			GObject.TYPE_UINT64, _('Free Space'), _('Free space in download directory'),
+			0, GLib.MAXUINT64, 0, GObject.ParamFlags.READABLE
+		),
+		'alt-speed-enabled': (
+			bool, _('Alternate Speed'), _('Alternate speeds enabled'),
+			False, GObject.ParamFlags.READABLE
+		),
+		# These are session statistics
+		'download-speed': (
+			GObject.TYPE_UINT64, _('Download Speed'), _('Speed of current downloads'),
+			0, GLib.MAXUINT64, 0, GObject.ParamFlags.READABLE
+		),
+		'upload-speed': (
+			GObject.TYPE_UINT64, _('Upload Speed'), _('Speed of current upload'),
+			0, GLib.MAXUINT64, 0, GObject.ParamFlags.READABLE
+		),
 	}
 
 	def __init__(self, **kwargs):
@@ -78,15 +100,22 @@ class Client(GObject.Object):
 		self._session_id = '0'
 		self._session.connect('authenticate', self._on_authenticate)
 		self._refresh_timer = None
+		self._session_timer = None
+
+		self.alt_speed_enabled = False
+		self.download_dir_free_space = 0
+		self.download_dir = ''
+		self.upload_speed = 0
+		self.download_speed = 0
 
 		if self.username and self.password:
 			self._session.add_feature_by_type(Soup.AuthBasic)
 
 	def do_get_property(self, prop):
-		return getattr(self, prop.name)
+		return getattr(self, prop.name.replace('-', '_'))
 
 	def do_set_property(self, prop, value):
-		setattr(self, prop.name, value)
+		setattr(self, prop.name.replace('-', '_'), value)
 
 	def _on_authenticate(self, session, message, auth, retrying):
 		if not retrying and self.username and self.password:
@@ -118,6 +147,10 @@ class Client(GObject.Object):
 		response = json.loads(response_str)
 		# logging.debug('<<<\n{}'.format(pprint.pformat(response)))
 
+		if response.get('result') != 'success':
+			logging.warning('Request failed: {}'.format(response.get('result')))
+			return
+
 		if user_data:
 			user_data(response)
 
@@ -148,6 +181,15 @@ class Client(GObject.Object):
 			if v is not None:
 				args[k] = v
 		return args
+
+	def session_get(self, callback=None):
+		self._make_request_async('session-get', None, callback=callback)
+
+	def session_set(self, arguments, callback=None):
+		self._make_request_async('session-set', arguments, callback=callback)
+
+	def session_stats(self, callback=None):
+		self._make_request_async('session-stats', None, callback=callback)
 
 	def torrent_start(self, torrent):
 		"""
@@ -218,6 +260,23 @@ class Client(GObject.Object):
 		                                     'sizeWhenDone', 'percentDone', 'totalSize', 'status',
 		                                     'isFinished'],
 						 callback=self._on_refresh_complete)
+		self.session_stats(self._on_refresh_stats_complete)
+
+	def _on_refresh_stats_complete(self, response):
+		for prop, value in response['arguments'].items():
+			prop_name = Torrent._propertify_name(prop)
+			if hasattr(self.props, prop_name):
+				setattr(self, prop_name.replace('-', '_'), value)
+				self.notify(prop_name)
+
+	def _on_refresh_session_complete(self, response):
+		for prop, value in response['arguments'].items():
+			if hasattr(self.props, prop):
+				setattr(self, prop.replace('-', '_'), value)
+				self.notify(prop)
+
+	def _refresh_session(self):
+		self.session_get(self._on_refresh_session_complete)
 
 	def _on_refresh_all_complete(self, response):
 		self.torrents.remove_all()
@@ -229,6 +288,9 @@ class Client(GObject.Object):
 			self._refresh_timer = Timer(self._refresh, timeout=self.timeout)
 			self.bind_property('timeout', self._refresh_timer, 'timeout', GObject.BindingFlags.DEFAULT)
 
+		if self._session_timer is None:
+			self._session_timer = Timer(self._refresh_session, timeout=300)
+
 	def refresh(self):
 		"""Refresh the list one time in the near future"""
 		if self._refresh_timer:
@@ -239,6 +301,7 @@ class Client(GObject.Object):
 								'sizeWhenDone', 'percentDone', 'totalSize', 'status',
 								'isFinished', 'trackers'],
 						 callback=self._on_refresh_all_complete)
+		self.session_stats(self._on_refresh_stats_complete)
 
 
 class TorrentEncoder(json.JSONEncoder):

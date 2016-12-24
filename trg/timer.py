@@ -32,6 +32,7 @@ class Timer(GObject.Object):
 
 		self._add_timeout()
 		self.connect('notify::timeout', self._on_timeout_changed)
+		self._run_func()
 
 	def __del__(self):
 		logging.debug('Timer removed')

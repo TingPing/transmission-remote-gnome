@@ -43,6 +43,7 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 	torrent_sw = GtkTemplate.Child()
 	search_entry = GtkTemplate.Child()
 	search_revealer = GtkTemplate.Child()
+	header_bar = GtkTemplate.Child()
 
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
@@ -51,6 +52,8 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 		self._filter = None
 		self._filter_text = None
 		self._filter_tracker = None
+
+		self.client.connect('notify::download-speed', self._on_speed_refresh)
 
 		torrent_target = Gtk.TargetEntry.new('text/uri-list', Gtk.TargetFlags.OTHER_APP, 0)
 		self.drag_dest_set(Gtk.DestDefaults.ALL, (torrent_target,), Gdk.DragAction.MOVE)
@@ -75,6 +78,18 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 		action = Gio.SimpleAction.new_stateful('filter_tracker', default_value.get_type(), default_value)
 		action.connect('change-state', self._on_tracker_filter)
 		self.add_action(action)
+
+	def _on_speed_refresh(self, *args):
+		subtitle = ''
+		down = self.client.props.download_speed
+		up = self.client.props.upload_speed
+		if down:
+			subtitle += '↓ {}/s'.format(GLib.format_size(down))
+		if down and up:
+			subtitle += ' — '
+		if up:
+			subtitle += '↑ {}/s'.format(GLib.format_size(up))
+		self.header_bar.props.subtitle = subtitle
 
 	@GtkTemplate.Callback
 	def _on_drag_data_received(self, widget, context, x, y, data, info, time):
