@@ -58,7 +58,7 @@ class AddDialog(Gtk.Dialog):
 
 		self.cancellable = Gio.Cancellable.new()
 
-		self.destination_combo.append_text('/mnt/Media') # TODO: Remote setting
+		self.destination_combo.append_text(self.client.props.download_dir)
 		self.destination_combo.set_active(0)
 
 		self.connect('notify::uri', self._on_uri_change)
