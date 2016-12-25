@@ -30,7 +30,7 @@ class WrappedStore(Gtk.ListStore):
 		self.set_column_types(list(properties_map.values()) + [GObject.Object])
 
 		self._model = model
-		self.properties = properties_map
+		self.properties = list(properties_map.keys())
 		self._model.connect('items-changed', self._on_items_changed)
 		self._on_items_changed(model, 0, 0, model.get_n_items())
 		return self
@@ -40,15 +40,9 @@ class WrappedStore(Gtk.ListStore):
 		if property_name not in self.properties:
 			return
 
-		def index(d, v):
-			for i, k in enumerate(d):
-				if k == v:
-					return i
-			raise IndexError('Key {} was not in dict'.format(v))
-
 		for row in self:
 			if row[-1] == item:
-				idx = index(self.properties, property_name)
+				idx = self.properties.index(property_name)
 				row[idx] = getattr(item.props, property_name)
 				break
 
@@ -63,7 +57,7 @@ class WrappedStore(Gtk.ListStore):
 		for i in range(added):
 			new_pos = position + i
 			item = model.get_item(new_pos)
-			new_values = [getattr(item.props, prop) for prop in self.properties.keys()] + [item]
+			new_values = [getattr(item.props, prop) for prop in self.properties] + [item]
 			self.insert_with_valuesv(new_pos, all_columns, new_values)
 			hook_id = item.connect('notify', self._on_item_property_changed)
 			item._hook_id = hook_id
