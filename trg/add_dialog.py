@@ -136,7 +136,8 @@ class AddDialog(Gtk.Dialog):
 
 	def _on_file_loaded(self, torrent):
 		self.fileview.set_torrent_file(torrent)
-		self.set_response_sensitive(Gtk.ResponseType.OK, True)
+		self.set_response_sensitive(Gtk.ResponseType.OK,
+		                            GLib.path_is_absolute(self.destination_combo.get_active_text()))
 
 	@GtkTemplate.Callback
 	def _on_destination_changed(self, combobox):
