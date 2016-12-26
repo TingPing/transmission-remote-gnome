@@ -27,6 +27,7 @@ class Timer(GObject.Object):
 		super().__init__(**kwargs)
 		assert (callable(function))
 
+		self._paused = False
 		self._func = function
 		self._id = 0
 
@@ -49,13 +50,20 @@ class Timer(GObject.Object):
 		self._add_timeout()
 
 	def _run_func(self):
-		try:
-			logging.debug('Timer running')
-			self._func()
-		except Exception as e:
-			logging.exception(e)
+		if not self._paused:
+			try:
+				logging.debug('Timer running')
+				self._func()
+			except Exception as e:
+				logging.exception(e)
 
 		return GLib.SOURCE_CONTINUE
+
+	def pause(self):
+		self._paused = True
+
+	def resume(self):
+		self._paused = False
 
 	def run_once(self):
 		# To be the most efficient we will restart the timer from here

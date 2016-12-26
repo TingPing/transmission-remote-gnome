@@ -102,6 +102,9 @@ class Client(GObject.Object):
 		self._refresh_timer = None
 		self._session_timer = None
 
+		network_monitor = Gio.NetworkMonitor.get_default()
+		network_monitor.connect('network-changed', self._on_network_changed)
+
 		for prop in ('username', 'password'):
 			self.connect('notify::' + prop, self._on_credentials_changed)
 		for prop in ('hostname', 'port'):
@@ -137,6 +140,21 @@ class Client(GObject.Object):
 		if not retrying and self.username and self.password:
 			logging.info('Authenticating as {}'.format(self.username))
 			auth.authenticate(self.username, self.password)
+
+	def _on_network_changed(self, monitor, available: bool):
+		logging.info('Network status changed to: {}'.format(
+			Gio.NetworkConnectivity(monitor.props.connectivity).value_nick
+		))
+		# FIXME: More robust localhost check (monitor.can_reach_async)
+		if self.hostname == 'localhost':
+			return
+
+		if not available:
+			self.torrents.remove_all()
+			self._refresh_timer.pause()
+			self._session_timer.pause()
+		else:
+			self.refresh_all()
 
 	def _on_message_finish(self, session, message, user_data=None):
 		status_code = message.props.status_code
@@ -303,9 +321,13 @@ class Client(GObject.Object):
 		if self._refresh_timer is None:
 			self._refresh_timer = Timer(self._refresh, timeout=self.timeout)
 			self.bind_property('timeout', self._refresh_timer, 'timeout', GObject.BindingFlags.DEFAULT)
+		else:
+			self._refresh_timer.resume()
 
 		if self._session_timer is None:
 			self._session_timer = Timer(self._refresh_session, timeout=300)
+		else:
+			self._session_timer.resume()
 
 	def refresh(self):
 		"""Refresh the list one time in the near future"""
