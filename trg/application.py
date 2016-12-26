@@ -145,6 +145,6 @@ class Application(Gtk.Application):
 		                        license_type=Gtk.License.GPL_3_0,
 		                        authors=['Patrick Griffis', ],
 		                        copyright='Copyright © 2016 Patrick Griffis',
-		                        logo_icon_name='transmission',
+		                        logo_icon_name='transmission-remote-gnome',
 		                        version=self.version)
 		about.present()

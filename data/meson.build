@@ -64,6 +64,11 @@ foreach size: sizes
 endforeach
 endif
 
+icondir = join_paths(get_option('datadir'), 'icons/hicolor')
+install_data('icons/transmission-remote-gnome.svg',
+  install_dir: join_paths(icondir, 'scalable/apps')
+)
+
 trg_resources = gnome.compile_resources(app_id,
   app_id + '.gresource.xml',
   gresource_bundle: true,
