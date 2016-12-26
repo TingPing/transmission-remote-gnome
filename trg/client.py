@@ -116,6 +116,7 @@ class Client(GObject.Object):
 		self.upload_speed = 0
 		self.download_speed = 0
 
+		self._last_auth = (self.username, self.password) # Not ideal
 		if self.username and self.password:
 			self._session.add_feature_by_type(Soup.AuthBasic)
 		self.refresh_all()
@@ -127,14 +128,21 @@ class Client(GObject.Object):
 		setattr(self, prop.name.replace('-', '_'), value)
 
 	def _on_credentials_changed(self, *args):
-		if self.username and self.password:
-			self._session.add_feature_by_type(Soup.AuthBasic)
-		self.refresh_all(remove=True)
+		new_auth = (self.username, self.password)
+		if new_auth != self._last_auth:
+			logging.info('Credentials changed')
+			self._last_auth = new_auth
+			if self.username and self.password:
+				self._session.add_feature_by_type(Soup.AuthBasic)
+			self.refresh_all(remove=True)
 
 	def _on_server_changed(self, *args):
-		self._rpc_uri = 'http://{}:{}/transmission/rpc'.format(self.hostname, self.port)
-		self._session_id = '0'
-		self.refresh_all(remove=True)
+		rpc_uri = 'http://{}:{}/transmission/rpc'.format(self.hostname, self.port)
+		if rpc_uri != self._rpc_uri:
+			logging.info('Server information changed')
+			self._rpc_uri = rpc_uri
+			self._session_id = '0'
+			self.refresh_all(remove=True)
 
 	def _on_authenticate(self, session, message, auth, retrying):
 		if not retrying and self.username and self.password:
@@ -341,8 +349,9 @@ class Client(GObject.Object):
 								'sizeWhenDone', 'percentDone', 'totalSize', 'status',
 								'isFinished', 'trackers'],
 						 callback=self._on_refresh_all_complete)
-		self.session_stats(self._on_refresh_stats_complete)
-
+		if self._refresh_timer:
+			# FIXME: Don't want to send too much until we have initial session id
+			self.session_stats(self._on_refresh_stats_complete)
 
 class TorrentEncoder(json.JSONEncoder):
 	"""JSONEncoder that converts Torrent objects into their id's at encode time"""
