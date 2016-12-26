@@ -68,6 +68,9 @@ icondir = join_paths(get_option('datadir'), 'icons/hicolor')
 install_data('icons/transmission-remote-gnome.svg',
   install_dir: join_paths(icondir, 'scalable/apps')
 )
+install_data('icons/transmission-remote-gnome-symbolic.svg',
+  install_dir: join_paths(icondir, 'symbolic/apps')
+)
 
 trg_resources = gnome.compile_resources(app_id,
   app_id + '.gresource.xml',
