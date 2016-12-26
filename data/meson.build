@@ -65,10 +65,10 @@ endforeach
 endif
 
 icondir = join_paths(get_option('datadir'), 'icons/hicolor')
-install_data('icons/transmission-remote-gnome.svg',
+install_data('icons/se.tingping.Trg.svg',
   install_dir: join_paths(icondir, 'scalable/apps')
 )
-install_data('icons/transmission-remote-gnome-symbolic.svg',
+install_data('icons/se.tingping.Trg-symbolic.svg',
   install_dir: join_paths(icondir, 'symbolic/apps')
 )
 
