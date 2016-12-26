@@ -95,7 +95,9 @@ class Application(Gtk.Application):
 
 		self.client = Client(username=self.settings['username'], password=self.settings['password'],
 		                     hostname=self.settings['hostname'], port=self.settings['port'])
-		self.client.refresh_all()
+
+		for prop in ('username', 'password', 'hostname', 'port'):
+			self.settings.bind(prop, self.client, prop, Gio.SettingsBindFlags.GET)
 
 	def do_open(self, files, n_files, hint):
 		self.activate()

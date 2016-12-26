@@ -41,22 +41,22 @@ class Client(GObject.Object):
 		'username': (
 			str, _('Username'), _('Username to login with'),
 			'',
-			GObject.ParamFlags.CONSTRUCT_ONLY|GObject.ParamFlags.READWRITE,
+			GObject.ParamFlags.CONSTRUCT|GObject.ParamFlags.READWRITE,
 		),
 		'password': (
 			str, _('Password'), _('Password to login with'),
 			'',
-			GObject.ParamFlags.CONSTRUCT_ONLY|GObject.ParamFlags.READWRITE,
+			GObject.ParamFlags.CONSTRUCT|GObject.ParamFlags.READWRITE,
 		),
 		'hostname': (
 			str, _('Hostname'), _('Hostname of remote server'),
 			'localhost',
-			GObject.ParamFlags.CONSTRUCT_ONLY|GObject.ParamFlags.READWRITE,
+			GObject.ParamFlags.CONSTRUCT|GObject.ParamFlags.READWRITE,
 		),
 		'port': (
 			int, _('Port'), _('Port of remote server'),
 			1, GLib.MAXUINT16, 9091,
-			GObject.ParamFlags.CONSTRUCT_ONLY|GObject.ParamFlags.READWRITE,
+			GObject.ParamFlags.CONSTRUCT|GObject.ParamFlags.READWRITE,
 		),
 		'torrents': (
 			Gio.ListModel, _('Torrents'), _('List of torrents'),
@@ -102,6 +102,11 @@ class Client(GObject.Object):
 		self._refresh_timer = None
 		self._session_timer = None
 
+		for prop in ('username', 'password'):
+			self.connect('notify::' + prop, self._on_credentials_changed)
+		for prop in ('hostname', 'port'):
+			self.connect('notify::' + prop, self._on_server_changed)
+
 		self.alt_speed_enabled = False
 		self.download_dir_free_space = 0
 		self.download_dir = ''
@@ -110,12 +115,23 @@ class Client(GObject.Object):
 
 		if self.username and self.password:
 			self._session.add_feature_by_type(Soup.AuthBasic)
+		self.refresh_all()
 
 	def do_get_property(self, prop):
 		return getattr(self, prop.name.replace('-', '_'))
 
 	def do_set_property(self, prop, value):
 		setattr(self, prop.name.replace('-', '_'), value)
+
+	def _on_credentials_changed(self, *args):
+		if self.username and self.password:
+			self._session.add_feature_by_type(Soup.AuthBasic)
+		self.refresh_all(remove=True)
+
+	def _on_server_changed(self, *args):
+		self._rpc_uri = 'http://{}:{}/transmission/rpc'.format(self.hostname, self.port)
+		self._session_id = '0'
+		self.refresh_all(remove=True)
 
 	def _on_authenticate(self, session, message, auth, retrying):
 		if not retrying and self.username and self.password:
@@ -296,7 +312,9 @@ class Client(GObject.Object):
 		if self._refresh_timer:
 			self._refresh_timer.run_once()
 
-	def refresh_all(self):
+	def refresh_all(self, remove=False):
+		if remove:
+			self.torrents.remove_all()
 		self.torrent_get(None, ['id', 'name', 'rateDownload', 'rateUpload', 'eta',
 								'sizeWhenDone', 'percentDone', 'totalSize', 'status',
 								'isFinished', 'trackers'],
