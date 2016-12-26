@@ -93,6 +93,7 @@ class PreferencesDialog(Gtk.Dialog):
 class AutoStartSwitch(Gtk.Switch):
 	def __init__(self, **kwargs):
 		super().__init__(sensitive=False, **kwargs)
+		self._was_enabled = None
 
 		autostart_file_path = path.join(GLib.get_user_config_dir(), 'autostart',
 										'se.tingping.Trg.service.desktop')
@@ -106,9 +107,11 @@ class AutoStartSwitch(Gtk.Switch):
 		try:
 			autostart_file.query_info_finish(result)
 			self.props.active = True
+			self._was_enabled = True
 			logging.debug('Autostart file exists')
 		except GLib.Error as e:
 			self.props.active = False
+			self._was_enabled = False
 			logging.debug('Querying autostart file returned: {}'.format(e))
 		self.props.sensitive = True
 
@@ -117,7 +120,7 @@ class AutoStartSwitch(Gtk.Switch):
 		if not self.props.sensitive: # We never got the current state
 			return
 
-		if self.props.active:
+		if self.props.active and not self._was_enabled:
 			logging.info('Creating autostart file')
 			source = Gio.File.new_for_uri('resource:///se/tingping/Trg/se.tingping.Trg.service.desktop')
 			if hasattr(source, 'copy_async'):
@@ -126,6 +129,6 @@ class AutoStartSwitch(Gtk.Switch):
 			else:
 				with suppress(GLib.Error):
 					source.copy(self.autostart_file, Gio.FileCopyFlags.NONE)
-		else:
+		elif not self.props.active and self._was_enabled:
 			logging.info('Deleting autostart file')
 			self.autostart_file.delete_async(GLib.PRIORITY_DEFAULT)
