@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 from contextlib import suppress
 from functools import lru_cache
 from urllib.parse import urlparse
@@ -53,6 +54,7 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 		self._filter = None
 		self._filter_text = None
 		self._filter_tracker = None
+		self._add_dialogs = []
 
 		self.client.connect('notify::download-speed', self._on_speed_refresh)
 		self.client.bind_property('alt-speed-enabled', self.alt_speed_toggle,
@@ -187,7 +189,16 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 		return True
 
 	def _on_torrent_add(self, action, param):
+		file_uri = param.get_string()
+		for dialog in self._add_dialogs:
+			if dialog.uri == file_uri:
+				dialog.present()
+				logging.info('Raising existing dialog for {}'.format(file_uri))
+				return
+
 		dialog = AddDialog(transient_for=self,
 		                   uri=param.get_string(),
 		                   client=self.client)
+		self._add_dialogs.append(dialog)
+		dialog.connect('destroy', lambda d: self._add_dialogs.remove(d))
 		dialog.present()
