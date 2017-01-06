@@ -100,7 +100,7 @@ class AddDialog(Gtk.Dialog):
 					elif row[FileColumn.pri_val] == 1:
 						pri_high.append(index)
 
-				_iter = self.fileview.props.model.iter_next(_iter)
+				_iter = store.iter_next(_iter)
 
 		iterate_model(store.get_iter_first())
 
