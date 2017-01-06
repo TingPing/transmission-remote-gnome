@@ -56,7 +56,7 @@
             </child>
           </object>
           <packing>
-            <property name="position">1</property>
+            <property name="pack-type">start</property>
           </packing>
         </child>
         <child>
@@ -73,7 +73,7 @@
             </child>
           </object>
           <packing>
-            <property name="position">1</property>
+            <property name="pack-type">start</property>
           </packing>
         </child>
         <child>
@@ -82,7 +82,7 @@
             <property name="can-focus">1</property>
             <property name="receives-default">1</property>
             <property name="popover">view_menu_widget</property>
-            <signal name="toggled" handler="_on_filter_button_toggled" object="tracker_box"/>
+            <signal name="toggled" handler="_on_filter_button_toggled"/>
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
@@ -133,6 +133,13 @@
             <property name="visible">1</property>
             <property name="menu-name">tracker_box</property>
             <property name="text" translatable="yes">Filter by tracker…</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkModelButton">
+            <property name="visible">1</property>
+            <property name="menu-name">directory_box</property>
+            <property name="text" translatable="yes">Filter by directory…</property>
           </object>
         </child>
       </object>
@@ -196,6 +203,23 @@
       </object>
       <packing>
         <property name="submenu">tracker_box</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkScrolledWindow">
+        <property name="visible">1</property>
+        <property name="max-content-height">500</property>
+        <property name="propagate-natural-height">1</property>
+        <child>
+          <object class="GtkBox" id="directory_box">
+            <property name="visible">1</property>
+            <property name="orientation">vertical</property>
+            <property name="margin">10</property>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="submenu">directory_box</property>
       </packing>
     </child>
   </object>

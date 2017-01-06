@@ -46,6 +46,8 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 	search_revealer = GtkTemplate.Child()
 	header_bar = GtkTemplate.Child()
 	alt_speed_toggle = GtkTemplate.Child()
+	tracker_box = GtkTemplate.Child()
+	directory_box = GtkTemplate.Child()
 
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
@@ -54,6 +56,7 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 		self._filter = None
 		self._filter_text = None
 		self._filter_tracker = None
+		self._filter_directory = None
 		self._add_dialogs = []
 
 		self.client.connect('notify::download-speed', self._on_speed_refresh)
@@ -79,9 +82,14 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 		action.connect('change-state', self._on_status_filter)
 		self.add_action(action)
 
-		default_value = GLib.Variant('s', 'All')
+		default_value = GLib.Variant('s', _('Any'))
 		action = Gio.SimpleAction.new_stateful('filter_tracker', default_value.get_type(), default_value)
 		action.connect('change-state', self._on_tracker_filter)
+		self.add_action(action)
+
+		default_value = GLib.Variant('s', _('Any'))
+		action = Gio.SimpleAction.new_stateful('filter_directory', default_value.get_type(), default_value)
+		action.connect('change-state', self._on_directory_filter)
 		self.add_action(action)
 
 	def _on_speed_refresh(self, *args):
@@ -123,22 +131,36 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 		return trackers
 
 	@GtkTemplate.Callback
-	def _on_filter_button_toggled(self, button, filter_box):
+	def _on_filter_button_toggled(self, button):
 		if not button.props.active:
 			# Empty on close
-			filter_box.foreach(lambda child: child.destroy())
+			self.tracker_box.foreach(lambda child: child.destroy())
+			self.directory_box.foreach(lambda child: child.destroy())
 			return
 
-		trackers = set()
-		for torrent in ListStore(self.client.props.torrents):
-			trackers |= self._get_torrent_trackers(torrent)
+		torrents = ListStore(self.client.props.torrents)
 
-		for tracker in ['All'] + list(trackers):
+		trackers = set()
+		for torrent in torrents:
+			trackers |= self._get_torrent_trackers(torrent)
+		for tracker in [_('Any')] + list(trackers):
 			button = Gtk.ModelButton(text=tracker,
 									 action_name='win.filter_tracker',
 									 action_target=GLib.Variant('s', tracker))
-			filter_box.add(button)
-		filter_box.show_all()
+			self.tracker_box.add(button)
+		self.tracker_box.show_all()
+
+		# TODO: Might be a better way to show these
+		directories = {torrent.props.download_dir.rstrip('/') for torrent in torrents}
+		for directory in [_('Any')] + sorted(directories):
+			label = directory.rpartition('/')[2]
+			if len(label) >= 25:
+				label = '…' + label[-24:]
+			button = Gtk.ModelButton(text=label,
+			                         action_name='win.filter_directory',
+			                         action_target=GLib.Variant('s', directory))
+			self.directory_box.add(button)
+		self.directory_box.show_all()
 
 	@GtkTemplate.Callback
 	def _on_search_changed(self, entry):
@@ -164,10 +186,20 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 		new_value = value.get_string()
 
 		action.set_state(value)
-		if new_value == 'All':
+		if new_value == _('Any'):
 			self._filter_tracker = None
 		else:
 			self._filter_tracker = new_value
+		self._filter_model.refilter()
+
+	def _on_directory_filter(self, action, value):
+		new_value = value.get_string()
+
+		action.set_state(value)
+		if new_value == _('Any'):
+			self._filter_directory = None
+		else:
+			self._filter_directory = new_value
 		self._filter_model.refilter()
 
 	@GtkTemplate.Callback
@@ -184,6 +216,9 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 			return False
 		if self._filter_text is not None and self._filter_text not in model[it][TorrentColumn.name].lower():
 			return False
+		if self._filter_directory is not None:
+			if self._filter_directory != model[it][TorrentColumn.directory].rstrip('/'):
+				return False
 		if self._filter_tracker is not None:
 			return self._filter_tracker in self._get_torrent_trackers(model[it][-1])
 		return True

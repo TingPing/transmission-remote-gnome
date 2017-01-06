@@ -9,12 +9,13 @@ project in terms of UI and codebase. This is still a work in progress:
 
 - [x] Add Dialog
   - [x] Parse torrent files
+  - [ ] Labels
 - [x] Torrent List
   - [x] Sorting
   - [x] Filtering
     - [x] By status
     - [x] By tracker
-    - [ ] By label/directory
+    - [x] By directory
   - [x] Searching
   - [x] Right click actions
   - [ ] View/Edit properties
@@ -30,7 +31,7 @@ project in terms of UI and codebase. This is still a work in progress:
   - [ ] Full API coverage
 - [x] Installation
   - [x] Misc files (desktop, appdata, translations)
-  - [ ] Icon
+  - [x] Icon
   - [x] Flatpak
 - [x] Port build system to Meson
 
