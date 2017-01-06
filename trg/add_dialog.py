@@ -78,22 +78,31 @@ class AddDialog(Gtk.Dialog):
 		pri_norm = []
 		pri_low = []
 
-		for row in self.fileview.props.model:
-			index = row[FileColumn.index]
-			if index == -1: # Directory
-				continue
+		store = self.fileview.props.model
+		# FIXME: Recursion and Ugly
+		def iterate_model(_iter):
+			while _iter is not None:
+				if store.iter_has_child(_iter):
+					iterate_model(store.iter_children(_iter))
+				else:
+					row = store[_iter]
+					index = row[FileColumn.index]
 
-			if row[FileColumn.download]:
-				files_wanted.append(index)
-			else:
-				files_unwanted.append(index)
+					if row[FileColumn.download]:
+						files_wanted.append(index)
+					else:
+						files_unwanted.append(index)
 
-			if row[FileColumn.pri_val] == -1:
-				pri_low.append(index)
-			elif row[FileColumn.pri_val] == 0:
-				pri_norm.append(index)
-			elif row[FileColumn.pri_val] == 1:
-				pri_high.append(index)
+					if row[FileColumn.pri_val] == -1:
+						pri_low.append(index)
+					elif row[FileColumn.pri_val] == 0:
+						pri_norm.append(index)
+					elif row[FileColumn.pri_val] == 1:
+						pri_high.append(index)
+
+				_iter = self.fileview.props.model.iter_next(_iter)
+
+		iterate_model(store.get_iter_first())
 
 		args = {
 			'metainfo': self.torrent.get_base64(),
