@@ -59,6 +59,10 @@ class Torrent(GObject.Object):
 			str, _('Name'), _('Name of torrent'), '',
 			GObject.ParamFlags.CONSTRUCT|GObject.ParamFlags.READWRITE,
 		),
+		'download-dir': (
+			str, _('Directory'), _('Download Directory'), '',
+			GObject.ParamFlags.CONSTRUCT | GObject.ParamFlags.READWRITE,
+		),
 		'eta': (
 			GObject.TYPE_INT64, _('Eta'), _('Time to finish'),
 			GLib.MININT64, GLib.MAXINT64, 0,

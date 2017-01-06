@@ -27,6 +27,7 @@ from .gi_composites import GtkTemplate
 from .client import Client
 from .torrent_file import TorrentFile
 from .torrent_file_view import TorrentFileView, FileColumn
+from .list_model_override import ListStore
 
 
 @GtkTemplate(ui='/se/tingping/Trg/ui/adddialog.ui')
@@ -60,6 +61,10 @@ class AddDialog(Gtk.Dialog):
 
 		self.destination_combo.append_text(self.client.props.download_dir)
 		self.destination_combo.set_active(0)
+		torrent_directories = {torrent.props.download_dir.rstrip('/')
+							   for torrent in ListStore(self.client.props.torrents)}
+		for directory in sorted(torrent_directories):
+			self.destination_combo.append_text(directory)
 
 		self.connect('notify::uri', self._on_uri_change)
 		if self.uri:

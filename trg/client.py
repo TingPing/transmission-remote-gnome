@@ -31,7 +31,7 @@ from .timer import Timer
 
 _REFRESH_ALL_LIST = ['id', 'name', 'rateDownload', 'rateUpload', 'eta',
 					 'sizeWhenDone', 'percentDone', 'totalSize', 'status',
-					 'isFinished', 'trackers']
+					 'isFinished', 'trackers', 'downloadDir']
 
 
 class Client(GObject.Object):
