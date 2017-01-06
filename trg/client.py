@@ -29,6 +29,10 @@ from gi.repository import (
 from .torrent import Torrent
 from .timer import Timer
 
+_REFRESH_ALL_LIST = ['id', 'name', 'rateDownload', 'rateUpload', 'eta',
+					 'sizeWhenDone', 'percentDone', 'totalSize', 'status',
+					 'isFinished', 'trackers']
+
 
 class Client(GObject.Object):
 	__gtype_name__ = 'Client'
@@ -187,7 +191,7 @@ class Client(GObject.Object):
 
 		response_str = message.props.response_body_data.get_data().decode('UTF-8')
 		response = json.loads(response_str)
-		# logging.debug('<<<\n{}'.format(pprint.pformat(response)))
+		logging.debug('<<<\n{}'.format(pprint.pformat(response)))
 
 		if response.get('result') != 'success':
 			logging.warning('Request failed: {}'.format(response.get('result')))
@@ -268,7 +272,15 @@ class Client(GObject.Object):
 		self._make_request_async('torrent-rename-path', args)
 
 	def torrent_add(self, args, callback=None):
-		self._make_request_async('torrent-add', args, callback=callback)
+		def on_add(response):
+			new_torrent = response['arguments'].get('torrent-added')
+			if new_torrent:
+				torrent = Torrent(id=new_torrent['id'], name=new_torrent['name'])
+				self.torrents.append(torrent)
+				self.torrent_get(new_torrent['id'], _REFRESH_ALL_LIST)
+			if callback:
+				callback(response)
+		self._make_request_async('torrent-add', args, callback=on_add)
 
 	@staticmethod
 	def _show_notification(self, torrent: Torrent):
@@ -345,9 +357,7 @@ class Client(GObject.Object):
 	def refresh_all(self, remove=False):
 		if remove:
 			self.torrents.remove_all()
-		self.torrent_get(None, ['id', 'name', 'rateDownload', 'rateUpload', 'eta',
-								'sizeWhenDone', 'percentDone', 'totalSize', 'status',
-								'isFinished', 'trackers'],
+		self.torrent_get(None, _REFRESH_ALL_LIST,
 						 callback=self._on_refresh_all_complete)
 		if self._refresh_timer:
 			# FIXME: Don't want to send too much until we have initial session id
