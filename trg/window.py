@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from collections import namedtuple
 from contextlib import suppress
 from functools import lru_cache
 from urllib.parse import urlparse
@@ -77,20 +78,17 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 		self._add_action.connect('activate', self._on_torrent_add)
 		self.add_action(self._add_action)
 
-		default_value = GLib.Variant('i', -1) # All
-		action = Gio.SimpleAction.new_stateful('filter_status', default_value.get_type(), default_value)
-		action.connect('change-state', self._on_status_filter)
-		self.add_action(action)
+		Action = namedtuple('Action', ('name', 'value', 'callback'))
+		actions = (
+			Action('filter_status', GLib.Variant('i', -1), self._on_status_filter),
+			Action('filter_tracker', GLib.Variant('s', _('Any')), self._on_tracker_filter),
+			Action('filter_directory', GLib.Variant('s', _('Any')), self._on_directory_filter),
+		)
 
-		default_value = GLib.Variant('s', _('Any'))
-		action = Gio.SimpleAction.new_stateful('filter_tracker', default_value.get_type(), default_value)
-		action.connect('change-state', self._on_tracker_filter)
-		self.add_action(action)
-
-		default_value = GLib.Variant('s', _('Any'))
-		action = Gio.SimpleAction.new_stateful('filter_directory', default_value.get_type(), default_value)
-		action.connect('change-state', self._on_directory_filter)
-		self.add_action(action)
+		for action in actions:
+			act = Gio.SimpleAction.new_stateful(action.name, action.value.get_type(), action.value)
+			act.connect('change-state', action.callback)
+			self.add_action(act)
 
 	def _on_speed_refresh(self, *args):
 		subtitle = ''
