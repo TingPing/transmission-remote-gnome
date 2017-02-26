@@ -89,9 +89,10 @@ class Application(Gtk.Application):
 			action.activate(GLib.Variant('s', file_uri))
 
 		downloads_str = GLib.get_user_special_dir(GLib.USER_DIRECTORY_DOWNLOAD)
-		downloads = Gio.File.new_for_path(downloads_str)
-		self.download_monitor = downloads.monitor_directory(Gio.FileMonitorFlags.NONE)
-		self.download_monitor.connect('changed', file_changed)
+		if downloads_str:
+			downloads = Gio.File.new_for_path(downloads_str)
+			self.download_monitor = downloads.monitor_directory(Gio.FileMonitorFlags.NONE)
+			self.download_monitor.connect('changed', file_changed)
 
 		self.client = Client(username=self.settings['username'], password=self.settings['password'],
 		                     hostname=self.settings['hostname'], port=self.settings['port'])
