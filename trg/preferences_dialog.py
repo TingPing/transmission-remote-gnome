@@ -51,6 +51,7 @@ class PreferencesDialog(Gtk.Dialog):
 				Row(_('Username:'), Gtk.Entry.new(), 'text', 'username'),
 				Row(_('Password:'), Gtk.Entry(visibility=False, input_purpose=Gtk.InputPurpose.PASSWORD), 'text',
 					'password'),
+				Row(_('Connect over HTTPS:'), Gtk.Switch.new(), 'active', 'tls'),
 			],
 			('service', _('Service')): [
 				Row(_('Automatically load downloaded torrent files:'), Gtk.Switch.new(), 'active',

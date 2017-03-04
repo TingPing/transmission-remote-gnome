@@ -62,6 +62,11 @@ class Client(GObject.Object):
 			1, GLib.MAXUINT16, 9091,
 			GObject.ParamFlags.CONSTRUCT|GObject.ParamFlags.READWRITE,
 		),
+		'tls': (
+			bool, _('TLS'), _('Connect using HTTPS'),
+			False,
+			GObject.ParamFlags.CONSTRUCT|GObject.ParamFlags.READWRITE,
+		),
 		'torrents': (
 			Gio.ListModel, _('Torrents'), _('List of torrents'),
 			GObject.ParamFlags.READABLE,
@@ -100,7 +105,7 @@ class Client(GObject.Object):
 		self.torrents = Gio.ListStore.new(Torrent)
 		self._encoder = TorrentEncoder()
 		self._session = Soup.Session.new()
-		self._rpc_uri = 'http://{}:{}/transmission/rpc'.format(self.hostname, self.port)
+		self._rpc_uri = self._get_rpc_uri()
 		self._session_id = '0'
 		self._session.connect('authenticate', self._on_authenticate)
 		self._refresh_timer = None
@@ -111,7 +116,7 @@ class Client(GObject.Object):
 
 		for prop in ('username', 'password'):
 			self.connect('notify::' + prop, self._on_credentials_changed)
-		for prop in ('hostname', 'port'):
+		for prop in ('hostname', 'port', 'tls'):
 			self.connect('notify::' + prop, self._on_server_changed)
 
 		self.alt_speed_enabled = False
@@ -140,8 +145,14 @@ class Client(GObject.Object):
 				self._session.add_feature_by_type(Soup.AuthBasic)
 			self.refresh_all(remove=True)
 
+	def _get_rpc_uri(self):
+		protocol = 'https' if self.tls else 'http'
+		uri = '{}://{}:{}/transmission/rpc'.format(protocol, self.hostname, self.port)
+		logging.info('RPC URI set to: {}'.format(uri))
+		return uri
+
 	def _on_server_changed(self, *args):
-		rpc_uri = 'http://{}:{}/transmission/rpc'.format(self.hostname, self.port)
+		rpc_uri = self._get_rpc_uri()
 		if rpc_uri != self._rpc_uri:
 			logging.info('Server information changed')
 			self._rpc_uri = rpc_uri

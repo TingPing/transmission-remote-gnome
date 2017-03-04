@@ -22,6 +22,11 @@
       <summary>Port to connect to</summary>
     </key>
 
+    <key type="b" name="tls">
+      <default>false</default>
+      <summary>Connect over HTTPS</summary>
+    </key>
+
     <key type="b" name="add-paused">
       <default>false</default>
       <summary>Add torrent in a paused state</summary>

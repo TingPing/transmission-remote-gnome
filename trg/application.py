@@ -95,9 +95,10 @@ class Application(Gtk.Application):
 			self.download_monitor.connect('changed', file_changed)
 
 		self.client = Client(username=self.settings['username'], password=self.settings['password'],
-		                     hostname=self.settings['hostname'], port=self.settings['port'])
+		                     hostname=self.settings['hostname'], port=self.settings['port'],
+							 tls=self.settings['tls'])
 
-		for prop in ('username', 'password', 'hostname', 'port'):
+		for prop in ('username', 'password', 'hostname', 'port', 'tls'):
 			self.settings.bind(prop, self.client, prop, Gio.SettingsBindFlags.GET)
 
 	def do_open(self, files, n_files, hint):
