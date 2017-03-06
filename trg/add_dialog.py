@@ -142,9 +142,15 @@ class AddDialog(Gtk.Dialog):
         self.torrent.connect('file-invalid', self._on_file_invalid)
 
     def _on_file_invalid(self, torrent, error):
+        def on_response(dialog, response):
+            if response != Gtk.ResponseType.DELETE_EVENT:
+                dialog.destroy()
+
         dialog = Gtk.MessageDialog(text='Failed to read torrent file: {}'.format(error),
                                    message_type=Gtk.MessageType.ERROR,
+                                   buttons=Gtk.ButtonsType.CLOSE,
                                    transient_for=self, modal=True)
+        dialog.connect('response', on_response)
         dialog.present()
         self.torrent = None
         self.set_response_sensitive(Gtk.ResponseType.OK, False)

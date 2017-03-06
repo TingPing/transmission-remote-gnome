@@ -109,7 +109,7 @@ class TorrentFile(GObject.Object):
         try:
             _, bdata, _ = file.load_contents_finish(result)
         except GLib.Error as e:
-            self.emit('file-invalid', 'Failed load file contents: {}'.format(e.msg))
+            self.emit('file-invalid', 'Failed load file contents: {}'.format(e.message))
             return
 
         self.base64 = GLib.base64_encode(bdata)
