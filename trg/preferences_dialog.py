@@ -56,7 +56,7 @@ class PreferencesDialog(Gtk.Dialog):
             ('service', _('Service')): [
                 Row(_('Automatically load downloaded torrent files:'), Gtk.Switch.new(), 'active',
                     'watch-downloads-directory'),
-                Row(_('Show notifications when downlods complete:'), Gtk.Switch.new(), 'active',
+                Row(_('Show notifications when downloads complete:'), Gtk.Switch.new(), 'active',
                     'notify-on-finish'),
                 Row(_('Autostart service on login:'), self._autostart_switch, '', ''),
             ]
