@@ -17,79 +17,79 @@
 
 import logging
 from gi.repository import (
-	GLib,
-	GObject,
-	Gio,
-	Gtk,
+    GLib,
+    GObject,
+    Gio,
+    Gtk,
 )
 from .torrent import TorrentStatus
 
 
 class CellRendererSize(Gtk.CellRendererText):
-	__gtype_name__ = 'TrgCellRendererSize'
+    __gtype_name__ = 'TrgCellRendererSize'
 
-	size = GObject.Property(type=GObject.TYPE_UINT64)
+    size = GObject.Property(type=GObject.TYPE_UINT64)
 
-	def __init__(self, **kwargs):
-		super().__init__(text='', **kwargs)
-		self.connect('notify::size', self._on_size_change)
+    def __init__(self, **kwargs):
+        super().__init__(text='', **kwargs)
+        self.connect('notify::size', self._on_size_change)
 
-	def _on_size_change(self, prop, param):
-		self.set_property('text', GLib.format_size(self.size))
+    def _on_size_change(self, prop, param):
+        self.set_property('text', GLib.format_size(self.size))
 
 
 class CellRendererSpeed(Gtk.CellRendererText):
-	__gtype_name__ = 'TrgCellRendererSpeed'
+    __gtype_name__ = 'TrgCellRendererSpeed'
 
-	speed = GObject.Property(type=GObject.TYPE_UINT64)
+    speed = GObject.Property(type=GObject.TYPE_UINT64)
 
-	def __init__(self, **kwargs):
-		super().__init__(text='', **kwargs)
-		self.connect('notify::speed', self._on_speed_change)
+    def __init__(self, **kwargs):
+        super().__init__(text='', **kwargs)
+        self.connect('notify::speed', self._on_speed_change)
 
-	def _on_speed_change(self, prop, param):
-		if self.speed:
-			self.props.text = GLib.format_size(self.speed) + '/s'
-		else:
-			self.props.text = ''
+    def _on_speed_change(self, prop, param):
+        if self.speed:
+            self.props.text = GLib.format_size(self.speed) + '/s'
+        else:
+            self.props.text = ''
 
 
 class CellRendererPercent(Gtk.CellRendererProgress):
-	__gtype_name__ = 'TrgCellRendererPercent'
+    __gtype_name__ = 'TrgCellRendererPercent'
 
-	percent = GObject.Property(type=float)
+    percent = GObject.Property(type=float)
 
-	def __init__(self, **kwargs):
-		super().__init__(**kwargs)
-		self.connect('notify::percent', self._on_percent_change)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.connect('notify::percent', self._on_percent_change)
 
-	def _on_percent_change(self, prop, param):
-		self.props.value = int(self.percent * 100)
+    def _on_percent_change(self, prop, param):
+        self.props.value = int(self.percent * 100)
 
 
 STATUS_ICONS = {
-	TorrentStatus.STOPPED: Gio.ThemedIcon.new('media-playback-pause-symbolic'),
-	TorrentStatus.DOWNLOAD: Gio.ThemedIcon.new('network-transmit-receive-symbolic'),
-	TorrentStatus.SEED: Gio.ThemedIcon.new('network-transmit-symbolic'),
-	TorrentStatus.CHECK: Gio.ThemedIcon.new('emblem-synchronizing-symbolic'),
+    TorrentStatus.STOPPED: Gio.ThemedIcon.new('media-playback-pause-symbolic'),
+    TorrentStatus.DOWNLOAD: Gio.ThemedIcon.new('network-transmit-receive-symbolic'),
+    TorrentStatus.SEED: Gio.ThemedIcon.new('network-transmit-symbolic'),
+    TorrentStatus.CHECK: Gio.ThemedIcon.new('emblem-synchronizing-symbolic'),
 
-	TorrentStatus.CHECK_WAIT: Gio.ThemedIcon.new('content-loading-symbolic'),
-	TorrentStatus.DOWNLOAD_WAIT: Gio.ThemedIcon.new('content-loading-symbolic'),
-	TorrentStatus.SEED_WAIT: Gio.ThemedIcon.new('content-loading-symbolic'),
+    TorrentStatus.CHECK_WAIT: Gio.ThemedIcon.new('content-loading-symbolic'),
+    TorrentStatus.DOWNLOAD_WAIT: Gio.ThemedIcon.new('content-loading-symbolic'),
+    TorrentStatus.SEED_WAIT: Gio.ThemedIcon.new('content-loading-symbolic'),
 }
 
 
 class CellRendererStatus(Gtk.CellRendererPixbuf):
-	__gtype_name__ = 'TrgCellRendererStatus'
+    __gtype_name__ = 'TrgCellRendererStatus'
 
-	status = GObject.Property(type=GObject.TYPE_UINT64)
+    status = GObject.Property(type=GObject.TYPE_UINT64)
 
-	def __init__(self, **kwargs):
-		super().__init__(gicon=None, **kwargs)
-		self.connect('notify::status', self._on_status_change)
+    def __init__(self, **kwargs):
+        super().__init__(gicon=None, **kwargs)
+        self.connect('notify::status', self._on_status_change)
 
-	def _on_status_change(self, prop, param):
-		icon = STATUS_ICONS.get(self.props.status)
-		self.props.gicon = icon
-		if not icon:
-			logging.warning('Icon for status {} not found!'.format(self.props.status))
+    def _on_status_change(self, prop, param):
+        icon = STATUS_ICONS.get(self.props.status)
+        self.props.gicon = icon
+        if not icon:
+            logging.warning('Icon for status {} not found!'.format(self.props.status))

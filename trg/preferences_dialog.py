@@ -20,9 +20,9 @@ from os import path
 from contextlib import suppress
 from collections import namedtuple
 from gi.repository import (
-	GLib,
-	Gio,
-	Gtk,
+    GLib,
+    Gio,
+    Gtk,
 )
 
 from .gi_composites import GtkTemplate
@@ -30,106 +30,106 @@ from .gi_composites import GtkTemplate
 
 @GtkTemplate(ui='/se/tingping/Trg/ui/preferencesdialog.ui')
 class PreferencesDialog(Gtk.Dialog):
-	__gtype_name__ = 'PreferencesDialog'
+    __gtype_name__ = 'PreferencesDialog'
 
-	local_stack = GtkTemplate.Child()
-	remote_stack = GtkTemplate.Child()
+    local_stack = GtkTemplate.Child()
+    remote_stack = GtkTemplate.Child()
 
-	def __init__(self, **kwargs):
-		super().__init__(use_header_bar=1, **kwargs)
-		self.init_template()
-		self.settings = Gio.Settings.new('se.tingping.Trg')
+    def __init__(self, **kwargs):
+        super().__init__(use_header_bar=1, **kwargs)
+        self.init_template()
+        self.settings = Gio.Settings.new('se.tingping.Trg')
 
-		Row = namedtuple('Row', ['title', 'widget', 'bind_property', 'setting'])
+        Row = namedtuple('Row', ['title', 'widget', 'bind_property', 'setting'])
 
-		self._autostart_switch = AutoStartSwitch()
+        self._autostart_switch = AutoStartSwitch()
 
-		settings_map = {
-			('connection', _('Connection')): [
-				Row(_('Hostname:'), Gtk.Entry.new(), 'text', 'hostname'),
-				Row(_('Port:'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1), 'value', 'port'),
-				Row(_('Username:'), Gtk.Entry.new(), 'text', 'username'),
-				Row(_('Password:'), Gtk.Entry(visibility=False, input_purpose=Gtk.InputPurpose.PASSWORD), 'text',
-					'password'),
-				Row(_('Connect over HTTPS:'), Gtk.Switch.new(), 'active', 'tls'),
-			],
-			('service', _('Service')): [
-				Row(_('Automatically load downloaded torrent files:'), Gtk.Switch.new(), 'active',
-					'watch-downloads-directory'),
-				Row(_('Show notifications when downlods complete:'), Gtk.Switch.new(), 'active',
-				 	'notify-on-finish'),
-				Row(_('Autostart service on login:'), self._autostart_switch, '', ''),
-			]
-		}
+        settings_map = {
+            ('connection', _('Connection')): [
+                Row(_('Hostname:'), Gtk.Entry.new(), 'text', 'hostname'),
+                Row(_('Port:'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1), 'value', 'port'),
+                Row(_('Username:'), Gtk.Entry.new(), 'text', 'username'),
+                Row(_('Password:'), Gtk.Entry(visibility=False, input_purpose=Gtk.InputPurpose.PASSWORD), 'text',
+                    'password'),
+                Row(_('Connect over HTTPS:'), Gtk.Switch.new(), 'active', 'tls'),
+            ],
+            ('service', _('Service')): [
+                Row(_('Automatically load downloaded torrent files:'), Gtk.Switch.new(), 'active',
+                    'watch-downloads-directory'),
+                Row(_('Show notifications when downlods complete:'), Gtk.Switch.new(), 'active',
+                    'notify-on-finish'),
+                Row(_('Autostart service on login:'), self._autostart_switch, '', ''),
+            ]
+        }
 
-		for page, rows in settings_map.items():
-			box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 4)
-			for row in rows:
-				row_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 4)
-				row_box.add(Gtk.Label.new(row.title))
-				row_box.add(row.widget)
+        for page, rows in settings_map.items():
+            box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 4)
+            for row in rows:
+                row_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 4)
+                row_box.add(Gtk.Label.new(row.title))
+                row_box.add(row.widget)
 
-				if row.bind_property and row.setting:
-					self.settings.bind(row.setting, row.widget, row.bind_property,
-									   Gio.SettingsBindFlags.DEFAULT|Gio.SettingsBindFlags.NO_SENSITIVITY)
-				box.add(row_box)
-			box.show_all()
-			self.local_stack.add_titled(box, page[0], page[1])
+                if row.bind_property and row.setting:
+                    self.settings.bind(row.setting, row.widget, row.bind_property,
+                                       Gio.SettingsBindFlags.DEFAULT|Gio.SettingsBindFlags.NO_SENSITIVITY)
+                box.add(row_box)
+            box.show_all()
+            self.local_stack.add_titled(box, page[0], page[1])
 
-	def do_show(self):
-		Gtk.Dialog.do_show(self)
-		self.settings.delay()
+    def do_show(self):
+        Gtk.Dialog.do_show(self)
+        self.settings.delay()
 
-	def do_response(self, response_id):
-		if response_id == Gtk.ResponseType.APPLY:
-			self.settings.apply()
-			self._autostart_switch.apply()
-		else:
-			self.settings.revert()
+    def do_response(self, response_id):
+        if response_id == Gtk.ResponseType.APPLY:
+            self.settings.apply()
+            self._autostart_switch.apply()
+        else:
+            self.settings.revert()
 
-		if response_id != Gtk.ResponseType.DELETE_EVENT:
-			self.destroy()
+        if response_id != Gtk.ResponseType.DELETE_EVENT:
+            self.destroy()
 
 
 class AutoStartSwitch(Gtk.Switch):
-	def __init__(self, **kwargs):
-		super().__init__(sensitive=False, **kwargs)
-		self._was_enabled = None
+    def __init__(self, **kwargs):
+        super().__init__(sensitive=False, **kwargs)
+        self._was_enabled = None
 
-		autostart_file_path = path.join(GLib.get_user_config_dir(), 'autostart',
-										'se.tingping.Trg.service.desktop')
+        autostart_file_path = path.join(GLib.get_user_config_dir(), 'autostart',
+                                        'se.tingping.Trg.service.desktop')
 
-		self.autostart_file = Gio.File.new_for_path(autostart_file_path)
-		logging.debug('Querying {} to see if it exists'.format(self.autostart_file))
-		self.autostart_file.query_info_async(Gio.FILE_ATTRIBUTE_STANDARD_TYPE, Gio.FileQueryInfoFlags.NONE,
-										GLib.PRIORITY_DEFAULT, callback=self._on_file_query)
+        self.autostart_file = Gio.File.new_for_path(autostart_file_path)
+        logging.debug('Querying {} to see if it exists'.format(self.autostart_file))
+        self.autostart_file.query_info_async(Gio.FILE_ATTRIBUTE_STANDARD_TYPE, Gio.FileQueryInfoFlags.NONE,
+                                             GLib.PRIORITY_DEFAULT, callback=self._on_file_query)
 
-	def _on_file_query(self, autostart_file, result):
-		try:
-			autostart_file.query_info_finish(result)
-			self.props.active = True
-			self._was_enabled = True
-			logging.debug('Autostart file exists')
-		except GLib.Error as e:
-			self.props.active = False
-			self._was_enabled = False
-			logging.debug('Querying autostart file returned: {}'.format(e))
-		self.props.sensitive = True
+    def _on_file_query(self, autostart_file, result):
+        try:
+            autostart_file.query_info_finish(result)
+            self.props.active = True
+            self._was_enabled = True
+            logging.debug('Autostart file exists')
+        except GLib.Error as e:
+            self.props.active = False
+            self._was_enabled = False
+            logging.debug('Querying autostart file returned: {}'.format(e))
+        self.props.sensitive = True
 
-	def apply(self):
-		"""Creates or deletes the autostart file based upon current state"""
-		if not self.props.sensitive: # We never got the current state
-			return
+    def apply(self):
+        """Creates or deletes the autostart file based upon current state"""
+        if not self.props.sensitive: # We never got the current state
+            return
 
-		if self.props.active and not self._was_enabled:
-			logging.info('Creating autostart file')
-			source = Gio.File.new_for_uri('resource:///se/tingping/Trg/se.tingping.Trg.service.desktop')
-			if hasattr(source, 'copy_async'):
-				# TODO: Fix upstream in GLib
-				source.copy_async(self.autostart_file, Gio.FileCopyFlags.NONE, GLib.PRIORITY_DEFAULT)
-			else:
-				with suppress(GLib.Error):
-					source.copy(self.autostart_file, Gio.FileCopyFlags.NONE)
-		elif not self.props.active and self._was_enabled:
-			logging.info('Deleting autostart file')
-			self.autostart_file.delete_async(GLib.PRIORITY_DEFAULT)
+        if self.props.active and not self._was_enabled:
+            logging.info('Creating autostart file')
+            source = Gio.File.new_for_uri('resource:///se/tingping/Trg/se.tingping.Trg.service.desktop')
+            if hasattr(source, 'copy_async'):
+                # TODO: Fix upstream in GLib
+                source.copy_async(self.autostart_file, Gio.FileCopyFlags.NONE, GLib.PRIORITY_DEFAULT)
+            else:
+                with suppress(GLib.Error):
+                    source.copy(self.autostart_file, Gio.FileCopyFlags.NONE)
+        elif not self.props.active and self._was_enabled:
+            logging.info('Deleting autostart file')
+            self.autostart_file.delete_async(GLib.PRIORITY_DEFAULT)

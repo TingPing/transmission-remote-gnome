@@ -2,7 +2,7 @@ conf = configuration_data()
 conf.set('VERSION', meson.project_version())
 conf.set('localedir', join_paths(prefix, get_option('localedir')))
 conf.set('pkgdatadir', pkgdatadir)
-conf.set('PYTHON', ' '.join(python.path()))
+conf.set('PYTHON', python.path())
 conf.set('pythondir', join_paths(prefix, pythondir))
 
 configure_file(

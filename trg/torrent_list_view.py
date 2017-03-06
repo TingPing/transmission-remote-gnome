@@ -20,10 +20,10 @@ from collections import (OrderedDict, namedtuple)
 from functools import partial
 
 from gi.repository import (
-	GObject,
-	Gio,
-	Gdk,
-	Gtk,
+    GObject,
+    Gio,
+    Gdk,
+    Gtk,
 )
 
 # This import is used by the UI file indirectly
@@ -36,94 +36,94 @@ from .gi_composites import GtkTemplate
 
 @GtkTemplate(ui='/se/tingping/Trg/ui/torrentview.ui')
 class TorrentListView(Gtk.TreeView):
-	__gtype_name__ = 'TorrentListView'
+    __gtype_name__ = 'TorrentListView'
 
-	client = GObject.Property(type=Client, flags=GObject.ParamFlags.READWRITE|GObject.ParamFlags.CONSTRUCT_ONLY)
+    client = GObject.Property(type=Client, flags=GObject.ParamFlags.READWRITE|GObject.ParamFlags.CONSTRUCT_ONLY)
 
-	def __init__(self, model, **kwargs):
-		# NOTE: Order must match TorrentColumn enum
-		props = OrderedDict()
-		props['name'] = str
-		props['size-when-done'] = GObject.TYPE_UINT64
-		props['percent-done'] = float
-		props['rate-download'] = GObject.TYPE_UINT64
-		props['rate-upload'] = GObject.TYPE_UINT64
-		props['status'] = GObject.TYPE_UINT64
-		props['download-dir'] = str
-		store = WrappedStore.new_for_model(model, props)
-		self.filter_model = Gtk.TreeModelFilter(child_model=store)
-		self._sort_model = Gtk.TreeModelSort(model=self.filter_model)
+    def __init__(self, model, **kwargs):
+        # NOTE: Order must match TorrentColumn enum
+        props = OrderedDict()
+        props['name'] = str
+        props['size-when-done'] = GObject.TYPE_UINT64
+        props['percent-done'] = float
+        props['rate-download'] = GObject.TYPE_UINT64
+        props['rate-upload'] = GObject.TYPE_UINT64
+        props['status'] = GObject.TYPE_UINT64
+        props['download-dir'] = str
+        store = WrappedStore.new_for_model(model, props)
+        self.filter_model = Gtk.TreeModelFilter(child_model=store)
+        self._sort_model = Gtk.TreeModelSort(model=self.filter_model)
 
-		super().__init__(model=self._sort_model, **kwargs)
-		self.init_template()
+        super().__init__(model=self._sort_model, **kwargs)
+        self.init_template()
 
-	def do_button_press_event(self, event: Gdk.EventButton) -> int:
-		if not (event.type == Gdk.EventType.BUTTON_PRESS and event.button == Gdk.BUTTON_SECONDARY):
-			return Gtk.TreeView.do_button_press_event(self, event)
+    def do_button_press_event(self, event: Gdk.EventButton) -> int:
+        if not (event.type == Gdk.EventType.BUTTON_PRESS and event.button == Gdk.BUTTON_SECONDARY):
+            return Gtk.TreeView.do_button_press_event(self, event)
 
-		ret = self.get_path_at_pos(event.x, event.y)
-		if not ret or not ret[0]:
-			return Gdk.EVENT_STOP
+        ret = self.get_path_at_pos(event.x, event.y)
+        if not ret or not ret[0]:
+            return Gdk.EVENT_STOP
 
-		# If we right click a single unselcted item, select it.
-		path = ret[0]
-		selection = self.get_selection()
-		if not selection.path_is_selected(path):
-			selection.unselect_all()
-			selection.select_path(path)
+        # If we right click a single unselcted item, select it.
+        path = ret[0]
+        selection = self.get_selection()
+        if not selection.path_is_selected(path):
+            selection.unselect_all()
+            selection.select_path(path)
 
-		# But we handle multple selections
-		model, paths = selection.get_selected_rows()
-		torrents = []
-		for path in paths:
-			it = model.get_iter(path)
-			torrent = model[it][-1]
-			torrents.append(torrent)
+        # But we handle multple selections
+        model, paths = selection.get_selected_rows()
+        torrents = []
+        for path in paths:
+            it = model.get_iter(path)
+            torrent = model[it][-1]
+            torrents.append(torrent)
 
-		menu = self._build_menu(torrents)
-		if hasattr(menu, 'popup_at_pointer'):
-			menu.popup_at_pointer(event) # Gtk 3.22
-		else:
-			menu.popup(None, None, None, None, event.button, event.time)
-		return Gdk.EVENT_STOP
+        menu = self._build_menu(torrents)
+        if hasattr(menu, 'popup_at_pointer'):
+            menu.popup_at_pointer(event) # Gtk 3.22
+        else:
+            menu.popup(None, None, None, None, event.button, event.time)
+        return Gdk.EVENT_STOP
 
-	def _build_menu(self, torrents) -> Gio.Menu:
-		Entry = namedtuple('Entry', ['label', 'function'])
+    def _build_menu(self, torrents) -> Gio.Menu:
+        Entry = namedtuple('Entry', ['label', 'function'])
 
-		MENU_ITEMS = (
-			Entry(_('Resume'), partial(self.client.torrent_start, torrents)),
-			Entry(_('Pause'), partial(self.client.torrent_stop, torrents)),
-			Entry(_('Verify'), partial(self.client.torrent_verify, torrents)),
-			(),
-			# Entry(_('Move'), None),
-			Entry(_('Remove'), partial(self.client.torrent_remove, torrents)),
-			Entry(_('Delete'), partial(self.client.torrent_remove, torrents, True)),
-		)
+        MENU_ITEMS = (
+            Entry(_('Resume'), partial(self.client.torrent_start, torrents)),
+            Entry(_('Pause'), partial(self.client.torrent_stop, torrents)),
+            Entry(_('Verify'), partial(self.client.torrent_verify, torrents)),
+            (),
+            # Entry(_('Move'), None),
+            Entry(_('Remove'), partial(self.client.torrent_remove, torrents)),
+            Entry(_('Delete'), partial(self.client.torrent_remove, torrents, True)),
+        )
 
-		def on_activate(widget, callback):
-			callback()
-			self.client.refresh()
+        def on_activate(widget, callback):
+            callback()
+            self.client.refresh()
 
-		menu = Gtk.Menu.new()
-		for entry in MENU_ITEMS:
-			if entry:
-				item = Gtk.MenuItem.new_with_label(entry.label)
-				if entry.function:
-					item.connect('activate', on_activate, entry.function)
-			else:
-				item = Gtk.SeparatorMenuItem.new()
-			menu.append(item)
+        menu = Gtk.Menu.new()
+        for entry in MENU_ITEMS:
+            if entry:
+                item = Gtk.MenuItem.new_with_label(entry.label)
+                if entry.function:
+                    item.connect('activate', on_activate, entry.function)
+            else:
+                item = Gtk.SeparatorMenuItem.new()
+            menu.append(item)
 
-		menu.attach_to_widget(self)
-		menu.show_all()
-		return menu
+        menu.attach_to_widget(self)
+        menu.show_all()
+        return menu
 
 
 class TorrentColumn(IntEnum):
-	name = 0
-	size = 1
-	progress = 2
-	down = 3
-	up = 4
-	status = 5
-	directory = 6
+    name = 0
+    size = 1
+    progress = 2
+    down = 3
+    up = 4
+    status = 5
+    directory = 6

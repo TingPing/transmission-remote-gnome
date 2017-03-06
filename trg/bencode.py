@@ -1,10 +1,10 @@
 # Taken from bencodepy with minor modifications
 
+from collections import OrderedDict
+
 __author__ = 'Eric Weast'
 __copyright__ = "Copyright 2014, Eric Weast"
 __license__ = "GPL v2"
-
-from collections import OrderedDict
 
 
 class Decoder:
@@ -18,7 +18,7 @@ class Decoder:
         self.idx += i
         if len(b) != i:
             raise DecodingError('Incorrect byte length returned between indexes of {0} and {1}. '
-			                    'Possible unexpected End of File.'.format(str(self.idx), str(self.idx - i)))
+                                'Possible unexpected End of File.'.format(str(self.idx), str(self.idx - i)))
         return b
 
     def __read_to(self, terminator: bytes) -> bytes:

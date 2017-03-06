@@ -19,62 +19,62 @@ from gi.repository import GObject, Gtk, Gio
 
 
 class WrappedStore(Gtk.ListStore):
-	"""Wraps a Gio.ListStore with a Gtk.ListStore"""
+    """Wraps a Gio.ListStore with a Gtk.ListStore"""
 
-	@classmethod
-	def new_for_model(cls, model: Gio.ListModel, properties_map):
-		"""
-		properties_map: Ordered Dict of property names and types to map
-		"""
-		self = cls()
+    @classmethod
+    def new_for_model(cls, model: Gio.ListModel, properties_map):
+        """
+        properties_map: Ordered Dict of property names and types to map
+        """
+        self = cls()
 
-		self._property_types = list(properties_map.values()) + [GObject.Object]
-		self.set_column_types(self._property_types)
+        self._property_types = list(properties_map.values()) + [GObject.Object]
+        self.set_column_types(self._property_types)
 
-		self._model = model
-		self.properties = list(properties_map.keys())
-		self._model.connect('items-changed', self._on_items_changed)
-		self._on_items_changed(model, 0, 0, model.get_n_items())
-		return self
+        self._model = model
+        self.properties = list(properties_map.keys())
+        self._model.connect('items-changed', self._on_items_changed)
+        self._on_items_changed(model, 0, 0, model.get_n_items())
+        return self
 
-	def _on_item_property_changed(self, item, paramspec):
-		property_name = paramspec.name
-		if property_name not in self.properties:
-			return
+    def _on_item_property_changed(self, item, paramspec):
+        property_name = paramspec.name
+        if property_name not in self.properties:
+            return
 
-		for row in self:
-			if row[-1] == item:
-				idx = self.properties.index(property_name)
-				row[idx] = getattr(item.props, property_name)
-				break
+        for row in self:
+            if row[-1] == item:
+                idx = self.properties.index(property_name)
+                row[idx] = getattr(item.props, property_name)
+                break
 
-	@staticmethod
-	def _fixup_value_types(values, types):
-		"""
-		Ensure the values are of the correct type, this is a problem when setting
-		64bit types for example.
-		"""
-		fixed_values = []
-		for i, value in enumerate(values):
-			fixed_value = GObject.Value()
-			fixed_value.init(types[i])
-			fixed_value.set_value(value)
-			fixed_values.append(fixed_value)
-		return fixed_values
+    @staticmethod
+    def _fixup_value_types(values, types):
+        """
+        Ensure the values are of the correct type, this is a problem when setting
+        64bit types for example.
+        """
+        fixed_values = []
+        for i, value in enumerate(values):
+            fixed_value = GObject.Value()
+            fixed_value.init(types[i])
+            fixed_value.set_value(value)
+            fixed_values.append(fixed_value)
+        return fixed_values
 
-	def _on_items_changed(self, model, position, removed, added):
-		while removed:
-			row = self[position]
-			item = row[-1]
-			item.disconnect(item._hook_id)
-			self.remove(row.iter)
-			removed -= 1
-		all_columns = [i for i in range(len(self.properties) + 1)]
-		for i in range(added):
-			new_pos = position + i
-			item = model.get_item(new_pos)
-			new_values = [getattr(item.props, prop) for prop in self.properties] + [item]
-			new_values = self._fixup_value_types(new_values, self._property_types)
-			self.insert_with_valuesv(new_pos, all_columns, new_values)
-			hook_id = item.connect('notify', self._on_item_property_changed)
-			item._hook_id = hook_id
+    def _on_items_changed(self, model, position, removed, added):
+        while removed:
+            row = self[position]
+            item = row[-1]
+            item.disconnect(item._hook_id)
+            self.remove(row.iter)
+            removed -= 1
+        all_columns = [i for i in range(len(self.properties) + 1)]
+        for i in range(added):
+            new_pos = position + i
+            item = model.get_item(new_pos)
+            new_values = [getattr(item.props, prop) for prop in self.properties] + [item]
+            new_values = self._fixup_value_types(new_values, self._property_types)
+            self.insert_with_valuesv(new_pos, all_columns, new_values)
+            hook_id = item.connect('notify', self._on_item_property_changed)
+            item._hook_id = hook_id

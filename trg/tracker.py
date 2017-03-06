@@ -19,10 +19,10 @@ from gi.repository import GObject
 
 
 class Tracker(GObject.Object):
-	announce = GObject.Property(type=str)
-	scrape = GObject.Property(type=str)
-	id = GObject.Property(type=GObject.TYPE_UINT64)
-	tier = GObject.Property(type=GObject.TYPE_UINT64)
+    announce = GObject.Property(type=str)
+    scrape = GObject.Property(type=str)
+    id = GObject.Property(type=GObject.TYPE_UINT64)
+    tier = GObject.Property(type=GObject.TYPE_UINT64)
 
-	def __repr__(self):
-		return '<Tracker {} ({})>'.format(self.announce, self.id)
+    def __repr__(self):
+        return '<Tracker {} ({})>'.format(self.announce, self.id)
