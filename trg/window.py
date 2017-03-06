@@ -42,7 +42,7 @@ class ApplicationWindow(Gtk.ApplicationWindow):
     __gtype_name__ = 'ApplicationWindow'
 
     client = GObject.Property(type=Client)
-    torrent_sw = GtkTemplate.Child()
+    main_box = GtkTemplate.Child()
     search_entry = GtkTemplate.Child()
     search_revealer = GtkTemplate.Child()
     header_bar = GtkTemplate.Child()
@@ -70,8 +70,20 @@ class ApplicationWindow(Gtk.ApplicationWindow):
         view = TorrentListView(self.client.props.torrents, client=self.client)
         self._filter_model = view.filter_model
         self._filter_model.set_visible_func(self._filter_model_func)
-        self.torrent_sw.add(view)
-        view.show_all()
+
+        sw = Gtk.ScrolledWindow(child=view, shadow_type=Gtk.ShadowType.IN)
+
+        builder = Gtk.Builder.new_from_resource('/se/tingping/Trg/ui/no-torrents.ui')
+        self._no_torrents = builder.get_object('no_torrents')
+        overlay = Gtk.Overlay(expand=True, child=sw, visible=True)
+        overlay.add_overlay(self._no_torrents)
+        overlay.set_overlay_pass_through(self._no_torrents, True)
+        self._filter_model.connect('row-deleted', self._on_row_deleted)
+        self._filter_model.connect('row-inserted', self._on_row_inserted)
+        self._no_torrents.props.visible = len(self._filter_model) == 0
+
+        self.main_box.add(overlay)
+        sw.show_all()
 
     def _init_actions(self):
         self._add_action = Gio.SimpleAction.new('torrent_add', GLib.VariantType('s'))
@@ -101,6 +113,14 @@ class ApplicationWindow(Gtk.ApplicationWindow):
         if up:
             subtitle += '↑ {}/s'.format(GLib.format_size(up))
         self.header_bar.props.subtitle = subtitle
+
+    def _on_row_deleted(self, model, path):
+        if not self._no_torrents.props.visible and len(model) == 0:
+            self._no_torrents.show()
+
+    def _on_row_inserted(self, model, path, iter_):
+        if self._no_torrents.props.visible and len(model):
+            self._no_torrents.hide()
 
     @GtkTemplate.Callback
     def _on_alt_speed_toggled(self, button):
