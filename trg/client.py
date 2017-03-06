@@ -76,6 +76,11 @@ class Client(GObject.Object):
             1, GLib.MAXUINT, 30,
             GObject.ParamFlags.CONSTRUCT|GObject.ParamFlags.READWRITE,
         ),
+        'connected': (
+            bool, _('Connected'), _('Have successfully connected'),
+            False,
+            GObject.ParamFlags.CONSTRUCT|GObject.ParamFlags.READWRITE,
+        ),
         # These are session properties
         'download-dir': (
             str, _('Download Directory'), _('Directory downloads are saved to'),
@@ -361,6 +366,8 @@ class Client(GObject.Object):
         else:
             self._session_timer.resume()
 
+        self.props.connected = True
+
     def refresh(self):
         """Refresh the list one time in the near future"""
         if self._refresh_timer:
@@ -368,6 +375,7 @@ class Client(GObject.Object):
 
     def refresh_all(self, remove=False):
         if remove:
+            self.props.connected = False
             self.torrents.remove_all()
         self.torrent_get(None, _REFRESH_ALL_LIST,
                          callback=self._on_refresh_all_complete)

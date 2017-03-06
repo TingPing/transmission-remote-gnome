@@ -7,31 +7,66 @@
     <property name="default-height">600</property>
     <signal name="drag-data-received" handler="_on_drag_data_received"/>
     <child>
-      <object class="GtkBox">
+      <object class="GtkStack" id="main_stack">
         <property name="visible">1</property>
-        <property name="can-focus">1</property>
-        <property name="orientation">vertical</property>
         <child>
-          <object class="GtkRevealer" id="search_revealer">
+          <object class="GtkGrid" id="warning_page">
             <property name="visible">1</property>
+            <property name="row_spacing">12</property>
+            <property name="expand">1</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+            <style>
+              <class name="dim-label"/>
+            </style>
             <child>
-              <object class="GtkSearchEntry" id="search_entry">
-                <property name="visible">1</property>
-                <property name="can-focus">1</property>
-                <signal name="search-changed" handler="_on_search_changed"/>
+              <object class="GtkImage">
+                <property name="visible">True</property>
+                <property name="icon-name">dialog-warning-symbolic</property>
+                <property name="pixel-size">72</property>
+                <style>
+                  <class name="dim-label"/>
+                </style>
               </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Not Connected</property>
+                <attributes>
+                  <attribute name="weight" value="bold"/>
+                  <attribute name="scale" value="1.44"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">1</property>
+              </packing>
             </child>
           </object>
         </child>
         <child>
-          <object class="GtkScrolledWindow" id="torrent_sw">
+          <object class="GtkBox" id="main_box">
             <property name="visible">1</property>
             <property name="can-focus">1</property>
-            <property name="shadow-type">in</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkRevealer" id="search_revealer">
+                <property name="visible">1</property>
+                <child>
+                  <object class="GtkSearchEntry" id="search_entry">
+                    <property name="visible">1</property>
+                    <property name="can-focus">1</property>
+                    <signal name="search-changed" handler="_on_search_changed"/>
+                  </object>
+                </child>
+              </object>
+            </child>
           </object>
-          <packing>
-            <property name="expand">1</property>
-          </packing>
         </child>
       </object>
     </child>

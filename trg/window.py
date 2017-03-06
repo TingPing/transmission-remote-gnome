@@ -49,6 +49,8 @@ class ApplicationWindow(Gtk.ApplicationWindow):
     alt_speed_toggle = GtkTemplate.Child()
     tracker_box = GtkTemplate.Child()
     directory_box = GtkTemplate.Child()
+    main_stack = GtkTemplate.Child()
+    warning_page = GtkTemplate.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -63,6 +65,8 @@ class ApplicationWindow(Gtk.ApplicationWindow):
         self.client.connect('notify::download-speed', self._on_speed_refresh)
         self.client.bind_property('alt-speed-enabled', self.alt_speed_toggle,
                                   'active', GObject.BindingFlags.SYNC_CREATE)
+        self.client.connect('notify::connected', self._on_connected_change)
+        self._on_connected_change()  # Initial state
 
         torrent_target = Gtk.TargetEntry.new('text/uri-list', Gtk.TargetFlags.OTHER_APP, 0)
         self.drag_dest_set(Gtk.DestDefaults.ALL, (torrent_target,), Gdk.DragAction.MOVE)
@@ -101,6 +105,12 @@ class ApplicationWindow(Gtk.ApplicationWindow):
             act = Gio.SimpleAction.new_stateful(action.name, action.value.get_type(), action.value)
             act.connect('change-state', action.callback)
             self.add_action(act)
+
+    def _on_connected_change(self, *args):
+        if self.client.props.connected:
+            self.main_stack.props.visible_child = self.main_box
+        else:
+            self.main_stack.props.visible_child = self.warning_page
 
     def _on_speed_refresh(self, *args):
         subtitle = ''
