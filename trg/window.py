@@ -61,6 +61,7 @@ class ApplicationWindow(Gtk.ApplicationWindow):
         self._filter_tracker = None
         self._filter_directory = None
         self._add_dialogs = []
+        self._queued_torrents = []
 
         self.client.connect('notify::download-speed', self._on_speed_refresh)
         self.client.bind_property('alt-speed-enabled', self.alt_speed_toggle,
@@ -109,6 +110,8 @@ class ApplicationWindow(Gtk.ApplicationWindow):
     def _on_connected_change(self, *args):
         if self.client.props.connected:
             self.main_stack.props.visible_child = self.main_box
+            while self._queued_torrents:
+                self._on_torrent_add_real(self._queued_torrents.pop(0))
         else:
             self.main_stack.props.visible_child = self.warning_page
 
@@ -251,8 +254,7 @@ class ApplicationWindow(Gtk.ApplicationWindow):
             return self._filter_tracker in self._get_torrent_trackers(model[it][-1])
         return True
 
-    def _on_torrent_add(self, action, param):
-        file_uri = param.get_string()
+    def _on_torrent_add_real(self, file_uri):
         for dialog in self._add_dialogs:
             if dialog.uri == file_uri:
                 dialog.present()
@@ -260,8 +262,15 @@ class ApplicationWindow(Gtk.ApplicationWindow):
                 return
 
         dialog = AddDialog(transient_for=self,
-                           uri=param.get_string(),
+                           uri=file_uri,
                            client=self.client)
         self._add_dialogs.append(dialog)
         dialog.connect('destroy', lambda d: self._add_dialogs.remove(d))
         dialog.present()
+
+    def _on_torrent_add(self, action, param):
+        file = param.get_string()
+        if self.client.props.connected:
+            self._on_torrent_add_real(file)
+        else:
+            self._queued_torrents.append(file)
