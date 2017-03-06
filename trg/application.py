@@ -141,7 +141,7 @@ class Application(Gtk.Application):
         Gtk.Application.do_shutdown(self)
 
     def on_preferences(self, action, param):
-        dialog = PreferencesDialog(transient_for=self.window, modal=True)
+        dialog = PreferencesDialog(transient_for=self.window, modal=True, client=self.client)
         dialog.present()
 
     def on_about(self, action, param):

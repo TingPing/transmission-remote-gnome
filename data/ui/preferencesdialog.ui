@@ -50,35 +50,121 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox">
+              <object class="GtkStack" id="remote_page_stack">
                 <property name="visible">1</property>
                 <child>
-                  <object class="GtkStackSidebar">
-                    <property name="width-request">80</property>
+                  <object class="GtkGrid">
                     <property name="visible">1</property>
-                    <property name="stack">remote_stack</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkSeparator">
-                    <property name="visible">1</property>
-                    <property name="orientation">vertical</property>
-                  </object>
-                  <packing>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkStack" id="remote_stack">
-                    <property name="visible">1</property>
-                    <property name="margin-top">5</property>
-                    <property name="transition-type">slide-up-down</property>
-                  </object>
-                  <packing>
+                    <property name="row_spacing">12</property>
                     <property name="expand">1</property>
-                    <property name="padding">5</property>
-                    <property name="position">2</property>
-                  </packing>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <style>
+                      <class name="dim-label"/>
+                    </style>
+                    <child>
+                      <object class="GtkSpinner">
+                        <property name="visible">1</property>
+                        <property name="active">1</property>
+                        <property name="width-request">72</property>
+                        <property name="height-request">72</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Refreshing Settings…</property>
+                        <attributes>
+                          <attribute name="weight" value="bold"/>
+                          <attribute name="scale" value="1.44"/>
+                        </attributes>
+                      </object>
+                      <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkGrid" id="disconnected_page">
+                    <property name="visible">1</property>
+                    <property name="row_spacing">12</property>
+                    <property name="expand">1</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <style>
+                      <class name="dim-label"/>
+                    </style>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="visible">True</property>
+                        <property name="icon-name">dialog-warning-symbolic</property>
+                        <property name="pixel-size">72</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Not Connected</property>
+                        <attributes>
+                          <attribute name="weight" value="bold"/>
+                          <attribute name="scale" value="1.44"/>
+                        </attributes>
+                      </object>
+                      <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="remote_page_box">
+                    <property name="visible">1</property>
+                    <child>
+                      <object class="GtkStackSidebar">
+                        <property name="width-request">80</property>
+                        <property name="visible">1</property>
+                        <property name="stack">remote_stack</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparator">
+                        <property name="visible">1</property>
+                        <property name="orientation">vertical</property>
+                      </object>
+                      <packing>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkStack" id="remote_stack">
+                        <property name="visible">1</property>
+                        <property name="margin-top">5</property>
+                        <property name="transition-type">slide-up-down</property>
+                      </object>
+                      <packing>
+                        <property name="expand">1</property>
+                        <property name="padding">5</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                  </object>
                 </child>
               </object>
               <packing>
