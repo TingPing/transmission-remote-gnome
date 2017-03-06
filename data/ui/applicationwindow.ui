@@ -58,10 +58,24 @@
               <object class="GtkRevealer" id="search_revealer">
                 <property name="visible">1</property>
                 <child>
-                  <object class="GtkSearchEntry" id="search_entry">
+                  <object class="GtkBox">
                     <property name="visible">1</property>
-                    <property name="can-focus">1</property>
-                    <signal name="search-changed" handler="_on_search_changed"/>
+                    <property name="orientation">horizontal</property>
+                    <style>
+                      <class name="searchbar"/>
+                    </style>
+                    <child>
+                      <object class="GtkSearchEntry" id="search_entry">
+                        <property name="visible">1</property>
+                        <property name="can-focus">1</property>
+                        <property name="width-request">400</property>
+                        <property name="hexpand">1</property>
+                        <property name="margin">5</property>
+                        <property name="halign">center</property>
+                        <property name="valign">center</property>
+                        <signal name="search-changed" handler="_on_search_changed"/>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
