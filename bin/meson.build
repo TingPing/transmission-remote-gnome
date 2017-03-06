@@ -17,7 +17,7 @@ trg = join_paths(meson.build_root(), 'bin', 'transmission-remote-gnome')
 run_target('run',
   command: [trg, '--log=3'],
   depends: [
-#    trg_resources,
+    trg_resources,
     trg_settings
   ]
 )
