@@ -6,18 +6,20 @@ Release: 1%{dist}
 Summary: Remote client for Transmission
 License: GPLv3+
 URL:     https://github.com/TingPing/transmission-remote-gnome
+Source0: %{name}-%{version}.tar.gz
 
 BuildArch: noarch
 BuildRequires: python3-devel >= 3.4
 BuildRequires: meson >= 0.37.0
+BuildRequires: pkgconfig(glib-2.0)
+BuildRequires: libappstream-glib
 BuildRequires: gettext
 Requires: python3-gobject
 Requires: gtk3 >= 3.20
 Requires: libsoup
 
 %description
-Remote client to connect to the Transmission daemon allowing you to manage
-torrents and settings.
+Remote client to connect to the Transmission daemon allowing you to manage torrents and settings.
 
 %prep
 %autosetup -p1
@@ -29,6 +31,9 @@ torrents and settings.
 %install
 %meson_install
 #%find_lang trg
+
+%check
+/usr/bin/appstream-util validate-relax --nonet %{buildroot}/%{_datadir}/appdata/*.appdata.xml
 
 %post
 /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
