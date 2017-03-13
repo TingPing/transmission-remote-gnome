@@ -32,7 +32,7 @@ if get_option('with-flatpak')
   # we want builds to use the local files so simply rewrite it
   make_local_manifest = find_program('scripts/make_local_manifest.py')
   local_manifest = custom_target('manifest',
-    input: 'se.tingping.Trg.json',
+    input: 'dist/flatpak/se.tingping.Trg.json',
     output: 'se.tingping.Trg.json',
     command: [make_local_manifest, '@INPUT@', '@OUTPUT@']
   )
