@@ -1,7 +1,7 @@
 {
   "app-id": "se.tingping.Trg",
   "runtime": "org.gnome.Platform",
-  "runtime-version": "3.22",
+  "runtime-version": "3.24",
   "sdk": "org.gnome.Sdk",
   "command": "transmission-remote-gnome",
   "finish-args": [
@@ -27,22 +27,6 @@
       "sources": [{
         "type": "git",
         "url": "https://github.com/TingPing/transmission-remote-gnome.git"
-      }],
-      "modules": [{
-        "name": "meson",
-        "no-autogen": true,
-        "cleanup": [ "/bin", "/lib" ],
-        "sources": [
-          {
-            "type": "archive",
-            "url": "https://github.com/mesonbuild/meson/releases/download/0.39.0/meson-0.39.0.tar.gz",
-            "sha256": "e582b040038d6ae7c44e64eda05bc24e0a9328629a82c3e4c2bfb983eade7592"
-          },
-          {
-            "type": "shell",
-            "commands": [ "echo 'all:\n\ninstall:\n\tpython3 ./setup.py install --prefix=/app' > Makefile" ]
-          }
-        ]
       }]
     }
   ]
