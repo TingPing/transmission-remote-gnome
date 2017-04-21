@@ -163,8 +163,9 @@ class RemoteSettings:
         self.client.session_get(callback=on_refresh)
 
     def apply(self):
-        changed_settings = {k: v for k, v in self.settings.items() if v != self._old_settings[k]}
-        self.client.session_set(changed_settings)
+        if hasattr(self, '_old_settings'):  # May not have gotten them yet
+            changed_settings = {k: v for k, v in self.settings.items() if v != self._old_settings[k]}
+            self.client.session_set(changed_settings)
 
 
 class AutoStartSwitch(Gtk.Switch):
