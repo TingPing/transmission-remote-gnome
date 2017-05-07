@@ -73,7 +73,7 @@ class TorrentFileView(Gtk.TreeView):
         return menu
 
     def do_button_press_event(self, event):
-        if not (event.type == Gdk.EventType.BUTTON_PRESS and event.button == Gdk.BUTTON_SECONDARY):
+        if not event.triggers_context_menu():
             return Gtk.TreeView.do_button_press_event(self, event)
 
         ret = self.get_path_at_pos(event.x, event.y)
