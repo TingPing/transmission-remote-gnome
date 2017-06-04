@@ -7,7 +7,7 @@ project in terms of UI and codebase. This is still a work in progress.
 
 ## Installing
 
-### Fedora
+### Fedora (26+)
 
 ```
 sudo dnf copr enable tingping/transmission-remote-gnome
@@ -18,6 +18,13 @@ sudo dnf install transmission-remote-gnome
 
 ```
 flatpak install https://dl.tingping.se/flatpak/transmission-remote-gnome.flatpakref
+```
+
+### Ubuntu (17.10+)
+
+```
+sudo add-apt-repository ppa:tingping/transmission-remote-gnome
+sudo apt update && sudo apt install transmission-remote-gnome
 ```
 
 ## Building
