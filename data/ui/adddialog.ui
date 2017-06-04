@@ -99,6 +99,11 @@ Author: Patrick Griffis
                 <property name="hexpand">1</property>
                 <property name="vexpand">1</property>
                 <property name="shadow-type">in</property>
+                <child>
+                  <object class="TorrentFileView" id="fileview">
+                    <property name="visible">1</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="left-attach">0</property>

@@ -44,6 +44,7 @@ class AddDialog(Gtk.Dialog):
     paused_check = GtkTemplate.Child()
     delete_check = GtkTemplate.Child()
     priority_combo = GtkTemplate.Child()
+    fileview = GtkTemplate.Child()
 
     def __init__(self, **kwargs):
         super().__init__(use_header_bar=1, **kwargs)
@@ -53,9 +54,6 @@ class AddDialog(Gtk.Dialog):
         self.settings = Gio.Settings.new('se.tingping.Trg')
         self.settings.bind('add-paused', self.paused_check, 'active', Gio.SettingsBindFlags.DEFAULT)
         self.settings.bind('delete-on-add', self.delete_check, 'active', Gio.SettingsBindFlags.DEFAULT)
-
-        self.fileview = TorrentFileView()
-        self.fileview_sw.add(self.fileview)
 
         self.cancellable = Gio.Cancellable.new()
 
