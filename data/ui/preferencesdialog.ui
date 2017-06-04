@@ -27,21 +27,13 @@
                     <property name="visible">1</property>
                     <property name="orientation">vertical</property>
                   </object>
-                  <packing>
-                    <property name="position">1</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkStack" id="local_stack">
                     <property name="visible">1</property>
-                    <property name="margin-top">5</property>
+                    <property name="margin-top">6</property>
                     <property name="transition-type">slide-up-down</property>
                   </object>
-                  <packing>
-                    <property name="expand">1</property>
-                    <property name="padding">5</property>
-                    <property name="position">2</property>
-                  </packing>
                 </child>
               </object>
               <packing>
@@ -52,6 +44,7 @@
             <child>
               <object class="GtkStack" id="remote_page_stack">
                 <property name="visible">1</property>
+                <property name="hexpand">1</property>
                 <child>
                   <object class="GtkGrid">
                     <property name="visible">1</property>
@@ -148,9 +141,6 @@
                         <property name="visible">1</property>
                         <property name="orientation">vertical</property>
                       </object>
-                      <packing>
-                        <property name="position">1</property>
-                      </packing>
                     </child>
                     <child>
                       <object class="GtkStack" id="remote_stack">
@@ -158,11 +148,6 @@
                         <property name="margin-top">5</property>
                         <property name="transition-type">slide-up-down</property>
                       </object>
-                      <packing>
-                        <property name="expand">1</property>
-                        <property name="padding">5</property>
-                        <property name="position">2</property>
-                      </packing>
                     </child>
                   </object>
                 </child>
@@ -174,10 +159,6 @@
               </packing>
             </child>
           </object>
-          <packing>
-            <property name="expand">1</property>
-            <property name="position">1</property>
-          </packing>
         </child>
       </object>
     </child>

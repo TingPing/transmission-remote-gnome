@@ -70,7 +70,7 @@
                         <property name="can-focus">1</property>
                         <property name="width-request">400</property>
                         <property name="hexpand">1</property>
-                        <property name="margin">5</property>
+                        <property name="margin">6</property>
                         <property name="halign">center</property>
                         <property name="valign">center</property>
                         <signal name="search-changed" handler="_on_search_changed"/>
@@ -168,7 +168,7 @@
     <child>
       <object class="GtkBox">
         <property name="visible">1</property>
-        <property name="border-width">8</property>
+        <property name="margin">9</property>
         <property name="orientation">vertical</property>
         <property name="width-request">160</property>
         <child>
@@ -198,7 +198,7 @@
       <object class="GtkBox" id="filter_box">
         <property name="visible">1</property>
         <property name="orientation">vertical</property>
-        <property name="margin">10</property>
+        <property name="margin">9</property>
         <!-- The value of these is documented in torrent.py -->
         <child>
           <object class="GtkModelButton">
@@ -249,7 +249,7 @@
       <object class="GtkBox" id="tracker_box">
         <property name="visible">1</property>
         <property name="orientation">vertical</property>
-        <property name="margin">10</property>
+        <property name="margin">9</property>
       </object>
       <packing>
         <property name="submenu">tracker_box</property>
@@ -264,7 +264,7 @@
           <object class="GtkBox" id="directory_box">
             <property name="visible">1</property>
             <property name="orientation">vertical</property>
-            <property name="margin">10</property>
+            <property name="margin">9</property>
           </object>
         </child>
       </object>

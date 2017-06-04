@@ -120,10 +120,11 @@ class TorrentListView(Gtk.TreeView):
                     item.connect('activate', on_activate, entry.function)
             else:
                 item = Gtk.SeparatorMenuItem.new()
+            item.show()
             menu.append(item)
 
         menu.attach_to_widget(self)
-        menu.show_all()
+        menu.show()
         return menu
 
 

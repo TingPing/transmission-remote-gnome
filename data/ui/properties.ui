@@ -9,10 +9,11 @@
     <child internal-child="vbox">
       <object class="GtkBox">
         <property name="orientation">vertical</property>
-        <property name="spacing">2</property>
+        <property name="spacing">3</property>
         <child>
           <object class="GtkNotebook">
             <property name="visible">1</property>
+            <property name="vexpand">1</property>
             <child>
               <object class="GtkBox">
                 <property name="visible">1</property>
@@ -69,9 +70,6 @@
               </object>
             </child>
           </object>
-          <packing>
-            <property name="expand">1</property>
-          </packing>
         </child>
       </object>
     </child>

@@ -72,15 +72,17 @@ class ApplicationWindow(Gtk.ApplicationWindow):
         torrent_target = Gtk.TargetEntry.new('text/uri-list', Gtk.TargetFlags.OTHER_APP, 0)
         self.drag_dest_set(Gtk.DestDefaults.ALL, (torrent_target,), Gdk.DragAction.MOVE)
 
-        view = TorrentListView(self.client.props.torrents, client=self.client)
+        view = TorrentListView(self.client.props.torrents, client=self.client, visible=True)
         self._filter_model = view.filter_model
         self._filter_model.set_visible_func(self._filter_model_func)
 
-        sw = Gtk.ScrolledWindow(child=view, shadow_type=Gtk.ShadowType.IN)
+        sw = Gtk.ScrolledWindow(shadow_type=Gtk.ShadowType.IN, visible=True)
+        sw.add(view)
 
         builder = Gtk.Builder.new_from_resource('/se/tingping/Trg/ui/no-torrents.ui')
         self._no_torrents = builder.get_object('no_torrents')
-        overlay = Gtk.Overlay(expand=True, child=sw, visible=True)
+        overlay = Gtk.Overlay(expand=True, visible=True)
+        overlay.add(sw)
         overlay.add_overlay(self._no_torrents)
         overlay.set_overlay_pass_through(self._no_torrents, True)
         self._filter_model.connect('row-deleted', self._on_row_deleted)
@@ -88,7 +90,6 @@ class ApplicationWindow(Gtk.ApplicationWindow):
         self._no_torrents.props.visible = len(self._filter_model) == 0
 
         self.main_box.add(overlay)
-        sw.show_all()
 
     def _init_actions(self):
         self._add_action = Gio.SimpleAction.new('torrent_add', GLib.VariantType('s'))
@@ -177,9 +178,9 @@ class ApplicationWindow(Gtk.ApplicationWindow):
         for tracker in [_('Any')] + list(trackers):
             button = Gtk.ModelButton(text=tracker,
                                      action_name='win.filter_tracker',
-                                     action_target=GLib.Variant('s', tracker))
+                                     action_target=GLib.Variant('s', tracker),
+                                     visible=True)
             self.tracker_box.add(button)
-        self.tracker_box.show_all()
 
         # TODO: Might be a better way to show these
         directories = {torrent.props.download_dir.rstrip('/') for torrent in torrents}
@@ -189,9 +190,9 @@ class ApplicationWindow(Gtk.ApplicationWindow):
                 label = '…' + label[-24:]
             button = Gtk.ModelButton(text=label,
                                      action_name='win.filter_directory',
-                                     action_target=GLib.Variant('s', directory))
+                                     action_target=GLib.Variant('s', directory),
+                                     visible=True)
             self.directory_box.add(button)
-        self.directory_box.show_all()
 
     @GtkTemplate.Callback
     def _on_search_changed(self, entry):

@@ -52,10 +52,7 @@ Author: Patrick Griffis
     </child>
     <child internal-child="vbox">
       <object class="GtkBox">
-        <property name="margin-left">5</property>
-        <property name="margin-right">5</property>
-        <property name="margin-top">5</property>
-        <property name="margin-bottom">5</property>
+        <property name="margin">6</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child internal-child="action_area">
@@ -160,26 +157,22 @@ Author: Patrick Griffis
                     <child>
                       <object class="GtkComboBoxText" id="priority_combo">
                         <property name="visible">1</property>
-                        <property name="margin-left">5</property>
+                        <property name="margin-start">6</property>
                         <property name="active">1</property>
+                        <property name="hexpand">1</property>
                         <items>
                           <item id="-1" translatable="yes">Low</item>
                           <item id="0" translatable="yes">Normal</item>
                           <item id="1" translatable="yes">High</item>
                         </items>
                       </object>
-                      <packing>
-                        <property name="position">1</property>
-                      </packing>
                     </child>
                   </object>
-                  <packing>
-                    <property name="expand">1</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkBox">
                     <property name="visible">1</property>
+                    <property name="spacing">6</property>
                     <child>
                       <object class="GtkCheckButton" id="delete_check">
                         <property name="visible">1</property>
@@ -196,7 +189,6 @@ Author: Patrick Griffis
                         <property name="label" translatable="yes">Delete Torrent: </property>
                       </object>
                       <packing>
-                        <property name="padding">5</property>
                         <property name="pack-type">end</property>
                       </packing>
                     </child>
@@ -216,14 +208,12 @@ Author: Patrick Griffis
                         <property name="label" translatable="yes">Start Paused: </property>
                       </object>
                       <packing>
-                        <property name="padding">5</property>
                         <property name="pack-type">end</property>
                       </packing>
                     </child>
                   </object>
                   <packing>
                     <property name="pack-type">end</property>
-                    <property name="position">2</property>
                   </packing>
                 </child>
               </object>
@@ -234,10 +224,6 @@ Author: Patrick Griffis
               </packing>
             </child>
           </object>
-          <packing>
-            <property name="expand">1</property>
-            <property name="position">1</property>
-          </packing>
         </child>
       </object>
     </child>

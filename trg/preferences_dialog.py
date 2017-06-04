@@ -103,19 +103,22 @@ class PreferencesDialog(Gtk.Dialog):
     def _create_settings_pane(self, pages, stack, bind_func):
         for page in pages:
             id_, title, rows = page
-            box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 5)
+            box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
+                          spacing=6, visible=True, margin=6)
             for row in rows:
-                row_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 5)
-                label = Gtk.Label(label=row.title, width_chars=17, xalign=0.0)
-                row_box.pack_start(label, False, True, 0)
-                row_box.pack_start(row.widget, True, True, 0)
+                row_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6, visible=True)
+                label = Gtk.Label(label=row.title, width_chars=17, xalign=0.0,
+                                  visible=True)
+                row.widget.props.hexpand = True
+                row.widget.show()
+                row_box.add(label)
+                row_box.add(row.widget)
                 if isinstance(row.widget, Gtk.Switch):
-                    row.widget.props.halign = Gtk.Align.START
+                    row.widget.props.halign = Gtk.Align.END
 
                 if row.bind_property and row.setting:
                     bind_func(row.widget, row.bind_property, row.setting)
                 box.add(row_box)
-            box.show_all()
             stack.add_titled(box, id_, title)
 
     def do_show(self):
