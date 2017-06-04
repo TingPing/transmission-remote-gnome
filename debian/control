@@ -1,0 +1,25 @@
+Source: transmission-remote-gnome
+Section: gnome
+Priority: optional
+Maintainer: Patrick Griffis <tingping@fedoraproject.org>
+Homepage: https://github.com/TingPing/transmission-remote-gnome
+Standards-Version: 3.9.7
+X-Python3-Version: >= 3.4
+Build-Depends:
+ debhelper (>= 9),
+ pkg-config,
+ gettext,
+ libappstream-glib-dev,
+ meson (>= 0.40.0)
+
+Package: transmission-remote-gnome
+Architecture: all
+Depends:
+ python3 (>= 3.4),
+ python3-gi (>= 3.22.0),
+ gir1.2-gtk-3.0 (>= 3.22.0),
+ gir1.2-soup-2.4
+Recommends:
+ gnome-icon-theme-symbolic
+Description: Remote client for Transmission torrent daemon
+
