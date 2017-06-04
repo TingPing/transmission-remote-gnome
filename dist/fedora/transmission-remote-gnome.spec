@@ -1,7 +1,7 @@
 %global appid se.tingping.Trg
 
 Name:    transmission-remote-gnome
-Version: 0.1.0
+Version: 0.2.0
 Release: 1%{dist}
 Summary: Remote client for Transmission
 License: GPLv3+
@@ -10,7 +10,7 @@ Source0: %{name}-%{version}.tar.gz
 
 BuildArch: noarch
 BuildRequires: python3-devel >= 3.4
-BuildRequires: meson >= 0.37.0
+BuildRequires: meson >= 0.40.0
 BuildRequires: pkgconfig(glib-2.0)
 BuildRequires: libappstream-glib
 BuildRequires: gettext
