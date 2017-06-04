@@ -20,7 +20,7 @@ sudo dnf install transmission-remote-gnome
 flatpak install https://dl.tingping.se/flatpak/transmission-remote-gnome.flatpakref
 ```
 
-### Ubuntu (17.10+)
+### Ubuntu (17.04+)
 
 ```
 sudo add-apt-repository ppa:tingping/transmission-remote-gnome
