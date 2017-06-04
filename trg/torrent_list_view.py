@@ -31,6 +31,7 @@ from gi.repository import (
 from . import cell_renderers # noqa: ignore=F401
 from .client import Client
 from .list_wrapper import WrappedStore
+from .torrent_properties import TorrentProperties
 from .gi_composites import GtkTemplate
 
 
@@ -87,6 +88,11 @@ class TorrentListView(Gtk.TreeView):
             menu.popup(None, None, None, None, event.button, event.time)
         return Gdk.EVENT_STOP
 
+    def _open_torrent_properties(self, torrents):
+        for torrent in torrents:  # TODO: Handle opening too many
+            dialog = TorrentProperties(torrent=torrent, client=self.client, transient_for=self.get_toplevel())
+            dialog.present()
+
     def _build_menu(self, torrents) -> Gio.Menu:
         Entry = namedtuple('Entry', ['label', 'function'])
 
@@ -98,6 +104,8 @@ class TorrentListView(Gtk.TreeView):
             # Entry(_('Move'), None),
             Entry(_('Remove'), partial(self.client.torrent_remove, torrents)),
             Entry(_('Delete'), partial(self.client.torrent_remove, torrents, True)),
+            (),
+            Entry(_('Properties'), partial(self._open_torrent_properties, torrents)),
         )
 
         def on_activate(widget, callback):
