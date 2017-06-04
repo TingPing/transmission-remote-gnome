@@ -25,10 +25,11 @@ flatpak install https://dl.tingping.se/flatpak/transmission-remote-gnome.flatpak
 ### Dependencies
 
 - Meson >= 0.40.0 (build only)
+- Appstream-GLib (build only)
 - Python >= 3.4
-- PyGObject
-- GLib (Only 2.50+ tested)
-- Gtk3 (Only 3.20+ tested)
+- PyGObject >= 3.22
+- GLib >= 2.50
+- Gtk3 3.22
 - LibSoup
 
 

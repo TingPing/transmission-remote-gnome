@@ -15,7 +15,7 @@ BuildRequires: pkgconfig(glib-2.0)
 BuildRequires: libappstream-glib
 BuildRequires: gettext
 Requires: python3-gobject
-Requires: gtk3 >= 3.20
+Requires: gtk3 >= 3.22
 Requires: libsoup
 
 %description
