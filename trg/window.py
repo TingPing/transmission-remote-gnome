@@ -51,6 +51,8 @@ class ApplicationWindow(Gtk.ApplicationWindow):
     directory_box = GtkTemplate.Child()
     main_stack = GtkTemplate.Child()
     warning_page = GtkTemplate.Child()
+    main_sw = GtkTemplate.Child()
+    no_torrents = GtkTemplate.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -75,21 +77,11 @@ class ApplicationWindow(Gtk.ApplicationWindow):
         view = TorrentListView(self.client.props.torrents, client=self.client, visible=True)
         self._filter_model = view.filter_model
         self._filter_model.set_visible_func(self._filter_model_func)
+        self.main_sw.add(view)
 
-        sw = Gtk.ScrolledWindow(shadow_type=Gtk.ShadowType.IN, visible=True)
-        sw.add(view)
-
-        builder = Gtk.Builder.new_from_resource('/se/tingping/Trg/ui/no-torrents.ui')
-        self._no_torrents = builder.get_object('no_torrents')
-        overlay = Gtk.Overlay(expand=True, visible=True)
-        overlay.add(sw)
-        overlay.add_overlay(self._no_torrents)
-        overlay.set_overlay_pass_through(self._no_torrents, True)
         self._filter_model.connect('row-deleted', self._on_row_deleted)
         self._filter_model.connect('row-inserted', self._on_row_inserted)
-        self._no_torrents.props.visible = len(self._filter_model) == 0
-
-        self.main_box.add(overlay)
+        self.no_torrents.props.visible = len(self._filter_model) == 0
 
     def _init_actions(self):
         self._add_action = Gio.SimpleAction.new('torrent_add', GLib.VariantType('s'))
@@ -129,12 +121,12 @@ class ApplicationWindow(Gtk.ApplicationWindow):
         self.header_bar.props.subtitle = subtitle
 
     def _on_row_deleted(self, model, path):
-        if not self._no_torrents.props.visible and len(model) == 0:
-            self._no_torrents.show()
+        if not self.no_torrents.props.visible and len(model) == 0:
+            self.no_torrents.show()
 
     def _on_row_inserted(self, model, path, iter_):
-        if self._no_torrents.props.visible and len(model):
-            self._no_torrents.hide()
+        if self.no_torrents.props.visible and len(model):
+            self.no_torrents.hide()
 
     @GtkTemplate.Callback
     def _on_alt_speed_toggled(self, button):
