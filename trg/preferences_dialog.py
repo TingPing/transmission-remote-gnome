@@ -31,6 +31,17 @@ from .gi_composites import GtkTemplate
 from .client import Client
 
 
+_is_flatpak = None
+
+
+def _get_is_flatpak():
+    global _is_flatpak
+    if _is_flatpak is None:
+        file_ = path.join(GLib.get_user_runtime_dir(), 'flatpak-info')
+        _is_flatpak = path.exists(file_)
+    return _is_flatpak
+
+
 @GtkTemplate(ui='/se/tingping/Trg/ui/preferencesdialog.ui')
 class PreferencesDialog(Gtk.Dialog):
     __gtype_name__ = 'PreferencesDialog'
@@ -50,7 +61,6 @@ class PreferencesDialog(Gtk.Dialog):
 
         # ---------- Local Settings --------------
         self.settings = Gio.Settings.new('se.tingping.Trg')
-        self._autostart_switch = AutoStartSwitch()
 
         local_pages = (
             Page('connection', _('Connection'), (
@@ -61,14 +71,17 @@ class PreferencesDialog(Gtk.Dialog):
                     'password'),
                 Row(_('Connect over HTTPS:'), Gtk.Switch.new(), 'active', 'tls'),
             )),
-            Page('service', _('Service'), (
+            Page('service', _('Service'), [
                 Row(_('Automatically load downloaded torrent files:'), Gtk.Switch.new(), 'active',
                     'watch-downloads-directory'),
                 Row(_('Show notifications when downloads complete:'), Gtk.Switch.new(), 'active',
                     'notify-on-finish'),
-                Row(_('Autostart service on login:'), self._autostart_switch, '', ''),
-            )),
+            ]),
         )
+        if not _get_is_flatpak():
+            self._autostart_switch = AutoStartSwitch()
+            as_row = Row(_('Autostart service on login:'), self._autostart_switch, '', '')
+            local_pages[1].rows.append(as_row)
 
         bind_flags = Gio.SettingsBindFlags.DEFAULT|Gio.SettingsBindFlags.NO_SENSITIVITY
         self._create_settings_pane(local_pages, self.local_stack,
@@ -129,7 +142,8 @@ class PreferencesDialog(Gtk.Dialog):
         if response_id == Gtk.ResponseType.APPLY:
             self.settings.apply()
             self.remote_settings.apply()
-            self._autostart_switch.apply()
+            if not _get_is_flatpak():
+                self._autostart_switch.apply()
         else:
             self.settings.revert()
 
