@@ -35,6 +35,8 @@
       <column type="gint"/>
       <!-- column-name priority-text -->
       <column type="gchararray"/>
+      <!-- column-name percent -->
+      <column type="gdouble"/>
       <!-- column-name index -->
       <column type="gint"/>
       <!-- column-name download-inconsistent -->
@@ -88,6 +90,22 @@
       </object>
     </child>
     <child>
+      <object class="GtkTreeViewColumn" id="percent_column">
+        <property name="sizing">fixed</property>
+        <property name="title" translatable="yes">Progress</property>
+        <property name="clickable">1</property>
+        <property name="visible">0</property>
+        <property name="sort-indicator">1</property>
+        <property name="sort-column-id">5</property>
+        <child>
+          <object class="TrgCellRendererPercent"/>
+          <attributes>
+            <attribute name="percent">5</attribute>
+          </attributes>
+        </child>
+      </object>
+    </child>
+    <child>
       <object class="GtkTreeViewColumn" id="download_column">
         <property name="sizing">fixed</property>
         <property name="title" translatable="yes">Download</property>
@@ -98,7 +116,7 @@
           </object>
           <attributes>
             <attribute name="active">2</attribute>
-            <attribute name="inconsistent">6</attribute>
+            <attribute name="inconsistent">7</attribute>
           </attributes>
         </child>
       </object>

@@ -24,8 +24,12 @@ from gi.repository import (
 
 from .gi_composites import GtkTemplate
 
-DEFAULT_PRI_STR = _('Normal')
-DEFAULT_PRI_VAL = 0
+
+PRIORITY_TO_STR = {
+    1: _('High'),
+    0: _('Normal'),
+    -1: _('Low'),
+}
 
 
 @GtkTemplate(ui='/se/tingping/Trg/ui/fileview.ui')
@@ -33,6 +37,7 @@ class TorrentFileView(Gtk.TreeView):
     __gtype_name__ = 'TorrentFileView'
 
     torrent_file_store = GtkTemplate.Child()
+    percent_column = GtkTemplate.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -54,9 +59,9 @@ class TorrentFileView(Gtk.TreeView):
             (_('Download'), FileColumn.download, True),
             (_('Skip'), FileColumn.download, False),
             (),
-            (_('Priority High'), FileColumn.pri_val, (1, _('High'))),
-            (_('Priority Normal'), FileColumn.pri_val, (0, _('Normal'))),
-            (_('Priority Low'), FileColumn.pri_val, (-1, _('Low'))),
+            (_('Priority High'), FileColumn.pri_val, (1, PRIORITY_TO_STR[1])),
+            (_('Priority Normal'), FileColumn.pri_val, (0, PRIORITY_TO_STR[0])),
+            (_('Priority Low'), FileColumn.pri_val, (-1, PRIORITY_TO_STR[-1])),
         )
 
         menu = Gtk.Menu.new()
@@ -95,9 +100,11 @@ class TorrentFileView(Gtk.TreeView):
 
     # TODO: Avoid recursion because python
     def _add_node_to_store(self, parent, node):
-        parent = self.torrent_file_store.append(parent, [node.name, node.get_size(), True,
-                                                         DEFAULT_PRI_VAL, DEFAULT_PRI_STR, node.index,
-                                                         False])
+        size = node.get_size()
+        parent = self.torrent_file_store.append(parent, [node.name, size, node.wanted,
+                                                         node.priority, PRIORITY_TO_STR[node.priority],
+                                                         node.get_downloaded() / size,
+                                                         node.index, False])
         for child in node.children:
             self._add_node_to_store(parent, child)
 
@@ -175,8 +182,9 @@ class FileColumn(IntEnum):
     download = 2
     pri_val = 3
     pri_str = 4
-    index = 5
-    download_inconsistent = 6
+    percent = 5
+    index = 6
+    download_inconsistent = 7
 
 
 class PriorityColumn(IntEnum):

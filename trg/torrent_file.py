@@ -25,10 +25,14 @@ from gi.repository import (
 
 
 class TorrentFileNode:
-    def __init__(self, name: str, size: int=-1, index: int=-1):
+    def __init__(self, name: str, size: int=-1, index: int=-1, downloaded: int=-1,
+                 wanted: bool=True, priority: int=0):
         self.name = name
         self.size = size
+        self.bytes_downloaded = downloaded
         self.index = index # Used by transmission
+        self.wanted = wanted
+        self.priority = priority
 
         self.children = [] # List of nodes
 
@@ -38,9 +42,16 @@ class TorrentFileNode:
         else:
             return sum(child.get_size() for child in self.children)
 
-    def add_file(self, paths: list, size: int, index: int):
+    def get_downloaded(self):
+        if self.bytes_downloaded >= 0:
+            return self.bytes_downloaded
+        else:
+            return sum(child.get_downloaded() for child in self.children)
+
+    def add_file(self, paths: list, size: int, index: int, downloaded: int=0,
+                 wanted: bool=True, priority: int=0):
         n = self
-        filenode = TorrentFileNode(paths.pop(), size, index)
+        filenode = TorrentFileNode(paths.pop(), size, index, downloaded, wanted, priority)
         for path in paths:
             for child in n.children:
                 if child.name == path:
