@@ -26,7 +26,7 @@ from gi.repository import (
     Soup,
 )
 
-from .torrent import Torrent
+from .torrent import Torrent, TorrentStatus
 from .timer import Timer
 
 _REFRESH_ALL_LIST = ['id', 'name', 'rateDownload', 'rateUpload', 'eta',
@@ -300,9 +300,9 @@ class Client(GObject.Object):
         self._make_request_async('torrent-add', args, callback=on_add)
 
     @staticmethod
-    def _show_notification(self, torrent: Torrent):
+    def _show_notification(torrent: Torrent):
         notification = Gio.Notification.new(_('Download completed'))
-        notification.set_body(torrent.props.name + _('has finished.'))
+        notification.set_body(torrent.props.name + _(' has finished downloading.'))
         application = Gio.Application.get_default()
         if application and application.settings['notify-on-finish']:
             # TODO: Combine repeated notifications
@@ -313,9 +313,12 @@ class Client(GObject.Object):
             for i in range(self.torrents.get_n_items()):
                 torrent = self.torrents.get_item(i)
                 if torrent.id == t['id']:
-                    torrent.update_from_response(t)
-                    if t.get('isFinished'):
+                    # If it was downloading but is now seeding or is finished
+                    # show a notification
+                    if torrent.status == TorrentStatus.DOWNLOAD and \
+                       (t['status'] in (TorrentStatus.SEED, TorrentStatus.SEED_WAIT) or t.get('isFinished')):
                         self._show_notification(torrent)
+                    torrent.update_from_response(t)
                     break
             else:
                 torrent = Torrent.new_from_response(t)
