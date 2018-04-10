@@ -69,8 +69,8 @@ class TorrentFile(GObject.Object):
     __gtype_name__ = 'TrgTorrentFile'
 
     __gsignals__ = {
-        'file-loaded': (GObject.SIGNAL_RUN_FIRST, None, ()),
-        'file-invalid': (GObject.SIGNAL_RUN_FIRST, None, (str, )),
+        'file-loaded': (GObject.SignalFlags.RUN_FIRST, None, ()),
+        'file-invalid': (GObject.SignalFlags.RUN_FIRST, None, (str, )),
     }
 
     rwc_flags = GObject.ParamFlags.CONSTRUCT_ONLY|GObject.ParamFlags.READWRITE

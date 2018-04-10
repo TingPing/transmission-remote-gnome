@@ -111,7 +111,7 @@ class Application(Gtk.Application):
             action = self.window.lookup_action('torrent_add')
             action.activate(GLib.Variant('s', file_uri))
 
-        downloads_str = GLib.get_user_special_dir(GLib.USER_DIRECTORY_DOWNLOAD)
+        downloads_str = GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_DOWNLOAD)
         if downloads_str:
             downloads = Gio.File.new_for_path(downloads_str)
             self.download_monitor = downloads.monitor_directory(Gio.FileMonitorFlags.NONE)
