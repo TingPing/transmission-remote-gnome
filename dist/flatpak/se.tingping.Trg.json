@@ -1,7 +1,7 @@
 {
   "app-id": "se.tingping.Trg",
   "runtime": "org.gnome.Platform",
-  "runtime-version": "3.24",
+  "runtime-version": "3.28",
   "sdk": "org.gnome.Sdk",
   "command": "transmission-remote-gnome",
   "finish-args": [
@@ -10,7 +10,9 @@
       "--socket=wayland",
       "--share=network",
 
-      "--talk-name=org.gnome.SettingsDaemon",
+      "--filesystem=xdg-download",
+      "--talk-name=org.gtk.vfs",
+      "--talk-name=org.gtk.vfs.*",
 
       "--talk-name=org.kde.StatusNotifierWatcher",
       "--own-name=org.kde.*", /* FIXME */
@@ -18,9 +20,8 @@
       "--env=DCONF_USER_CONFIG_DIR=.config/dconf",
       "--filesystem=xdg-run/dconf",
       "--filesystem=~/.config/dconf:ro",
-      "--talk-name=ca.desrt.dconf",
-
-      "--env=SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt"
+      "--talk-name=ca.desrt.dconf"
+  ],
   "cleanup": [
     "/include",
     "/lib/pkgconfig",
