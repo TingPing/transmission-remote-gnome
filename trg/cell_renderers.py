@@ -22,7 +22,7 @@ from gi.repository import (
     Gio,
     Gtk,
 )
-from .torrent import TorrentStatus
+from .torrent import TorrentStatus, TorrentError
 
 
 class CellRendererSize(Gtk.CellRendererText):
@@ -78,18 +78,29 @@ STATUS_ICONS = {
     TorrentStatus.SEED_WAIT: Gio.ThemedIcon.new('content-loading-symbolic'),
 }
 
+ERROR_ICONS = {
+    TorrentError.TRACKER_WARNING: Gio.ThemedIcon.new('dialog-warning-symbolic'),
+    TorrentError.TRACKER_ERROR: Gio.ThemedIcon.new('dialog-error-symbolic'),
+    TorrentError.LOCAL_ERROR: Gio.ThemedIcon.new('dialog-error-symbolic'),
+}
+
 
 class CellRendererStatus(Gtk.CellRendererPixbuf):
     __gtype_name__ = 'TrgCellRendererStatus'
 
     status = GObject.Property(type=GObject.TYPE_UINT64)
+    error = GObject.Property(type=GObject.TYPE_UINT64)
 
     def __init__(self, **kwargs):
         super().__init__(gicon=None, **kwargs)
         self.connect('notify::status', self._on_status_change)
+        self.connect('notify::error', self._on_status_change)
 
     def _on_status_change(self, prop, param):
-        icon = STATUS_ICONS.get(self.props.status)
+        if self.props.error is 0:
+            icon = STATUS_ICONS.get(self.props.status)
+        else:
+            icon = ERROR_ICONS.get(self.props.error)
         self.props.gicon = icon
         if not icon:
             logging.warning('Icon for status {} not found!'.format(self.props.status))

@@ -31,7 +31,7 @@ from .timer import Timer
 
 _REFRESH_ALL_LIST = ['id', 'name', 'rateDownload', 'rateUpload', 'eta',
                      'sizeWhenDone', 'percentDone', 'totalSize', 'status',
-                     'isFinished', 'trackers', 'downloadDir']
+                     'isFinished', 'trackers', 'downloadDir', 'error']
 
 
 class Client(GObject.Object):
@@ -332,7 +332,7 @@ class Client(GObject.Object):
     def _refresh(self):
         self.torrent_get('recently-active', ['id', 'name', 'rateDownload', 'rateUpload', 'eta',
                                              'sizeWhenDone', 'percentDone', 'totalSize', 'status',
-                                             'isFinished'],
+                                             'isFinished', 'error'],
                          callback=self._on_refresh_complete)
         self.session_stats(self._on_refresh_stats_complete)
 

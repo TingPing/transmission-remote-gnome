@@ -102,6 +102,11 @@ class Torrent(GObject.Object):
             0, GLib.MAXUINT64, 0,
             GObject.ParamFlags.CONSTRUCT|GObject.ParamFlags.READWRITE,
         ),
+        'error': (
+            GObject.TYPE_UINT64, _('Error'), _('Error code of torrent'),
+            0, GLib.MAXUINT64, 0,
+            GObject.ParamFlags.CONSTRUCT|GObject.ParamFlags.READWRITE,
+        ),
         'is-finished': (
             bool, _('Finished'), _('Torrent is finished downloading'), False,
             GObject.ParamFlags.CONSTRUCT|GObject.ParamFlags.READWRITE,
@@ -192,3 +197,10 @@ class TorrentStatus(IntEnum):
     DOWNLOAD = 4
     SEED_WAIT = 5
     SEED = 6
+
+
+class TorrentError(IntEnum):
+    OK = 0
+    TRACKER_WARNING = 1
+    TRACKER_ERROR = 2
+    LOCAL_ERROR = 3

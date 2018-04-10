@@ -41,6 +41,7 @@ along with .  If not, see <http://www.gnu.org/licenses/>.
           <object class="TrgCellRendererStatus"/>
           <attributes>
             <attribute name="status">5</attribute>
+            <attribute name="error">7</attribute>
           </attributes>
         </child>
       </object>

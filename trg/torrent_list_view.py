@@ -51,6 +51,7 @@ class TorrentListView(Gtk.TreeView):
         props['rate-upload'] = GObject.TYPE_UINT64
         props['status'] = GObject.TYPE_UINT64
         props['download-dir'] = str
+        props['error'] = GObject.TYPE_UINT64
         store = WrappedStore.new_for_model(model, props)
         self.filter_model = Gtk.TreeModelFilter(child_model=store)
         self._sort_model = Gtk.TreeModelSort(model=self.filter_model)
@@ -136,3 +137,4 @@ class TorrentColumn(IntEnum):
     up = 4
     status = 5
     directory = 6
+    error = 7
