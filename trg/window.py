@@ -65,11 +65,16 @@ class ApplicationWindow(Gtk.ApplicationWindow):
         self._add_dialogs = []
         self._queued_torrents = []
 
-        self.client.connect('notify::download-speed', self._on_speed_refresh)
+        self._hooks = [
+            self.client.connect('notify::download-speed', self._on_speed_refresh),
+            self.client.connect('notify::connected', self._on_connected_change),
+        ]
         self.client.bind_property('alt-speed-enabled', self.alt_speed_toggle,
                                   'active', GObject.BindingFlags.SYNC_CREATE)
-        self.client.connect('notify::connected', self._on_connected_change)
-        self._on_connected_change()  # Initial state
+
+        # Set initial state
+        self._on_connected_change()
+        self._on_speed_refresh()
 
         torrent_target = Gtk.TargetEntry.new('text/uri-list', Gtk.TargetFlags.OTHER_APP, 0)
         self.drag_dest_set(Gtk.DestDefaults.ALL, (torrent_target,), Gdk.DragAction.MOVE)
@@ -82,6 +87,12 @@ class ApplicationWindow(Gtk.ApplicationWindow):
         self._filter_model.connect('row-deleted', self._on_row_deleted)
         self._filter_model.connect('row-inserted', self._on_row_inserted)
         self.no_torrents.props.visible = len(self._filter_model) == 0
+
+    def do_destroy(self):
+        for hook in self._hooks:
+            self.client.disconnect(hook)
+        self._hooks = []
+        super().destroy()
 
     def _init_actions(self):
         self._add_action = Gio.SimpleAction.new('torrent_add', GLib.VariantType('s'))
