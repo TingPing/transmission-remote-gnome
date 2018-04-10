@@ -102,6 +102,20 @@ class PreferencesDialog(Gtk.Dialog):
                 Row(_('Peer port:'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1), 'value', 'peer-port'),
                 Row(_('Encryption:'), encryption_combo, 'active-id', 'encryption'),
             )),
+            # TODO: Add headers
+            # TODO: Add toggles for these
+            Page('limits', _('Limits'), (
+                Row(_('Download limit (KB/s):'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 1),
+                    'value', 'speed-limit-down'),
+                Row(_('Upload limit (KB/s):'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 1),
+                    'value', 'speed-limit-up'),
+                Row(_('Alternate down limit (KB/s)'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 1),
+                    'value', 'alt-speed-down'),
+                Row(_('Alternate up limit (KB/s)'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 1),
+                    'value', 'alt-speed-up'),
+                Row(_('Seed ratio limit'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, .1),
+                    'value', 'seedRatioLimit'),
+            )),
         )
 
         self._create_settings_pane(remote_pages, self.remote_stack, self.remote_settings.bind_setting)
@@ -118,9 +132,10 @@ class PreferencesDialog(Gtk.Dialog):
             id_, title, rows = page
             box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
                           spacing=6, visible=True, margin=6)
+            max_row_len = max(len(row.title) for row in rows) + 3
             for row in rows:
                 row_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6, visible=True)
-                label = Gtk.Label(label=row.title, width_chars=17, xalign=0.0,
+                label = Gtk.Label(label=row.title, width_chars=max_row_len, xalign=0.0,
                                   visible=True)
                 row.widget.props.hexpand = True
                 row.widget.show()
