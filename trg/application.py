@@ -17,6 +17,7 @@
 
 import logging
 
+import gi
 from gi.repository import (
     GLib,
     GObject,
@@ -27,6 +28,12 @@ from gi.repository import (
 from .window import ApplicationWindow
 from .preferences_dialog import PreferencesDialog
 from .client import Client
+
+try:
+    gi.require_version('StatusNotifier', '1.0')
+    from gi.repository import StatusNotifier
+except (ImportError, ValueError):
+    StatusNotifier = None
 
 
 class Application(Gtk.Application):
@@ -44,6 +51,7 @@ class Application(Gtk.Application):
         self.window = None
         self.client = None
         self.download_monitor = None
+        self.status = None
         self.settings = Gio.Settings.new('se.tingping.Trg')
 
         self.add_main_option('log', 0, GLib.OptionFlags.NONE, GLib.OptionArg.INT,
@@ -65,6 +73,21 @@ class Application(Gtk.Application):
         self.add_action(action)
 
         self._init_service()
+        self._init_statusnotifier()
+
+    def _init_statusnotifier(self):
+        if StatusNotifier is None:
+            return
+
+        self.status = StatusNotifier.Item.new_from_icon_name(self.props.application_id,
+                                                             StatusNotifier.Category.APPLICATION_STATUS,
+                                                             'se.tingping.Trg-symbolic')
+        self.status.props.status = StatusNotifier.Status.ACTIVE
+        self.status.connect('activate', lambda sn, x, y: self.activate())
+
+        self.hold()
+        self.status.connect('registration-failed', lambda sn, pspec: self.release())
+        self.status.register()
 
     def _init_service(self):
         if self.props.flags & Gio.ApplicationFlags.IS_SERVICE:

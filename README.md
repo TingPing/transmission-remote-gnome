@@ -38,6 +38,7 @@ sudo apt update && sudo apt install transmission-remote-gnome
 - GLib >= 2.50
 - Gtk3 3.22
 - LibSoup
+- [StatusNotifier](https://github.com/jjk-jacky/statusnotifier) (optional)
 
 
 ```sh

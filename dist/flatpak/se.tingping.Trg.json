@@ -12,14 +12,31 @@
 
       "--talk-name=org.gnome.SettingsDaemon",
 
+      "--talk-name=org.kde.StatusNotifierWatcher",
+      "--own-name=org.kde.*", /* FIXME */
+
       "--env=DCONF_USER_CONFIG_DIR=.config/dconf",
       "--filesystem=xdg-run/dconf",
       "--filesystem=~/.config/dconf:ro",
       "--talk-name=ca.desrt.dconf",
 
       "--env=SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt"
+  "cleanup": [
+    "/include",
+    "/lib/pkgconfig",
+    "/lib/*.la",
+    "/share/gir-1.0"
   ],
   "modules": [
+    {
+      "name": "statusnotifier",
+      "config-opts": ["--disable-static"],
+      "sources": [{
+        "type": "archive",
+        "url": "https://github.com/jjk-jacky/statusnotifier/archive/1.0.0.tar.gz",
+        "sha256": "a307f04bc3ae749fd2bd368c3752dec2f1dbd180da89c737f1dda63a698d441b"
+      }]
+    },
     {
       "name": "transmission-remote-gnome",
       "buildsystem": "meson",
