@@ -42,6 +42,14 @@ def _get_is_flatpak():
     return _is_flatpak
 
 
+def _get_has_statusnotifier():
+    try:
+        from gi.repository import StatusNotifier
+        return True
+    except ImportError:
+        return False
+
+
 @GtkTemplate(ui='/se/tingping/Trg/ui/preferencesdialog.ui')
 class PreferencesDialog(Gtk.Dialog):
     __gtype_name__ = 'PreferencesDialog'
@@ -82,6 +90,10 @@ class PreferencesDialog(Gtk.Dialog):
             self._autostart_switch = AutoStartSwitch()
             as_row = Row(_('Autostart service on login:'), self._autostart_switch, '', '')
             local_pages[1].rows.append(as_row)
+
+        if _get_has_statusnotifier():
+            row = Row(_('Show status icon:'), Gtk.Switch.new(), 'active', 'show-status-icon')
+            local_pages[1].rows.append(row)
 
         bind_flags = Gio.SettingsBindFlags.DEFAULT|Gio.SettingsBindFlags.NO_SENSITIVITY
         self._create_settings_pane(local_pages, self.local_stack,

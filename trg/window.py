@@ -92,7 +92,7 @@ class ApplicationWindow(Gtk.ApplicationWindow):
         for hook in self._hooks:
             self.client.disconnect(hook)
         self._hooks = []
-        super().destroy()
+        Gtk.ApplicationWindow.do_destroy(self)
 
     def _init_actions(self):
         self._add_action = Gio.SimpleAction.new('torrent_add', GLib.VariantType('s'))

@@ -73,21 +73,40 @@ class Application(Gtk.Application):
         self.add_action(action)
 
         self._init_service()
-        self._init_statusnotifier()
+        self.settings.connect('changed::show-status-icon', self._on_status_icon_change)
+        self._on_status_icon_change()
 
-    def _init_statusnotifier(self):
+    def _on_status_icon_change(self, settings=None, key=None):
         if StatusNotifier is None:
             return
 
-        self.status = StatusNotifier.Item.new_from_icon_name(self.props.application_id,
-                                                             StatusNotifier.Category.APPLICATION_STATUS,
-                                                             'se.tingping.Trg-symbolic')
-        self.status.props.status = StatusNotifier.Status.ACTIVE
-        self.status.connect('activate', lambda sn, x, y: self.activate())
+        enabled = self.settings['show-status-icon']
 
-        self.hold()
-        self.status.connect('registration-failed', lambda sn, pspec: self.release())
-        self.status.register()
+        if enabled is True and self.status is None:  # Ran once
+            self.status = StatusNotifier.Item.new_from_icon_name(self.props.application_id,
+                                                                 StatusNotifier.Category.APPLICATION_STATUS,
+                                                                 'se.tingping.Trg-symbolic')
+            self.status.connect('activate', lambda sn, x, y: self.activate())
+            self.status.holding = False
+
+            def on_registration_failed(sn, pspec):
+                if sn.holding is True:
+                    self.release()
+                    sn.holding = False
+
+            self.status.connect('registration-failed', on_registration_failed)
+            self.status.register()
+
+        if enabled is True:
+            if self.status.holding is False:
+                self.hold()
+                self.status.holding = True
+            self.status.props.status = StatusNotifier.Status.ACTIVE
+        elif self.status:
+            if self.status.holding is True:
+                self.release()
+                self.status.holding = False
+            self.status.props.status = StatusNotifier.Status.PASSIVE
 
     def _init_service(self):
         if self.props.flags & Gio.ApplicationFlags.IS_SERVICE:

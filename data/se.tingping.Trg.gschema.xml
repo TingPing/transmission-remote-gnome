@@ -47,6 +47,11 @@
       <summary>Show notifications when a download finishes</summary>
     </key>
 
+    <key type="b" name="show-status-icon">
+      <default>true</default>
+      <summary>Show status icon for application</summary>
+    </key>
+
   </schema>
 
 </schemalist>
