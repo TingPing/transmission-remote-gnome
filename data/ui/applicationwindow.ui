@@ -295,6 +295,22 @@
             <property name="text" translatable="yes">Checking</property>
           </object>
         </child>
+        <child>
+          <object class="GtkModelButton">
+            <property name="visible">1</property>
+            <property name="action-name">win.filter_status</property>
+            <property name="action-target">12</property>
+            <property name="text" translatable="yes">Tracker Error</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkModelButton">
+            <property name="visible">1</property>
+            <property name="action-name">win.filter_status</property>
+            <property name="action-target">13</property>
+            <property name="text" translatable="yes">Local Error</property>
+          </object>
+        </child>
       </object>
       <packing>
         <property name="submenu">filter_box</property>

@@ -58,7 +58,8 @@ class ApplicationWindow(Gtk.ApplicationWindow):
         super().__init__(**kwargs)
         self.init_template()
         self._init_actions()
-        self._filter = None
+        self._filter_status = None
+        self._filter_error = None
         self._filter_text = None
         self._filter_tracker = None
         self._filter_directory = None
@@ -211,14 +212,19 @@ class ApplicationWindow(Gtk.ApplicationWindow):
 
     def _on_status_filter(self, action, value):
         new_value = value.get_int32()
-        if new_value > TorrentStatus.SEED:
-            return # Invalid
-
         action.set_state(value)
+
         if new_value < 0:
-            self._filter = None
+            self._filter_status = None
+            self._filter_error = None
+        elif new_value >= 10:
+            # Hack where we shove errors and status into same value
+            self._filter_error = new_value - 10
+            self._filter_status = None
         else:
-            self._filter = new_value
+            self._filter_status = new_value
+            self._filter_error = None
+
         self._filter_model.refilter()
 
     def _on_tracker_filter(self, action, value):
@@ -251,7 +257,9 @@ class ApplicationWindow(Gtk.ApplicationWindow):
             self.search_entry.grab_focus()
 
     def _filter_model_func(self, model, it, data=None) -> bool:
-        if self._filter is not None and model[it][TorrentColumn.status] != self._filter:
+        if self._filter_status is not None and model[it][TorrentColumn.status] != self._filter_status:
+            return False
+        if self._filter_error is not None and model[it][TorrentColumn.error] != self._filter_error:
             return False
         if self._filter_text is not None and self._filter_text not in model[it][TorrentColumn.name].lower():
             return False
