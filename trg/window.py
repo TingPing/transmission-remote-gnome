@@ -34,7 +34,6 @@ from .gi_composites import GtkTemplate
 from .torrent_list_view import TorrentListView, TorrentColumn
 from .add_dialog import AddDialog, AddURIDialog
 from .client import Client
-from .torrent import TorrentStatus
 
 
 @GtkTemplate(ui='/se/tingping/Trg/ui/applicationwindow.ui')
