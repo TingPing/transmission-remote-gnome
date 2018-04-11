@@ -20,6 +20,7 @@ import logging
 from os import path
 from contextlib import suppress
 from collections import namedtuple
+from gettext import gettext as _
 from gi.repository import (
     GLib,
     GObject,
@@ -50,6 +51,12 @@ def _get_has_statusnotifier():
         return False
 
 
+Row = namedtuple('Row', ('title', 'widget', 'bind_property', 'setting'))
+ToggledRow = namedtuple('ToggledRow', ('title', 'widget', 'bind_property',
+                                       'setting', 'toggle_setting'))
+Page = namedtuple('Page', ('id', 'title', 'rows'))
+
+
 @GtkTemplate(ui='/se/tingping/Trg/ui/preferencesdialog.ui')
 class PreferencesDialog(Gtk.Dialog):
     __gtype_name__ = 'PreferencesDialog'
@@ -64,8 +71,6 @@ class PreferencesDialog(Gtk.Dialog):
     def __init__(self, **kwargs):
         super().__init__(use_header_bar=1, **kwargs)
         self.init_template()
-        Row = namedtuple('Row', ('title', 'widget', 'bind_property', 'setting'))
-        Page = namedtuple('Page', ('id', 'title', 'rows'))
 
         # ---------- Local Settings --------------
         self.settings = Gio.Settings.new('se.tingping.Trg')
@@ -108,25 +113,49 @@ class PreferencesDialog(Gtk.Dialog):
         remote_pages = (
             Page('general', _('General'), (
                 Row(_('Download directory:'), Gtk.Entry.new(), 'text', 'download-dir'),
-                Row(_('Incomplete directory:'), Gtk.Entry.new(), 'text', 'incomplete-dir'), # TODO: Switch
+                ToggledRow(_('Incomplete directory:'), Gtk.Entry.new(), 'text',
+                           'incomplete-dir', 'incomplete-dir-enabled'),
+                Row(_('Append ".part" to incomplete files:'), Gtk.Switch.new(), 'active', 'rename-partial-files'),
             )),
             Page('connections', _('Connection'), (
                 Row(_('Peer port:'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1), 'value', 'peer-port'),
+                Row(_('Randomize port on start:'), Gtk.Switch.new(), 'active', 'peer-port-random-on-start'),
                 Row(_('Encryption:'), encryption_combo, 'active-id', 'encryption'),
+                Row(_('DHT:'), Gtk.Switch.new(), 'active', 'dht-enabled'),
+                Row(_('Peer exchange:'), Gtk.Switch.new(), 'active', 'pex-enabled'),
+                Row(_('Local peer discovery:'), Gtk.Switch.new(), 'active', 'lpd-enabled'),
+                Row(_('UTP:'), Gtk.Switch.new(), 'active', 'utp-enabled'),
+                Row(_('UPNP:'), Gtk.Switch.new(), 'active', 'port-forwarding-enabled'),
+                ToggledRow(_('Blocklist URL:'), Gtk.Entry.new(), 'text',
+                           'blocklist-url', 'blocklist-enabled'),
             )),
             # TODO: Add headers
             # TODO: Add toggles for these
             Page('limits', _('Limits'), (
-                Row(_('Download limit (KB/s):'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 1),
-                    'value', 'speed-limit-down'),
-                Row(_('Upload limit (KB/s):'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 1),
-                    'value', 'speed-limit-up'),
+                ToggledRow(_('Download limit (KB/s):'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 1),
+                           'value', 'speed-limit-down', 'speed-limit-down-enabled'),
+                ToggledRow(_('Upload limit (KB/s):'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 1),
+                           'value', 'speed-limit-up', 'speed-limit-up-enabled'),
+                ToggledRow(_('Seed ratio limit'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, .1),
+                           'value', 'seedRatioLimit', 'seedRatioLimited'),
+                ToggledRow(_('Download queue size'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1),
+                           'value', 'download-queue-size', 'download-queue-enabled'),
+                ToggledRow(_('Seed queue size'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1),
+                           'value', 'seed-queue-size', 'seed-queue-enabled'),
+                ToggledRow(_('Idle Seed queue size'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1),
+                           'value', 'idle-seeding-limit', 'idle-seeding-limit-enabled'),
+                Row(_('Global peer limit'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1),
+                    'value', 'peer-limit-global',),
+                Row(_('Per-torrent peer limit'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1),
+                    'value', 'peer-limit-per-torrent',),
+            )),
+            Page('alt-limits', _('Alternate Limits'), (
+                Row(_('Alternative limits active'), Gtk.Switch.new(), 'active', 'alt-speed-enabled'),
                 Row(_('Alternate down limit (KB/s)'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 1),
                     'value', 'alt-speed-down'),
                 Row(_('Alternate up limit (KB/s)'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 1),
                     'value', 'alt-speed-up'),
-                Row(_('Seed ratio limit'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, .1),
-                    'value', 'seedRatioLimit'),
+                # TODO: Alt-time limits
             )),
         )
 
@@ -152,6 +181,12 @@ class PreferencesDialog(Gtk.Dialog):
                 row.widget.props.hexpand = True
                 row.widget.show()
                 row_box.add(label)
+                if isinstance(row, ToggledRow):
+                    toggle = Gtk.Switch(visible=True)
+                    bind_func(toggle, 'active', row.toggle_setting)
+                    toggle.bind_property('active', row.widget, 'sensitive',
+                                         GObject.BindingFlags.SYNC_CREATE)
+                    row_box.add(toggle)
                 row_box.add(row.widget)
                 if isinstance(row.widget, Gtk.Switch):
                     row.widget.props.halign = Gtk.Align.END
