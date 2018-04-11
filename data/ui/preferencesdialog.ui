@@ -31,7 +31,6 @@
                 <child>
                   <object class="GtkStack" id="local_stack">
                     <property name="visible">1</property>
-                    <property name="margin-top">6</property>
                     <property name="transition-type">slide-up-down</property>
                   </object>
                 </child>
@@ -145,7 +144,6 @@
                     <child>
                       <object class="GtkStack" id="remote_stack">
                         <property name="visible">1</property>
-                        <property name="margin-top">5</property>
                         <property name="transition-type">slide-up-down</property>
                       </object>
                     </child>

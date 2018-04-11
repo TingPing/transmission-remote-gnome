@@ -77,27 +77,27 @@ class PreferencesDialog(Gtk.Dialog):
 
         local_pages = (
             Page('connection', _('Connection'), (
-                Row(_('Hostname:'), Gtk.Entry.new(), 'text', 'hostname'),
-                Row(_('Port:'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1), 'value', 'port'),
-                Row(_('Username:'), Gtk.Entry.new(), 'text', 'username'),
-                Row(_('Password:'), Gtk.Entry(visibility=False, input_purpose=Gtk.InputPurpose.PASSWORD), 'text',
+                Row(_('Hostname'), Gtk.Entry.new(), 'text', 'hostname'),
+                Row(_('Port'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1), 'value', 'port'),
+                Row(_('Username'), Gtk.Entry.new(), 'text', 'username'),
+                Row(_('Password'), Gtk.Entry(visibility=False, input_purpose=Gtk.InputPurpose.PASSWORD), 'text',
                     'password'),
-                Row(_('Connect over HTTPS:'), Gtk.Switch.new(), 'active', 'tls'),
+                Row(_('Connect over HTTPS'), Gtk.Switch.new(), 'active', 'tls'),
             )),
             Page('service', _('Service'), [
-                Row(_('Automatically load downloaded torrent files:'), Gtk.Switch.new(), 'active',
+                Row(_('Automatically Load Torrent Files'), Gtk.Switch.new(), 'active',
                     'watch-downloads-directory'),
-                Row(_('Show notifications when downloads complete:'), Gtk.Switch.new(), 'active',
+                Row(_('Show Notifications on Completion'), Gtk.Switch.new(), 'active',
                     'notify-on-finish'),
             ]),
         )
         if not _get_is_flatpak():
             self._autostart_switch = AutoStartSwitch()
-            as_row = Row(_('Autostart service on login:'), self._autostart_switch, '', '')
+            as_row = Row(_('Autostart service on login'), self._autostart_switch, '', '')
             local_pages[1].rows.append(as_row)
 
         if _get_has_statusnotifier():
-            row = Row(_('Show status icon:'), Gtk.Switch.new(), 'active', 'show-status-icon')
+            row = Row(_('Show status icon'), Gtk.Switch.new(), 'active', 'show-status-icon')
             local_pages[1].rows.append(row)
 
         bind_flags = Gio.SettingsBindFlags.DEFAULT|Gio.SettingsBindFlags.NO_SENSITIVITY
@@ -112,48 +112,49 @@ class PreferencesDialog(Gtk.Dialog):
 
         remote_pages = (
             Page('general', _('General'), (
-                Row(_('Download directory:'), Gtk.Entry.new(), 'text', 'download-dir'),
-                ToggledRow(_('Incomplete directory:'), Gtk.Entry.new(), 'text',
+                Row(_('Download Directory'), Gtk.Entry.new(), 'text', 'download-dir'),
+                ToggledRow(_('Incomplete Directory'), Gtk.Entry.new(), 'text',
                            'incomplete-dir', 'incomplete-dir-enabled'),
-                Row(_('Append ".part" to incomplete files:'), Gtk.Switch.new(), 'active', 'rename-partial-files'),
+                Row(_('Append ".part" to Incomplete'), Gtk.Switch.new(), 'active', 'rename-partial-files'),
             )),
             Page('connections', _('Connection'), (
-                Row(_('Peer port:'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1), 'value', 'peer-port'),
-                Row(_('Randomize port on start:'), Gtk.Switch.new(), 'active', 'peer-port-random-on-start'),
-                Row(_('Encryption:'), encryption_combo, 'active-id', 'encryption'),
-                Row(_('DHT:'), Gtk.Switch.new(), 'active', 'dht-enabled'),
-                Row(_('Peer exchange:'), Gtk.Switch.new(), 'active', 'pex-enabled'),
-                Row(_('Local peer discovery:'), Gtk.Switch.new(), 'active', 'lpd-enabled'),
-                Row(_('UTP:'), Gtk.Switch.new(), 'active', 'utp-enabled'),
-                Row(_('UPNP:'), Gtk.Switch.new(), 'active', 'port-forwarding-enabled'),
-                ToggledRow(_('Blocklist URL:'), Gtk.Entry.new(), 'text',
+                Row(_('Peer Port'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1), 'value', 'peer-port'),
+                Row(_('Encryption'), encryption_combo, 'active-id', 'encryption'),
+                ToggledRow(_('Blocklist URL'), Gtk.Entry.new(), 'text',
                            'blocklist-url', 'blocklist-enabled'),
+                Row(_('Randomize Port on Start'), Gtk.Switch.new(), 'active', 'peer-port-random-on-start'),
+                Row(_('DHT'), Gtk.Switch.new(), 'active', 'dht-enabled'),
+                Row(_('Peer Exchange'), Gtk.Switch.new(), 'active', 'pex-enabled'),
+                Row(_('Local Peer Discovery'), Gtk.Switch.new(), 'active', 'lpd-enabled'),
+                Row(_('UTP'), Gtk.Switch.new(), 'active', 'utp-enabled'),
+                Row(_('UPNP'), Gtk.Switch.new(), 'active', 'port-forwarding-enabled'),
+
             )),
             # TODO: Add headers
             # TODO: Add toggles for these
             Page('limits', _('Limits'), (
-                ToggledRow(_('Download limit (KB/s):'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 1),
+                ToggledRow(_('Download Limit (KB/s)'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 1),
                            'value', 'speed-limit-down', 'speed-limit-down-enabled'),
-                ToggledRow(_('Upload limit (KB/s):'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 1),
+                ToggledRow(_('Upload Limit (KB/s)'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 1),
                            'value', 'speed-limit-up', 'speed-limit-up-enabled'),
-                ToggledRow(_('Seed ratio limit'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, .1),
+                ToggledRow(_('Seed Ratio Limit'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, .1),
                            'value', 'seedRatioLimit', 'seedRatioLimited'),
-                ToggledRow(_('Download queue size'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1),
+                ToggledRow(_('Download Queue Size'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1),
                            'value', 'download-queue-size', 'download-queue-enabled'),
-                ToggledRow(_('Seed queue size'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1),
+                ToggledRow(_('Seed Queue Size'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1),
                            'value', 'seed-queue-size', 'seed-queue-enabled'),
-                ToggledRow(_('Idle Seed queue size'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1),
+                ToggledRow(_('Idle Seed Queue Size'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1),
                            'value', 'idle-seeding-limit', 'idle-seeding-limit-enabled'),
-                Row(_('Global peer limit'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1),
+                Row(_('Global Peer Limit'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1),
                     'value', 'peer-limit-global',),
-                Row(_('Per-torrent peer limit'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1),
+                Row(_('Per-Torrent Peer Limit'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1),
                     'value', 'peer-limit-per-torrent',),
             )),
             Page('alt-limits', _('Alternate Limits'), (
-                Row(_('Alternative limits active'), Gtk.Switch.new(), 'active', 'alt-speed-enabled'),
-                Row(_('Alternate down limit (KB/s)'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 1),
+                Row(_('Alternative Limits Active'), Gtk.Switch.new(), 'active', 'alt-speed-enabled'),
+                Row(_('Alternate Down Limit (KB/s)'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 1),
                     'value', 'alt-speed-down'),
-                Row(_('Alternate up limit (KB/s)'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 1),
+                Row(_('Alternate Up Limit (KB/s)'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 1),
                     'value', 'alt-speed-up'),
                 # TODO: Alt-time limits
             )),
@@ -171,30 +172,32 @@ class PreferencesDialog(Gtk.Dialog):
     def _create_settings_pane(self, pages, stack, bind_func):
         for page in pages:
             id_, title, rows = page
-            box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL,
-                          spacing=6, visible=True, margin=6)
-            max_row_len = max(len(row.title) for row in rows) + 3
-            for row in rows:
-                row_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6, visible=True)
-                label = Gtk.Label(label=row.title, width_chars=max_row_len, xalign=0.0,
-                                  visible=True)
+            grid = Gtk.Grid(visible=True, margin=18,
+                            column_spacing=12, row_spacing=6)
+            for i, row in enumerate(rows):
+                label = Gtk.Label(label=row.title, halign=Gtk.Align.END, visible=True)
+                label.get_style_context().add_class('dim-label')
                 row.widget.props.hexpand = True
                 row.widget.show()
-                row_box.add(label)
+                grid.attach(label, 0, i, 1, 1)
+
                 if isinstance(row, ToggledRow):
-                    toggle = Gtk.Switch(visible=True)
+                    widget = Gtk.Box(visible=True, spacing=6)
+                    toggle = Gtk.Switch(visible=True, valign=Gtk.Align.CENTER)
                     bind_func(toggle, 'active', row.toggle_setting)
                     toggle.bind_property('active', row.widget, 'sensitive',
                                          GObject.BindingFlags.SYNC_CREATE)
-                    row_box.add(toggle)
-                row_box.add(row.widget)
-                if isinstance(row.widget, Gtk.Switch):
-                    row.widget.props.halign = Gtk.Align.END
+                    widget.add(toggle)
+                    widget.add(row.widget)
+                else:
+                    widget = row.widget
+                if isinstance(widget, Gtk.Switch):
+                    widget.props.halign = Gtk.Align.START
+                grid.attach(widget, 1, i, 1, 1)
 
                 if row.bind_property and row.setting:
                     bind_func(row.widget, row.bind_property, row.setting)
-                box.add(row_box)
-            stack.add_titled(box, id_, title)
+            stack.add_titled(grid, id_, title)
 
     def do_show(self):
         Gtk.Dialog.do_show(self)
