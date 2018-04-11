@@ -55,13 +55,6 @@ Author: Patrick Griffis
         <property name="margin">6</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
-        <child internal-child="action_area">
-          <object class="GtkButtonBox">
-          </object>
-          <packing>
-            <property name="fill">0</property>
-          </packing>
-        </child>
         <child>
           <object class="GtkGrid">
             <property name="visible">1</property>

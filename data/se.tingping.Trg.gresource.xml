@@ -8,6 +8,7 @@
 
     <file preprocess="xml-stripblanks">ui/applicationwindow.ui</file>
     <file preprocess="xml-stripblanks">ui/adddialog.ui</file>
+    <file preprocess="xml-stripblanks">ui/adduridialog.ui</file>
     <file preprocess="xml-stripblanks">ui/fileview.ui</file>
     <file preprocess="xml-stripblanks">ui/torrentview.ui</file>
     <file preprocess="xml-stripblanks">ui/preferencesdialog.ui</file>

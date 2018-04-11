@@ -167,3 +167,39 @@ class AddDialog(Gtk.Dialog):
     @GtkTemplate.Callback
     def _on_file_set(self, chooser):
         self.uri = chooser.get_uri()
+
+
+@GtkTemplate(ui='/se/tingping/Trg/ui/adduridialog.ui')
+class AddURIDialog(Gtk.Dialog):
+    __gtype_name__ = 'AddURIDialog'
+
+    uri = GObject.Property(type=str)
+    client = GObject.Property(type=Client)
+    uri_entry = GtkTemplate.Child()
+    paused_check = GtkTemplate.Child()
+
+    def __init__(self, **kwargs):
+        super().__init__(use_header_bar=1, **kwargs)
+        self.init_template()
+
+        self.settings = Gio.Settings.new('se.tingping.Trg')
+        self.settings.bind('add-paused', self.paused_check, 'active', Gio.SettingsBindFlags.DEFAULT)
+
+        self.uri_entry.connect('notify::text', self._on_entry_text_changed)
+        self.uri_entry.props.text = self.uri
+        self._on_entry_text_changed()
+        self.uri_entry.grab_focus()
+
+    def _on_entry_text_changed(self, entry=None, pspec=None):
+        self.set_response_sensitive(Gtk.ResponseType.OK, self.uri_entry.props.text != '')
+
+    def do_response(self, response_id):
+        if response_id == Gtk.ResponseType.OK:
+            args = {
+                'filename': self.uri_entry.props.text,
+                'paused': self.paused_check.props.active,
+            }
+            self.client.torrent_add(args)
+
+        if response_id != Gtk.ResponseType.DELETE_EVENT:
+            self.destroy()

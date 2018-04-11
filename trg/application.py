@@ -146,7 +146,10 @@ class Application(Gtk.Application):
     def do_open(self, files, n_files, hint):
         self.activate()
         for f in files:
-            self.window.activate_action('torrent_add', GLib.Variant('s', f.get_uri()))
+            if f.get_uri_scheme() == 'file':
+                self.window.activate_action('torrent_add', GLib.Variant('s', f.get_uri()))
+            else:
+                self.window.activate_action('torrent_add_uri', GLib.Variant('s', f.get_uri()))
 
     def do_handle_local_options(self, options):
         if options.contains('log'):

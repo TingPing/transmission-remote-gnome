@@ -147,12 +147,11 @@
         <property name="has-subtitle">0</property>
         <property name="show-close-button">1</property>
         <child>
-          <object class="GtkButton">
-            <property name="action_target">''</property>
+          <object class="GtkMenuButton">
+            <property name="popover">add_popover</property>
             <property name="visible">1</property>
             <property name="can-focus">1</property>
             <property name="receives-default">1</property>
-            <property name="action-name">win.torrent_add</property>
             <child>
               <object class="GtkImage">
                 <property name="visible">1</property>
@@ -327,6 +326,34 @@
       <packing>
         <property name="submenu">directory_box</property>
       </packing>
+    </child>
+  </object>
+  <object class="GtkPopoverMenu" id="add_popover">
+    <child>
+      <object class="GtkBox">
+        <property name="visible">1</property>
+        <property name="margin">10</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkModelButton">
+            <property name="action_target">''</property>
+            <property name="visible">1</property>
+            <property name="can-focus">1</property>
+            <property name="receives-default">1</property>
+            <property name="action-name">win.torrent_add</property>
+            <property name="text" translatable="yes">Add File…</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkModelButton">
+            <property name="action_target">''</property>
+            <property name="visible">1</property>
+            <property name="can-focus">1</property>
+            <property name="action-name">win.torrent_add_uri</property>
+            <property name="text" translatable="yes">Add URI…</property>
+          </object>
+        </child>
+      </object>
     </child>
   </object>
 </interface>

@@ -48,6 +48,9 @@ class TorrentProperties(Gtk.Dialog):
         for i, f in enumerate(files):
             f.update(file_stats[i])
 
+        if not files:
+            return
+
         first_name = files[0]['name']
         if '/' in first_name:
             root_name = first_name.split('/', 1)[0]

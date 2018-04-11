@@ -32,7 +32,7 @@ from gi.repository import (
 from .list_model_override import ListStore
 from .gi_composites import GtkTemplate
 from .torrent_list_view import TorrentListView, TorrentColumn
-from .add_dialog import AddDialog
+from .add_dialog import AddDialog, AddURIDialog
 from .client import Client
 from .torrent import TorrentStatus
 
@@ -99,6 +99,10 @@ class ApplicationWindow(Gtk.ApplicationWindow):
         self._add_action.connect('activate', self._on_torrent_add)
         self.add_action(self._add_action)
 
+        self._add_uri_action = Gio.SimpleAction.new('torrent_add_uri', GLib.VariantType('s'))
+        self._add_uri_action.connect('activate', self._on_torrent_add)
+        self.add_action(self._add_uri_action)
+
         Action = namedtuple('Action', ('name', 'value', 'callback'))
         actions = (
             Action('filter_status', GLib.Variant('i', -1), self._on_status_filter),
@@ -115,7 +119,7 @@ class ApplicationWindow(Gtk.ApplicationWindow):
         if self.client.props.connected:
             self.main_stack.props.visible_child = self.main_box
             while self._queued_torrents:
-                self._on_torrent_add_real(self._queued_torrents.pop(0))
+                self._on_torrent_add_real(*self._queued_torrents.pop(0))
         else:
             self.main_stack.props.visible_child = self.warning_page
 
@@ -258,23 +262,29 @@ class ApplicationWindow(Gtk.ApplicationWindow):
             return self._filter_tracker in self._get_torrent_trackers(model[it][-1])
         return True
 
-    def _on_torrent_add_real(self, file_uri):
+    def _on_torrent_add_real(self, uri, uri_only):
         for dialog in self._add_dialogs:
-            if dialog.uri == file_uri:
+            if dialog.uri == uri:
                 dialog.present()
-                logging.info('Raising existing dialog for {}'.format(file_uri))
+                logging.info('Raising existing dialog for {}'.format(uri))
                 return
 
-        dialog = AddDialog(transient_for=self,
-                           uri=file_uri,
-                           client=self.client)
+        if uri_only is True:
+            dialog = AddURIDialog(transient_for=self,
+                                  uri=uri,
+                                  client=self.client)
+        else:
+            dialog = AddDialog(transient_for=self,
+                               uri=uri,
+                               client=self.client)
         self._add_dialogs.append(dialog)
         dialog.connect('destroy', lambda d: self._add_dialogs.remove(d))
         dialog.present()
 
     def _on_torrent_add(self, action, param):
         file = param.get_string()
+        uri_only = action is self._add_uri_action
         if self.client.props.connected:
-            self._on_torrent_add_real(file)
+            self._on_torrent_add_real(file, uri_only)
         else:
-            self._queued_torrents.append(file)
+            self._queued_torrents.append((file, uri_only))
