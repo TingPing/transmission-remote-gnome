@@ -141,6 +141,11 @@ class Client(GObject.Object):
     def do_set_property(self, prop, value):
         setattr(self, prop.name.replace('-', '_'), value)
 
+    @property
+    def is_local(self):
+        # TODO: Handle IPs, etc
+        return self.hostname == 'localhost'
+
     def _on_credentials_changed(self, *args):
         new_auth = (self.username, self.password)
         if new_auth != self._last_auth:

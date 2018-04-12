@@ -18,6 +18,8 @@
 from enum import IntEnum
 from collections import (OrderedDict, namedtuple)
 from functools import partial
+from gettext import gettext as _
+import os
 
 from gi.repository import (
     GObject,
@@ -32,6 +34,7 @@ from . import cell_renderers # noqa: ignore=F401
 from .client import Client
 from .list_wrapper import WrappedStore
 from .torrent_properties import TorrentProperties
+from .preferences_dialog import _get_is_flatpak  # TODO: Move this
 from .gi_composites import GtkTemplate
 
 
@@ -91,10 +94,21 @@ class TorrentListView(Gtk.TreeView):
             dialog = TorrentProperties(torrent=torrent, client=self.client, transient_for=self.get_toplevel())
             dialog.present()
 
+    def _open_torrents(self, torrents):
+        for torrent in torrents:
+            if torrent.files.get_n_items() <= 1:
+                # FIXME: This is kinda a workaround for my usage
+                # which is opening a flatpak and the file isn't working
+                path = torrent.download_dir
+            else:
+                path = os.path.join(torrent.download_dir, torrent.name)
+            uri = Gio.File.new_for_path(path).get_uri()
+            Gtk.show_uri_on_window(self.get_toplevel(), uri, Gdk.CURRENT_TIME)
+
     def _build_menu(self, torrents) -> Gio.Menu:
         Entry = namedtuple('Entry', ['label', 'function'])
 
-        MENU_ITEMS = (
+        MENU_ITEMS = [
             Entry(_('Resume'), partial(self.client.torrent_start, torrents)),
             Entry(_('Pause'), partial(self.client.torrent_stop, torrents)),
             Entry(_('Verify'), partial(self.client.torrent_verify, torrents)),
@@ -104,7 +118,13 @@ class TorrentListView(Gtk.TreeView):
             Entry(_('Delete'), partial(self.client.torrent_remove, torrents, True)),
             (),
             Entry(_('Properties'), partial(self._open_torrent_properties, torrents)),
-        )
+        ]
+
+        # TODO: It can work in flatpak depending in permissions
+        if self.client.is_local and not _get_is_flatpak():
+            open_entry = Entry(_('Open'), partial(self._open_torrents, torrents))
+            MENU_ITEMS.insert(4, tuple())
+            MENU_ITEMS.insert(4, open_entry)
 
         def on_activate(widget, callback):
             callback()
