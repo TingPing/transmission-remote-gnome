@@ -32,6 +32,7 @@ from gi.repository import (
 # noinspection PyUnresolvedReferences
 from . import cell_renderers # noqa: ignore=F401
 from .client import Client
+from .add_dialog import MoveDialog
 from .list_wrapper import WrappedStore
 from .torrent_properties import TorrentProperties
 from .preferences_dialog import _get_is_flatpak  # TODO: Move this
@@ -94,6 +95,11 @@ class TorrentListView(Gtk.TreeView):
             dialog = TorrentProperties(torrent=torrent, client=self.client, transient_for=self.get_toplevel())
             dialog.present()
 
+    def _move_torrents(self, torrents):
+        for torrent in torrents:  # TODO: Maybe move multiple at once?
+            dialog = MoveDialog(torrent=torrent, client=self.client, transient_for=self.get_toplevel())
+            dialog.present()
+
     def _open_torrents(self, torrents):
         for torrent in torrents:
             if torrent.files.get_n_items() <= 1:
@@ -113,7 +119,7 @@ class TorrentListView(Gtk.TreeView):
             Entry(_('Pause'), partial(self.client.torrent_stop, torrents)),
             Entry(_('Verify'), partial(self.client.torrent_verify, torrents)),
             (),
-            # Entry(_('Move'), None),
+            Entry(_('Move'), partial(self._move_torrents, torrents)),
             Entry(_('Remove'), partial(self.client.torrent_remove, torrents)),
             Entry(_('Delete'), partial(self.client.torrent_remove, torrents, True)),
             (),

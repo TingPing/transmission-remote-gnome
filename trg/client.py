@@ -281,6 +281,10 @@ class Client(GObject.Object):
     def torrent_set(self, torrent, args):
         self._make_request_async('torrent-set', self._make_args(torrent, args=args))
 
+    def torrent_set_location(self, torrent, location):
+        args = {'location': location, 'move': True}  # Expose move option?
+        self._make_request_async('torrent-set-location', self._make_args(torrent, args=args))
+
     def torrent_get(self, torrent, fields, callback=None):
         args = self._make_args(torrent, fields=fields)
         self._make_request_async('torrent-get', args, callback=callback)

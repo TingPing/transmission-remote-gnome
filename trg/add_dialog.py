@@ -25,6 +25,7 @@ from gi.repository import (
 
 from .gi_composites import GtkTemplate
 from .client import Client
+from .torrent import Torrent
 from .torrent_file import TorrentFile
 from .torrent_file_view import TorrentFileView, FileColumn
 from .list_model_override import ListStore
@@ -200,6 +201,42 @@ class AddURIDialog(Gtk.Dialog):
                 'paused': self.paused_check.props.active,
             }
             self.client.torrent_add(args)
+
+        if response_id != Gtk.ResponseType.DELETE_EVENT:
+            self.destroy()
+
+
+@GtkTemplate(ui='/se/tingping/Trg/ui/movedialog.ui')
+class MoveDialog(Gtk.Dialog):
+    __gtype_name__ = 'MoveDialog'
+
+    torrent = GObject.Property(type=Torrent)
+    client = GObject.Property(type=Client)
+    destination_combo = GtkTemplate.Child()
+
+    def __init__(self, **kwargs):
+        super().__init__(use_header_bar=1, **kwargs)
+        self.init_template()
+
+        self.set_response_sensitive(Gtk.ResponseType.OK, False)
+
+        self.destination_combo.append_text(self.client.props.download_dir)
+        torrent_directories = {torrent.props.download_dir.rstrip('/')
+                               for torrent in ListStore(self.client.props.torrents)}
+        for i, directory in enumerate(sorted(torrent_directories)):
+            self.destination_combo.append_text(directory)
+            if directory == self.torrent.download_dir:
+                self.destination_combo.set_active(i + 1)
+
+    @GtkTemplate.Callback
+    def _on_destination_changed(self, combobox):
+        path = combobox.get_active_text()
+        self.set_response_sensitive(Gtk.ResponseType.OK, GLib.path_is_absolute(path))
+
+    def do_response(self, response_id):
+        if response_id == Gtk.ResponseType.OK:
+            path = self.destination_combo.get_active_text()
+            self.client.torrent_set_location(self.torrent, path)
 
         if response_id != Gtk.ResponseType.DELETE_EVENT:
             self.destroy()
