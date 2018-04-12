@@ -83,10 +83,7 @@ class TorrentListView(Gtk.TreeView):
             torrents.append(torrent)
 
         menu = self._build_menu(torrents)
-        if hasattr(menu, 'popup_at_pointer'):
-            menu.popup_at_pointer(event) # Gtk 3.22
-        else:
-            menu.popup(None, None, None, None, event.button, event.time)
+        menu.popup_at_pointer(event)
         return Gdk.EVENT_STOP
 
     def _open_torrent_properties(self, torrents):
