@@ -19,7 +19,7 @@ desktop_file = configure_file(
 #  install_dir: pkgdatadir,
 #)
 
-i18n.merge_file(
+trg_desktop = i18n.merge_file(
   input: desktop_file,
   output: app_id + '.desktop',
   type: 'desktop',
@@ -28,7 +28,7 @@ i18n.merge_file(
   install_dir: join_paths(get_option('datadir'), 'applications')
 )
 
-i18n.merge_file(
+trg_appstream = i18n.merge_file(
   input: app_id + '.appdata.xml.in',
   output: app_id + '.appdata.xml',
   po_dir: '../po',
@@ -81,3 +81,26 @@ trg_resources = gnome.compile_resources(app_id,
 )
 
 trg_settings = gnome.compile_schemas()
+
+# ---- Tests ----
+
+appstream_util = find_program('appstream-util', required: false)
+if appstream_util.found()
+  test('Validate appstream file', appstream_util,
+    args: ['validate-relax', trg_appstream]
+  )
+endif
+
+desktop_utils = find_program('desktop-file-validate', required: false)
+if desktop_utils.found()
+  test('Validate desktop file', desktop_utils,
+    args: [trg_desktop]
+  )
+endif
+
+compile_schemas = find_program('glib-compile-schemas', required: false)
+if compile_schemas.found()
+  test('Validate schema file', compile_schemas,
+    args: ['--strict', '--dry-run', meson.current_source_dir()]
+  )
+endif
