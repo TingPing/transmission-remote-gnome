@@ -100,6 +100,9 @@ class PreferencesDialog(Gtk.Dialog):
         for val in (('required', _('Required')), ('preferred', _('Preferred')), ('tolerated', _('Tolerated'))):
             encryption_combo.append(*val)
 
+        def make_link(url, text):
+            return '<a href="{}">{}</a>'.format(url, GLib.markup_escape_text(text))
+
         remote_pages = (
             Page('general', _('General'), (
                 Row(_('Download Directory'), Gtk.Entry.new(), 'text', 'download-dir'),
@@ -113,11 +116,18 @@ class PreferencesDialog(Gtk.Dialog):
                 ToggledRow(_('Blocklist URL'), Gtk.Entry.new(), 'text',
                            'blocklist-url', 'blocklist-enabled'),
                 Row(_('Randomize Port on Start'), Gtk.Switch.new(), 'active', 'peer-port-random-on-start'),
-                Row(_('DHT'), Gtk.Switch.new(), 'active', 'dht-enabled'),
-                Row(_('Peer Exchange'), Gtk.Switch.new(), 'active', 'pex-enabled'),
-                Row(_('Local Peer Discovery'), Gtk.Switch.new(), 'active', 'lpd-enabled'),
-                Row(_('UTP'), Gtk.Switch.new(), 'active', 'utp-enabled'),
-                Row(_('UPNP'), Gtk.Switch.new(), 'active', 'port-forwarding-enabled'),
+                Row(make_link('https://en.wikipedia.org/wiki/Distributed_hash_table', _('Distributed Hash Table (DHT)')),
+                    Gtk.Switch.new(), 'active', 'dht-enabled'),
+                Row(make_link('https://en.wikipedia.org/wiki/Peer_exchange', _('Peer Exchange (PEX)')),
+                    Gtk.Switch.new(), 'active', 'pex-enabled'),
+                Row(make_link('https://en.wikipedia.org/wiki/Local_Peer_Discovery', _('Local Peer Discovery')),
+                    Gtk.Switch.new(), 'active', 'lpd-enabled'),
+                Row(make_link('https://en.wikipedia.org/wiki/Micro_Transport_Protocol', _('Micro Transport Protocol (µTP)')),
+                    Gtk.Switch.new(), 'active', 'utp-enabled'),
+                Row(' '.join((GLib.markup_escape_text(_('Port fowarding')),
+                             make_link('https://en.wikipedia.org/wiki/NAT_Port_Mapping_Protocol', '(NAT-PMP)'),
+                             make_link('https://en.wikipedia.org/wiki/Universal_Plug_and_Play', '(UPnP)'))),
+                    Gtk.Switch.new(), 'active', 'port-forwarding-enabled'),
 
             )),
             # TODO: Add headers
@@ -166,6 +176,8 @@ class PreferencesDialog(Gtk.Dialog):
                             column_spacing=12, row_spacing=6)
             for i, row in enumerate(rows):
                 label = Gtk.Label(label=row.title, halign=Gtk.Align.END, visible=True)
+                if '<a href' in row.title:
+                    label.props.use_markup = True
                 label.get_style_context().add_class('dim-label')
                 row.widget.props.hexpand = True
                 row.widget.show()
