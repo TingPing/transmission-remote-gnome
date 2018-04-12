@@ -100,6 +100,9 @@ class PreferencesDialog(Gtk.Dialog):
         for val in (('required', _('Required')), ('preferred', _('Preferred')), ('tolerated', _('Tolerated'))):
             encryption_combo.append(*val)
 
+        seed_button = Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, .1)
+        seed_button.props.digits = 2
+
         def make_link(url, text):
             return '<a href="{}">{}</a>'.format(url, GLib.markup_escape_text(text))
 
@@ -133,11 +136,11 @@ class PreferencesDialog(Gtk.Dialog):
             # TODO: Add headers
             # TODO: Add toggles for these
             Page('limits', _('Limits'), (
-                ToggledRow(_('Download Limit (KB/s)'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 1),
+                ToggledRow(_('Download Limit (KB/s)'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 10),
                            'value', 'speed-limit-down', 'speed-limit-down-enabled'),
-                ToggledRow(_('Upload Limit (KB/s)'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 1),
+                ToggledRow(_('Upload Limit (KB/s)'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 10),
                            'value', 'speed-limit-up', 'speed-limit-up-enabled'),
-                ToggledRow(_('Seed Ratio Limit'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, .1),
+                ToggledRow(_('Seed Ratio Limit'), seed_button,
                            'value', 'seedRatioLimit', 'seedRatioLimited'),
                 ToggledRow(_('Download Queue Size'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT16, 1),
                            'value', 'download-queue-size', 'download-queue-enabled'),
@@ -152,9 +155,9 @@ class PreferencesDialog(Gtk.Dialog):
             )),
             Page('alt-limits', _('Alternate Limits'), (
                 Row(_('Alternative Limits Active'), Gtk.Switch.new(), 'active', 'alt-speed-enabled'),
-                Row(_('Alternate Down Limit (KB/s)'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 1),
+                Row(_('Alternate Down Limit (KB/s)'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 10),
                     'value', 'alt-speed-down'),
-                Row(_('Alternate Up Limit (KB/s)'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 1),
+                Row(_('Alternate Up Limit (KB/s)'), Gtk.SpinButton.new_with_range(0, GLib.MAXUINT32, 10),
                     'value', 'alt-speed-up'),
                 # TODO: Alt-time limits
             )),
