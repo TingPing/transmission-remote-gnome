@@ -95,13 +95,16 @@ class ApplicationWindow(Gtk.ApplicationWindow):
         Gtk.ApplicationWindow.do_destroy(self)
 
     def _init_actions(self):
+        app = self.props.application
         self._add_action = Gio.SimpleAction.new('torrent_add', GLib.VariantType('s'))
         self._add_action.connect('activate', self._on_torrent_add)
         self.add_action(self._add_action)
+        app.set_accels_for_action("win.torrent_add('')", ['<Primary>o'])
 
         self._add_uri_action = Gio.SimpleAction.new('torrent_add_uri', GLib.VariantType('s'))
         self._add_uri_action.connect('activate', self._on_torrent_add)
         self.add_action(self._add_uri_action)
+        app.set_accels_for_action("win.torrent_add_uri('')", ['<Primary>l', '<Primary>u'])
 
         Action = namedtuple('Action', ('name', 'value', 'callback'))
         actions = (
