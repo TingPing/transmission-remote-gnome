@@ -22,6 +22,7 @@ from gi.repository import (
     GLib,
     GObject,
     Gio,
+    Gdk,
     Gtk
 )
 
@@ -70,6 +71,10 @@ class Application(Gtk.Application):
 
         action = Gio.SimpleAction.new('preferences')
         action.connect('activate', self.on_preferences)
+        self.add_action(action)
+
+        action = Gio.SimpleAction.new('open-uri', GLib.VariantType('s'))
+        action.connect('activate', self._on_open_uri)
         self.add_action(action)
 
         self._init_service()
@@ -197,3 +202,7 @@ class Application(Gtk.Application):
                                 logo_icon_name='se.tingping.Trg',
                                 version=self.version)
         about.present()
+
+    def _on_open_uri(self, action, param):
+        uri = param.get_string()
+        Gtk.show_uri_on_window(self.window, uri, Gdk.CURRENT_TIME)

@@ -30,17 +30,7 @@ from gi.repository import (
 
 from .gi_composites import GtkTemplate
 from .client import Client
-
-
-_is_flatpak = None
-
-
-def _get_is_flatpak():
-    global _is_flatpak
-    if _is_flatpak is None:
-        file_ = path.join(GLib.get_user_runtime_dir(), 'flatpak-info')
-        _is_flatpak = path.exists(file_)
-    return _is_flatpak
+from .utils import is_flatpak
 
 
 def _get_has_statusnotifier():
@@ -91,7 +81,7 @@ class PreferencesDialog(Gtk.Dialog):
                     'notify-on-finish'),
             ]),
         )
-        if not _get_is_flatpak():
+        if not is_flatpak():
             self._autostart_switch = AutoStartSwitch()
             as_row = Row(_('Autostart service on login'), self._autostart_switch, '', '')
             local_pages[1].rows.append(as_row)

@@ -18,6 +18,7 @@
 import json
 import pprint
 import logging
+from gettext import gettext as _
 
 from gi.repository import (
     GLib,
@@ -26,6 +27,7 @@ from gi.repository import (
     Soup,
 )
 
+from .utils import is_flatpak
 from .torrent import Torrent, TorrentStatus
 from .timer import Timer
 
@@ -308,10 +310,13 @@ class Client(GObject.Object):
                 callback(response)
         self._make_request_async('torrent-add', args, callback=on_add)
 
-    @staticmethod
-    def _show_notification(torrent: Torrent):
+    def _show_notification(self, torrent: Torrent):
         notification = Gio.Notification.new(_('Download completed'))
         notification.set_body(torrent.props.name + _(' has finished downloading.'))
+        if self.is_local and not is_flatpak():
+            notification.add_button_with_target(_('Open'), 'app.open-uri',
+                                                GLib.Variant('s', torrent.uri))
+
         application = Gio.Application.get_default()
         if application and application.settings['notify-on-finish']:
             # TODO: Combine repeated notifications

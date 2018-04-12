@@ -42,6 +42,7 @@ if __name__ == '__main__':
     import gi
 
     gi.require_versions({
+        'Gdk': '3.0',
         'Gtk': '3.0',
         'Soup': '2.4',
     })

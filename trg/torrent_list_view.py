@@ -19,7 +19,6 @@ from enum import IntEnum
 from collections import (OrderedDict, namedtuple)
 from functools import partial
 from gettext import gettext as _
-import os
 
 from gi.repository import (
     GObject,
@@ -35,7 +34,7 @@ from .client import Client
 from .add_dialog import MoveDialog
 from .list_wrapper import WrappedStore
 from .torrent_properties import TorrentProperties
-from .preferences_dialog import _get_is_flatpak  # TODO: Move this
+from .utils import is_flatpak
 from .gi_composites import GtkTemplate
 
 
@@ -102,14 +101,7 @@ class TorrentListView(Gtk.TreeView):
 
     def _open_torrents(self, torrents):
         for torrent in torrents:
-            if torrent.files.get_n_items() <= 1:
-                # FIXME: This is kinda a workaround for my usage
-                # which is opening a flatpak and the file isn't working
-                path = torrent.download_dir
-            else:
-                path = os.path.join(torrent.download_dir, torrent.name)
-            uri = Gio.File.new_for_path(path).get_uri()
-            Gtk.show_uri_on_window(self.get_toplevel(), uri, Gdk.CURRENT_TIME)
+            Gtk.show_uri_on_window(self.get_toplevel(), torrent.uri, Gdk.CURRENT_TIME)
 
     def _build_menu(self, torrents) -> Gio.Menu:
         Entry = namedtuple('Entry', ['label', 'function'])
@@ -127,7 +119,7 @@ class TorrentListView(Gtk.TreeView):
         ]
 
         # TODO: It can work in flatpak depending in permissions
-        if self.client.is_local and not _get_is_flatpak():
+        if self.client.is_local and not is_flatpak():
             open_entry = Entry(_('Open'), partial(self._open_torrents, torrents))
             MENU_ITEMS.insert(4, tuple())
             MENU_ITEMS.insert(4, open_entry)

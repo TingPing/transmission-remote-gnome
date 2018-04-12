@@ -17,6 +17,7 @@
 
 import logging
 from enum import IntEnum
+import os
 
 from gi.repository import (
     GLib,
@@ -167,6 +168,16 @@ class Torrent(GObject.Object):
         if trackers:
             torrent._set_trackers(trackers)
         return torrent
+
+    @property
+    def uri(self):
+        if self.files.get_n_items() <= 1:
+            # FIXME: This is kinda a workaround for my usage
+            # which is opening a flatpak and the file isn't working
+            path = self.download_dir
+        else:
+            path = os.path.join(self.download_dir, self.name)
+        return Gio.File.new_for_path(path).get_uri()
 
     def set_files(self, files: list):
         self.files.remove_all()
