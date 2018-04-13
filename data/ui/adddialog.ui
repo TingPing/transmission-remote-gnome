@@ -1,26 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.19.0
-
-Copyright (C)
-
-This file is part of .
-
- is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
- is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with .  If not, see <http://www.gnu.org/licenses/>.
-
-Author: Patrick Griffis
-
--->
 <interface>
   <requires lib="gtk+" version="3.18"/>
   <!-- interface-license-type gplv3 -->
@@ -32,7 +10,7 @@ Author: Patrick Griffis
     </mime-types>
   </object>
   <template class="AddDialog" parent="GtkDialog">
-    <property name="can-focus">False</property>
+    <property name="can-focus">0</property>
     <property name="title" translatable="yes">Add Torrent</property>
     <property name="default-width">700</property>
     <property name="default-height">500</property>
@@ -52,21 +30,21 @@ Author: Patrick Griffis
     </child>
     <child internal-child="vbox">
       <object class="GtkBox">
-        <property name="margin">6</property>
         <property name="orientation">vertical</property>
-        <property name="spacing">2</property>
+        <property name="margin">6</property>
         <child>
           <object class="GtkGrid">
             <property name="visible">1</property>
-            <property name="row-spacing">5</property>
-            <property name="column-spacing">5</property>
+            <property name="row-spacing">6</property>
+            <property name="column-spacing">12</property>
             <child>
               <object class="GtkLabel">
                 <property name="visible">1</property>
-                <property name="halign">start</property>
-                <property name="label" translatable="yes">Torrent file:</property>
-                <property name="width-chars">16</property>
-                <property name="xalign">0</property>
+                <property name="halign">end</property>
+                <property name="label" translatable="yes">Torrent File</property>
+                <style>
+                  <class name="dim-label"/>
+                </style>
               </object>
               <packing>
                 <property name="left-attach">0</property>
@@ -78,7 +56,6 @@ Author: Patrick Griffis
                 <property name="visible">1</property>
                 <property name="hexpand">1</property>
                 <property name="filter">torrent_filefilter</property>
-                <property name="title" translatable="yes"></property>
                 <signal name="file-set" handler="_on_file_set" swapped="no"/>
               </object>
               <packing>
@@ -89,8 +66,6 @@ Author: Patrick Griffis
             <child>
               <object class="GtkScrolledWindow" id="fileview_sw">
                 <property name="visible">1</property>
-                <property name="hexpand">1</property>
-                <property name="vexpand">1</property>
                 <property name="shadow-type">in</property>
                 <child>
                   <object class="TorrentFileView" id="fileview">
@@ -107,10 +82,11 @@ Author: Patrick Griffis
             <child>
               <object class="GtkLabel">
                 <property name="visible">1</property>
-                <property name="halign">start</property>
-                <property name="label" translatable="yes">Destination folder:</property>
-                <property name="width-chars">16</property>
-                <property name="xalign">0</property>
+                <property name="halign">end</property>
+                <property name="label" translatable="yes">Destination Folder</property>
+                <style>
+                  <class name="dim-label"/>
+                </style>
               </object>
               <packing>
                 <property name="left-attach">0</property>
@@ -120,14 +96,9 @@ Author: Patrick Griffis
             <child>
               <object class="GtkComboBoxText" id="destination_combo">
                 <property name="visible">1</property>
-                <property name="hexpand">1</property>
+                <property name="hexpand">0</property>
                 <property name="has-entry">1</property>
                 <signal name="changed" handler="_on_destination_changed" swapped="no"/>
-                <child internal-child="entry">
-                  <object class="GtkEntry">
-                    <property name="can-focus">1</property>
-                  </object>
-                </child>
               </object>
               <packing>
                 <property name="left-attach">1</property>
@@ -137,78 +108,33 @@ Author: Patrick Griffis
             <child>
               <object class="GtkBox">
                 <property name="visible">1</property>
-                <property name="spacing">4</property>
-                <property name="homogeneous">1</property>
+                <property name="spacing">6</property>
                 <child>
-                  <object class="GtkBox">
+                  <object class="GtkComboBoxText" id="priority_combo">
                     <property name="visible">1</property>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="name">0</property>
-                        <property name="visible">1</property>
-                        <property name="halign">start</property>
-                        <property name="label" translatable="yes">Priority:</property>
-                        <property name="width-chars">16</property>
-                        <property name="xalign">0</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkComboBoxText" id="priority_combo">
-                        <property name="visible">1</property>
-                        <property name="margin-start">6</property>
-                        <property name="active">1</property>
-                        <property name="hexpand">1</property>
-                        <items>
-                          <item id="-1" translatable="yes">Low</item>
-                          <item id="0" translatable="yes">Normal</item>
-                          <item id="1" translatable="yes">High</item>
-                        </items>
-                      </object>
-                    </child>
+                    <property name="active">1</property>
+                    <items>
+                      <item id="-1" translatable="yes">Low</item>
+                      <item id="0" translatable="yes">Normal</item>
+                      <item id="1" translatable="yes">High</item>
+                    </items>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkBox">
+                  <object class="GtkCheckButton" id="delete_check">
                     <property name="visible">1</property>
-                    <property name="spacing">6</property>
-                    <child>
-                      <object class="GtkCheckButton" id="delete_check">
-                        <property name="visible">1</property>
-                        <property name="can-focus">1</property>
-                        <property name="draw-indicator">1</property>
-                      </object>
-                      <packing>
-                        <property name="pack-type">end</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">1</property>
-                        <property name="label" translatable="yes">Delete Torrent: </property>
-                      </object>
-                      <packing>
-                        <property name="pack-type">end</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkCheckButton" id="paused_check">
-                        <property name="visible">1</property>
-                        <property name="can-focus">1</property>
-                        <property name="draw-indicator">1</property>
-                      </object>
-                      <packing>
-                        <property name="pack-type">end</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="visible">1</property>
-                        <property name="label" translatable="yes">Start Paused: </property>
-                      </object>
-                      <packing>
-                        <property name="pack-type">end</property>
-                      </packing>
-                    </child>
+                    <property name="receives-default">0</property>
+                    <property name="label" translatable="yes">Delete File</property>
+                  </object>
+                  <packing>
+                    <property name="pack-type">end</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkCheckButton" id="paused_check">
+                    <property name="visible">1</property>
+                    <property name="receives-default">0</property>
+                    <property name="label" translatable="yes">Start Paused</property>
                   </object>
                   <packing>
                     <property name="pack-type">end</property>
@@ -216,9 +142,22 @@ Author: Patrick Griffis
                 </child>
               </object>
               <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">1</property>
+                <property name="halign">end</property>
+                <property name="label" translatable="yes">Priority</property>
+                <style>
+                  <class name="dim-label"/>
+                </style>
+              </object>
+              <packing>
                 <property name="left-attach">0</property>
                 <property name="top-attach">2</property>
-                <property name="width">2</property>
               </packing>
             </child>
           </object>
