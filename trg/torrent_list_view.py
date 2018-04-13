@@ -21,6 +21,7 @@ from functools import partial
 from gettext import gettext as _
 
 from gi.repository import (
+    GLib,
     GObject,
     Gio,
     Gdk,
@@ -103,6 +104,23 @@ class TorrentListView(Gtk.TreeView):
         for torrent in torrents:
             Gtk.show_uri_on_window(self.get_toplevel(), torrent.uri, Gdk.CURRENT_TIME)
 
+    def _delete_torrents(self, torrents):
+        def response(dialog, response_id):
+            if response_id == Gtk.ResponseType.OK:
+                self.client.torrent_remove(torrents, True)
+            if response_id != Gtk.ResponseType.DELETE_EVENT:
+                dialog.destroy()
+
+        text = GLib.markup_escape_text(_('Remove Torrent and Data?'))
+        dialog = Gtk.MessageDialog(transient_for=self.get_toplevel(),
+                                   destroy_with_parent=True,
+                                   message_type=Gtk.MessageType.QUESTION,
+                                   buttons=Gtk.ButtonsType.OK_CANCEL,
+                                   use_markup=True,
+                                   text='<b>{}</b>'.format(text))
+        dialog.connect('response', response)
+        dialog.present()
+
     def _build_menu(self, torrents) -> Gio.Menu:
         Entry = namedtuple('Entry', ['label', 'function'])
 
@@ -113,7 +131,7 @@ class TorrentListView(Gtk.TreeView):
             (),
             Entry(_('Move'), partial(self._move_torrents, torrents)),
             Entry(_('Remove'), partial(self.client.torrent_remove, torrents)),
-            Entry(_('Delete'), partial(self.client.torrent_remove, torrents, True)),
+            Entry(_('Delete'), partial(self._delete_torrents, torrents)),
             (),
             Entry(_('Properties'), partial(self._open_torrent_properties, torrents)),
         ]
