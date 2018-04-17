@@ -5,47 +5,92 @@
   "sdk": "org.gnome.Sdk",
   "command": "transmission-remote-gnome",
   "finish-args": [
-      "--share=ipc",
-      "--socket=x11",
-      "--socket=wayland",
-      "--share=network",
-
-      "--filesystem=xdg-download",
-      "--talk-name=org.gtk.vfs",
-      "--talk-name=org.gtk.vfs.*",
-
-      "--talk-name=org.kde.StatusNotifierWatcher",
-      "--own-name=org.kde.*", /* FIXME */
-
-      "--env=DCONF_USER_CONFIG_DIR=.config/dconf",
-      "--filesystem=xdg-run/dconf",
-      "--filesystem=~/.config/dconf:ro",
-      "--talk-name=ca.desrt.dconf"
+    "--share=ipc",
+    "--socket=x11",
+    "--socket=wayland",
+    "--share=network",
+    "--filesystem=xdg-download",
+    "--talk-name=org.gtk.vfs",
+    "--talk-name=org.gtk.vfs.*",
+    "--talk-name=org.kde.StatusNotifierWatcher",
+    "--own-name=org.kde.*",
+    "--env=DCONF_USER_CONFIG_DIR=.config/dconf",
+    "--filesystem=xdg-run/dconf",
+    "--filesystem=~/.config/dconf:ro",
+    "--talk-name=ca.desrt.dconf"
+  ],
+  "x-run-args": [
+    "--log=3"
   ],
   "cleanup": [
     "/include",
     "/lib/pkgconfig",
     "/lib/*.la",
-    "/share/gir-1.0"
+    "/share/gir-1.0",
+    "/share/man"
   ],
   "modules": [
     {
       "name": "statusnotifier",
-      "config-opts": ["--disable-static"],
-      "sources": [{
-        "type": "archive",
-        "url": "https://github.com/jjk-jacky/statusnotifier/archive/1.0.0.tar.gz",
-        "sha256": "a307f04bc3ae749fd2bd368c3752dec2f1dbd180da89c737f1dda63a698d441b"
-      }]
+      "config-opts": [
+        "--disable-static"
+      ],
+      "sources": [
+        {
+          "type": "archive",
+          "url": "https://github.com/jjk-jacky/statusnotifier/archive/1.0.0.tar.gz",
+          "sha256": "a307f04bc3ae749fd2bd368c3752dec2f1dbd180da89c737f1dda63a698d441b"
+        }
+      ]
+    },
+    {
+      "name": "transmission-daemon",
+      "config-opts": [
+        "--enable-daemon",
+        "--disable-cli",
+        "--without-gtk"
+      ],
+      "cleanup": [
+        "/bin/transmission-create",
+        "/bin/transmission-edit",
+        "/bin/transmission-show"
+      ],
+      "sources": [
+        {
+          "type": "archive",
+          "url": "https://github.com/transmission/transmission-releases/raw/master/transmission-2.93.tar.xz",
+          "sha256": "8815920e0a4499bcdadbbe89a4115092dab42ce5199f71ff9a926cfd12b9b90b"
+        }
+      ],
+      "modules": [
+        {
+          "name": "libevent",
+          "config-opts": [
+            "--disable-static"
+          ],
+          "cleanup": [
+            "/bin"
+          ],
+          "sources": [
+            {
+              "type": "archive",
+              "url": "https://github.com/libevent/libevent/releases/download/release-2.1.8-stable/libevent-2.1.8-stable.tar.gz",
+              "sha256": "965cc5a8bb46ce4199a47e9b2c9e1cae3b137e8356ffdad6d94d3b9069b71dc2"
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "transmission-remote-gnome",
       "buildsystem": "meson",
       "builddir": true,
-      "sources": [{
-        "type": "git",
-        "url": "https://github.com/TingPing/transmission-remote-gnome.git"
-      }]
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://github.com/TingPing/transmission-remote-gnome.git"
+        }
+      ]
     }
   ]
 }

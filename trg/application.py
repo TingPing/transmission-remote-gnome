@@ -16,6 +16,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+import os
+import signal
 
 import gi
 from gi.repository import (
@@ -53,6 +55,7 @@ class Application(Gtk.Application):
         self.client = None
         self.download_monitor = None
         self.status = None
+        self.proc = None
         self.settings = Gio.Settings.new('se.tingping.Trg')
 
         self.add_main_option('log', 0, GLib.OptionFlags.NONE, GLib.OptionArg.INT,
@@ -80,6 +83,7 @@ class Application(Gtk.Application):
         self._init_service()
         self.settings.connect('changed::show-status-icon', self._on_status_icon_change)
         self._on_status_icon_change()
+        self._init_daemon()
 
     def _on_status_icon_change(self, settings=None, key=None):
         if StatusNotifier is None:
@@ -112,6 +116,35 @@ class Application(Gtk.Application):
                 self.release()
                 self.status.holding = False
             self.status.props.status = StatusNotifier.Status.PASSIVE
+
+    def _init_daemon(self):
+        if not self.settings['run-embedded-daemon']:
+            return
+
+        def _on_proc_finished(proc, result):
+            self.release()
+            try:
+                success = proc.wait_finish(result)
+            except GLib.Error as e:
+                logging.exception(e)
+
+        config_dir = os.path.join(GLib.get_user_config_dir(), 'se.tingping.Trg', 'daemon')
+        args = [
+            'transmission-daemon',
+            '--config-dir=' + config_dir,
+            '--pid-file=' + os.path.join(config_dir, 'pidfile'),
+            '--foreground',
+            '--auth',
+            '--username=' + self.settings['username'],
+            '--password=' + self.settings['password'],
+        ]
+        try:
+            self.proc = Gio.Subprocess.new(args, Gio.SubprocessFlags.NONE)
+            self.hold()
+            self.proc.wait_async(None, _on_proc_finished)
+        except GLib.Error as e:
+            logging.exception(e)
+
 
     def _init_service(self):
         if self.props.flags & Gio.ApplicationFlags.IS_SERVICE:
@@ -188,6 +221,8 @@ class Application(Gtk.Application):
         self.window.present()
 
     def do_shutdown(self):
+        if self.proc is not None:
+            self.proc.send_signal(signal.SIGINT)
         Gtk.Application.do_shutdown(self)
 
     def on_preferences(self, action, param):

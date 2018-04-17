@@ -52,6 +52,11 @@
       <summary>Show status icon for application</summary>
     </key>
 
+    <key type="b" name="run-embedded-daemon">
+      <default>false</default>
+      <summary>Run private instance of transmission-daemon</summary>
+    </key>
+
   </schema>
 
 </schemalist>
