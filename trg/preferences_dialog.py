@@ -212,7 +212,7 @@ class PreferencesDialog(Gtk.Dialog):
         if response_id == Gtk.ResponseType.APPLY:
             self.settings.apply()
             self.remote_settings.apply()
-            if not _get_is_flatpak():
+            if not is_flatpak():
                 self._autostart_switch.apply()
         else:
             self.settings.revert()
