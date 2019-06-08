@@ -1,7 +1,7 @@
 {
   "app-id": "se.tingping.Trg",
   "runtime": "org.gnome.Platform",
-  "runtime-version": "3.28",
+  "runtime-version": "3.32",
   "sdk": "org.gnome.Sdk",
   "command": "transmission-remote-gnome",
   "finish-args": [
