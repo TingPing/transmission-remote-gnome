@@ -1,26 +1,20 @@
 {
   "app-id": "se.tingping.Trg",
   "runtime": "org.gnome.Platform",
-  "runtime-version": "3.32",
+  "runtime-version": "3.34",
   "sdk": "org.gnome.Sdk",
   "command": "transmission-remote-gnome",
   "finish-args": [
       "--share=ipc",
-      "--socket=x11",
+      "--socket=fallback-x11",
       "--socket=wayland",
       "--share=network",
 
       "--filesystem=xdg-download",
-      "--talk-name=org.gtk.vfs",
-      "--talk-name=org.gtk.vfs.*",
 
       "--talk-name=org.kde.StatusNotifierWatcher",
-      "--own-name=org.kde.*", /* FIXME */
 
-      "--env=DCONF_USER_CONFIG_DIR=.config/dconf",
-      "--filesystem=xdg-run/dconf",
-      "--filesystem=~/.config/dconf:ro",
-      "--talk-name=ca.desrt.dconf"
+      "--metadata=X-DConf=migrate-path=/se/tingping/Trg/"
   ],
   "cleanup": [
     "/include",
@@ -33,15 +27,15 @@
       "name": "statusnotifier",
       "config-opts": ["--disable-static"],
       "sources": [{
-        "type": "archive",
-        "url": "https://github.com/jjk-jacky/statusnotifier/archive/1.0.0.tar.gz",
-        "sha256": "a307f04bc3ae749fd2bd368c3752dec2f1dbd180da89c737f1dda63a698d441b"
+        "type": "git",
+        "url": "https://github.com/jjk-jacky/statusnotifier.git",
+        "//": "Commit adding register-name-on-bus",
+        "commit": "31fdf788e9ff213d35dc4c52c6d68dc08e66ee5c"
       }]
     },
     {
       "name": "transmission-remote-gnome",
       "buildsystem": "meson",
-      "builddir": true,
       "sources": [{
         "type": "git",
         "url": "https://github.com/TingPing/transmission-remote-gnome.git"
