@@ -64,6 +64,7 @@ class Application(Gtk.Application):
         action = Gio.SimpleAction.new('quit')
         action.connect('activate', lambda act, param: self.quit())
         self.add_action(action)
+        self.set_accels_for_action('app.quit', ['<Primary>q'])
 
         action = Gio.SimpleAction.new('about')
         action.connect('activate', self.on_about)
